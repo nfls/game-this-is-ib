@@ -1,0 +1,21 @@
+ManifestFileVersion: 0
+CRC: 1297942100
+Hashes:
+  AssetFileHash:
+    serializedVersion: 2
+    Hash: 47d9045996b599830e2977f59dc8d070
+  TypeTreeHash:
+    serializedVersion: 2
+    Hash: 9f3481602d7058069d4ed5f4e7dfbebd
+HashAppended: 0
+ClassTypes:
+- Class: 114
+  Script: {fileID: 11500000, guid: a63c9be5a2cdb4161b96b7340a0b56f0, type: 3}
+- Class: 114
+  Script: {fileID: 11500000, guid: 609eaece1db04aca879f3bf620c7a4a7, type: 3}
+- Class: 115
+  Script: {instanceID: 0}
+Assets:
+- Assets/Hotassets/Data/VersionData.asset
+- Assets/Hotassets/Data/PlayerAttributesData.asset
+Dependencies: []

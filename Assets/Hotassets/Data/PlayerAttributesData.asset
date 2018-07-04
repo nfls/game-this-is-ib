@@ -1,0 +1,249 @@
+%YAML 1.1
+%TAG !u! tag:unity3d.com,2011:
+--- !u!114 &11400000
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInternal: {fileID: 0}
+  m_GameObject: {fileID: 0}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: a63c9be5a2cdb4161b96b7340a0b56f0, type: 3}
+  m_Name: PlayerAttributesData
+  m_EditorClassIdentifier: 
+  name: Poor Guy
+  health: 300
+  dodgeTrailSettings:
+    motionVectorMode: 1
+    mainColor: {r: 0, g: 0, b: 1, a: 1}
+    outlineColor: {r: 0, g: 0, b: 1, a: 1}
+    outlineWidth: 1
+    outlineDistance: 0.1
+    brightness: 1
+    lifespan: 0.3
+    minDistance: 0.5
+    width:
+      serializedVersion: 2
+      m_Curve:
+      - serializedVersion: 3
+        time: 0
+        value: 0.7562485
+        inSlope: 0
+        outSlope: 0
+        tangentMode: 0
+        weightedMode: 0
+        inWeight: 0.33333334
+        outWeight: 0.33333334
+      - serializedVersion: 3
+        time: 1
+        value: 0.7562485
+        inSlope: 0
+        outSlope: 0
+        tangentMode: 0
+        weightedMode: 0
+        inWeight: 0.33333334
+        outWeight: 0.33333334
+      m_PreInfinity: 2
+      m_PostInfinity: 2
+      m_RotationOrder: 4
+    cornerVertices: 0
+    endCapVertices: 0
+    alignment: 1
+    material: {fileID: 0}
+  accelerationTrailSettings:
+    motionVectorMode: 1
+    mainColor: {r: 0, g: 1, b: 1, a: 1}
+    outlineColor: {r: 0, g: 1, b: 1, a: 1}
+    outlineWidth: 1
+    outlineDistance: 0.1
+    brightness: 1
+    lifespan: 0.3
+    minDistance: 1
+    width:
+      serializedVersion: 2
+      m_Curve:
+      - serializedVersion: 3
+        time: 0
+        value: 0.9001999
+        inSlope: 0
+        outSlope: 0
+        tangentMode: 0
+        weightedMode: 0
+        inWeight: 0.33333334
+        outWeight: 0.33333334
+      - serializedVersion: 3
+        time: 1
+        value: 0.9001999
+        inSlope: 0
+        outSlope: 0
+        tangentMode: 0
+        weightedMode: 0
+        inWeight: 0.33333334
+        outWeight: 0.33333334
+      m_PreInfinity: 2
+      m_PostInfinity: 2
+      m_RotationOrder: 4
+    cornerVertices: 0
+    endCapVertices: 0
+    alignment: 1
+    material: {fileID: 0}
+  speed:
+    name: Speed
+    description: The horizontal speed when player moves normally
+    attributes:
+    - name: Pre-IB's Foot
+      value: 6
+      cost: 0
+    - name: DP-1's Foot
+      value: 8
+      cost: 5
+    - name: DP-2's Foot
+      value: 10
+      cost: 10
+    - name: IB-Surival's Foot
+      value: 12
+      cost: 20
+  acceleration:
+    name: Acceleration
+    description: The scale of move speed when player is accelerating
+    attributes:
+    - name: No Hurries
+      value: 1.5
+      cost: 0
+    - name: Call On Predict Scores
+      value: 1.8
+      cost: 5
+    - name: Call On DDL
+      value: 2
+      cost: 10
+    - name: Call On Universities
+      value: 2.5
+      cost: 20
+  jumpPower:
+    name: Jump Power
+    description: The vertical speed when player jumps
+    attributes:
+    - name: One Month Before DDL
+      value: 12
+      cost: 0
+    - name: One Week Before DDL
+      value: 15
+      cost: 5
+    - name: One Day Before DDL
+      value: 18
+      cost: 10
+    - name: Due
+      value: 20
+      cost: 20
+  jumpTimes:
+    name: Jump Times
+    description: The maximum number of jumps before landing
+    attributes:
+    - name: Number Of SAT II
+      value: 1
+      cost: 0
+    - name: Number Of TOEFL
+      value: 2
+      cost: 5
+    - name: Number Of SAT
+      value: 3
+      cost: 10
+    - name: Number Of Deaths
+      value: 4
+      cost: 20
+  jumpPowerDecay:
+    name: Jump Power Decay
+    description: The decay in power of multiple jumps
+    attributes:
+    - name: After Vacation
+      value: 0.7
+      cost: 0
+    - name: After Weekend
+      value: 0.8
+      cost: 5
+    - name: After Self-Study Period
+      value: 0.9
+      cost: 10
+    - name: After Exams
+      value: 1
+      cost: 20
+  dodgeDistance:
+    name: Dodge Distance
+    description: The distance player can dodge if no obstacles
+    attributes:
+    - name: Met Teacher
+      value: 1.5
+      cost: 0
+    - name: Met Tutor
+      value: 2
+      cost: 5
+    - name: Met Coordinator
+      value: 3
+      cost: 10
+    - name: Met Principal
+      value: 4
+      cost: 20
+  dodgeInvincibilityTime:
+    name: Dodge Invincibility Time
+    description: The invincible time after dodging
+    attributes:
+    - name: Absence
+      value: 0.3
+      cost: 0
+    - name: Exam Leave
+      value: 0.5
+      cost: 5
+    - name: Sick Note
+      value: 0.8
+      cost: 10
+    - name: Official Leave
+      value: 1
+      cost: 20
+  dodgeCapacity:
+    name: Dodge Capacity
+    description: The maximum number of dodge before any cooldown
+    attributes:
+    - name: Perfect Student
+      value: 1
+      cost: 0
+    - name: Average Student
+      value: 2
+      cost: 5
+    - name: Naghty Student
+      value: 3
+      cost: 10
+    - name: Shameless Student
+      value: 4
+      cost: 20
+  dodgeCooldown:
+    name: Dodge Cooldown
+    description: The time needed to cooldown one dodge
+    attributes:
+    - name: Reading Time
+      value: 0
+      cost: 0
+    - name: Thirty Minutes Left
+      value: 0
+      cost: 5
+    - name: Fifteen Minutes Left
+      value: 0
+      cost: 10
+    - name: Five Minutes Left
+      value: 0
+      cost: 20
+  ibSpriteCapacity:
+    name: IB Sprite Capacity
+    description: The maximum number of IB Sprites player can carry with
+    attributes:
+    - name: Honest Student
+      value: 3
+      cost: 0
+    - name: Cheater With Dictionary
+      value: 4
+      cost: 5
+    - name: Cheater With Calculator
+      value: 5
+      cost: 10
+    - name: Cheater With Phone
+      value: 6
+      cost: 20

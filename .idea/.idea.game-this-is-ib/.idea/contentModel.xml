@@ -1,0 +1,127 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<project version="4">
+  <component name="ContentModelStore">
+    <e p="$PROJECT_DIR$" t="IncludeRecursive">
+      <e p="Assembly-CSharp-Editor.csproj" t="IncludeRecursive" />
+      <e p="Assembly-CSharp.csproj" t="IncludeRecursive" />
+      <e p="Assets" t="Include">
+        <e p="2DGamekit" t="Include">
+          <e p="Utilities" t="Include">
+            <e p="Cinemachine" t="Include">
+              <e p="ReleaseNotes.txt" t="Include" />
+            </e>
+          </e>
+        </e>
+        <e p="Editor" t="Include">
+          <e p="AssetBundleTool.cs" t="Include" />
+          <e p="DataTool.cs" t="Include" />
+        </e>
+        <e p="Physix" t="Include">
+          <e p="Physix.cs" t="Include" />
+          <e p="PreviewScenes" t="Include">
+            <e p="Scripts" t="Include">
+              <e p="AdvancedPhysixMove.cs" t="Include" />
+              <e p="FirstPersonPhysixMove.cs" t="Include" />
+              <e p="ReallySimplePhysixMove.cs" t="Include" />
+              <e p="SimplePhysixMove.cs" t="Include" />
+              <e p="TerribleCamera.cs" t="Include" />
+              <e p="TerribleFPSCamera.cs" t="Include" />
+            </e>
+          </e>
+          <e p="README.txt" t="Include" />
+          <e p="Scripts" t="Include">
+            <e p="PhysixInspector.cs" t="Include" />
+          </e>
+        </e>
+        <e p="Resources" t="Include">
+          <e p="Scripts" t="Include">
+            <e p="Character" t="Include">
+              <e p="CharacterController.cs" t="Include" />
+              <e p="CharacterFactory.cs" t="Include" />
+              <e p="CharacterMotor.cs" t="Include" />
+              <e p="CharacterOperator.cs" t="Include" />
+              <e p="InputOperator.cs" t="Include" />
+            </e>
+            <e p="Data" t="Include">
+              <e p="IBSpriteAttributesData.cs" t="Include" />
+              <e p="ItemAttributesData.cs" t="Include" />
+              <e p="PlayerAttributesData.cs" t="Include" />
+              <e p="PlayerData.cs" t="Include" />
+              <e p="VersionData.cs" t="Include" />
+            </e>
+            <e p="Game" t="Include">
+              <e p="StageController.cs" t="Include" />
+            </e>
+            <e p="Input" t="Include">
+              <e p="AxisDetector.cs" t="Include" />
+              <e p="IInputDetectable.cs" t="Include" />
+              <e p="InputDetector.cs" t="Include" />
+              <e p="InputManager.cs" t="Include" />
+              <e p="InputMapper.cs" t="Include" />
+              <e p="KeyDetector.cs" t="Include" />
+            </e>
+            <e p="local" t="Include">
+              <e p="LocalDataManager.cs" t="Include" />
+              <e p="PlayerManager.cs" t="Include" />
+              <e p="ResourcesManager.cs" t="Include" />
+            </e>
+            <e p="Network" t="Include">
+              <e p="DownloadRequest.cs" t="Include" />
+              <e p="NetworkManager.cs" t="Include" />
+              <e p="NetworkRequest.cs" t="Include" />
+            </e>
+            <e p="Pickup" t="Include">
+              <e p="PickupController.cs" t="Include" />
+            </e>
+            <e p="Scene" t="Include">
+              <e p="LaunchSceneController.cs" t="Include" />
+            </e>
+            <e p="Sprite" t="Include">
+              <e p="DamageTrigger.cs" t="Include" />
+              <e p="IBSpriteController.cs" t="Include" />
+              <e p="IBSpriteFactory.cs" t="Include" />
+              <e p="PendulumSpriteController.cs" t="Include" />
+              <e p="Projectile" t="Include">
+                <e p="ProjectileController.cs" t="Include" />
+              </e>
+              <e p="ShooterSpriteController.cs" t="Include" />
+            </e>
+            <e p="System" t="Include">
+              <e p="DispatchSystem.cs" t="Include" />
+              <e p="LayerManager.cs" t="Include" />
+              <e p="TagManager.cs" t="Include" />
+            </e>
+            <e p="Terrain" t="Include">
+              <e p="DynamicPlatformController.cs" t="Include" />
+            </e>
+            <e p="Test" t="Include">
+              <e p="TestSceneController.cs" t="Include" />
+            </e>
+            <e p="Trail" t="Include">
+              <e p="TrailSettings.cs" t="Include" />
+            </e>
+            <e p="Utility" t="Include">
+              <e p="CommonUtils.cs" t="Include" />
+              <e p="Extensions.cs" t="Include" />
+              <e p="MonoSingleton.cs" t="Include" />
+              <e p="SingletonManager.cs" t="Include" />
+            </e>
+          </e>
+          <e p="Shaders" t="Include">
+            <e p="OutlinedToonShader.shader" t="Include" />
+            <e p="ToonShader.shader" t="Include" />
+            <e p="UnlitOutlinedShader.shader" t="Include" />
+          </e>
+        </e>
+      </e>
+      <e p="game-this-is-ib.sln" t="IncludeFlat" />
+      <e p="Library" t="ExcludeRecursive" />
+      <e p="obj" t="ExcludeRecursive" />
+      <e p="packages" t="ExcludeRecursive" />
+      <e p="Temp" t="ExcludeRecursive">
+        <e p="bin" t="ExcludeRecursive" />
+      </e>
+    </e>
+    <e p="$USER_HOME$/Library/Caches/Rider2018.1/resharper-host/local/Transient/ReSharperHost/v12/SolutionCaches/_game-this-is-ib.-1397334290.00" t="ExcludeRecursive" />
+  </component>
+</project>

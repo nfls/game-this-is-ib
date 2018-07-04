@@ -1,159 +1,235 @@
-﻿using System.Collections.Generic;
-using UnityEngine;
-using System.Collections;
+﻿using UnityEngine;
 
-[RequireComponent(typeof(CharacterController))]
+[RequireComponent(typeof(BoxCollider))]
 public class CharacterMotor : MonoBehaviour {
+	
+	private const string BOTTOM_COLLISION = "Bottom";
+	private const string LEFT_COLLISION = "Left";
+	private const string RIGHT_COLLISION = "Right";
+	private const string GLOBAL_MOVEMENT = "Global";
+	
+	private static readonly Vector3 ZeroVector3 = Vector3.zero;
+	private static readonly Quaternion IdentityQuaternion = Quaternion.identity;
 
-	public float jumpPower;
-	public float speed;
-	public float acceleration;
-	public float dodgeTime;
-	public float dodgeDistance;
-	public int maxJumpTimes;
-	public bool moveInAir;
+	public bool useGravity = true;
+	public float gravity = 1f;
+	public float mass = 1f;
+	public float brakePower = 2f;
+	public float freeBodyDrag = 1f;
 
-	int jumpTimes;
-	bool inAir;
-	bool stunned;
-	bool accelerating;
-	bool attacking;
-	bool dodging;
-	bool parrying;
-	FaceDirection faceDirection;
+	public RigidbodyInterpolation interpolation = RigidbodyInterpolation.Interpolate;
+	public CollisionDetectionMode collisionDetectionMode;
+	
+	public delegate void OnGroundEnterHandler();
+	public delegate void OnGroundExitHandler();
+	public delegate void OnFreeBodyExitHandler();
 
-	CharacterController characterController;
-	WeaponMotor weaponMotor;
+	public event OnGroundEnterHandler OnGroundEnter;
+	public event OnGroundExitHandler OnGroundExit;
+	public event OnFreeBodyExitHandler OnFreeBodyExit;
 
-	Coroutine jumpTask;
-	Coroutine attackTask;
-	Coroutine dodgeTask;
-
-	float temperFloat;
-	Vector3 temperVector3 = Vector3.zero;
-
-	void Start() {
-		characterController = GetComponent<CharacterController>();
-		weaponMotor = GetComponent<WeaponMotor>();
-		faceDirection = FaceDirection.Left;
+	public bool IsGrounded {
+		get { return _isGrounded; }
 	}
 
-	public virtual void OnReceiveMoveLeftCommand() {
-		if (inAir) {
-			if (!moveInAir) {
-				return;
+	public FaceDirection FaceDirection {
+		get { return _faceDirection; }
+	}
+
+	public float VelocityX {
+		get { return _freeVelocityX + _moveVelocityX; }
+	}
+
+	public float VelocityY {
+		get { return _velocityY; }
+	}
+
+	private BoxCollider _bodyCollider;
+	private Rigidbody _rigidbody;
+	private Physix _physix;
+	private FaceDirection _faceDirection = FaceDirection.Right;
+
+	private bool _isGrounded;
+	private int _groundTouchCount;
+
+	private bool _hasMoved;
+	private bool _hasDodged;
+
+	private float _freeVelocityX;
+	private float _moveVelocityX;
+	private float _platformVelocityX;
+	private float _dodgeDistance;
+	private float _velocityY;
+	private float _platformVelocityY;
+
+	private Rigidbody _platformRigidbody;
+	
+	private void Start() {
+		_bodyCollider = GetComponent<BoxCollider>();
+		
+		// Config Rigidbody
+		_rigidbody = gameObject.AddComponent<Rigidbody>();
+		_rigidbody.useGravity = false;
+		_rigidbody.mass = mass;
+		_rigidbody.drag = 0f;
+		_rigidbody.angularDrag = 0f;
+		_rigidbody.collisionDetectionMode = collisionDetectionMode;
+		_rigidbody.constraints = (int) RigidbodyConstraints.FreezePositionZ + (int) RigidbodyConstraints.FreezeRotationX + (int) RigidbodyConstraints.FreezeRotationY + RigidbodyConstraints.FreezeRotationZ;
+		_rigidbody.interpolation = interpolation;
+		
+		// Condig Physix
+		_physix = gameObject.AddComponent<Physix>();
+		_physix.Collisions = new Physix.PHYSIXCOLLISION[3];
+		_physix.Collisions[0] = new Physix.PHYSIXCOLLISION {
+			Name = BOTTOM_COLLISION,
+			Active = true,
+			Ranges = new[] { new Physix.PHYSIXBOUNDS { y = true, less = true, equals = true, value = -45f } }
+		};
+		_physix.Collisions[1] = new Physix.PHYSIXCOLLISION {
+			Name = LEFT_COLLISION,
+			Active = true,
+			Ranges = new[] { new Physix.PHYSIXBOUNDS { x = true, greater = true, equals = true, value = 44f } }
+		};
+		_physix.Collisions[2] = new Physix.PHYSIXCOLLISION {
+			Name = RIGHT_COLLISION,
+			Active = true,
+			Ranges = new[] { new Physix.PHYSIXBOUNDS { x = true, less = true, equals = true, value = -44f } }
+		};
+		_physix.Movements = new[] { new Physix.PHYSIXMOVE { Name = GLOBAL_MOVEMENT } };
+		_physix.Movements[0].x.equals = true;
+		_physix.Movements[0].y.equals = true;
+		_physix.Movements[0].z.equals = true;
+	}
+
+	private void FixedUpdate() {
+		if (_physix.IsColliding(BOTTOM_COLLISION)) {
+			if (!_isGrounded) {
+				_velocityY = 0f;
+				_isGrounded = true;
+				if (OnGroundEnter != null) {
+					OnGroundEnter();
+				}
+
+				Collision collision = _physix.GetCollision(BOTTOM_COLLISION);
+				if (collision.rigidbody != null) {
+					_platformRigidbody = collision.rigidbody;
+				}
+			}
+
+			if (_platformRigidbody) {
+				_platformVelocityX = _platformRigidbody.velocity.x;
+				_platformVelocityY = _platformRigidbody.velocity.y;
+			}
+		} else {
+			if (useGravity) {
+				_velocityY -= gravity;
+			}
+			
+			if (_isGrounded) {
+				_isGrounded = false;
+				_platformRigidbody = null;
+				_platformVelocityX = 0f;
+				_platformVelocityY = 0f;
+				
+				if (OnGroundExit != null) {
+					OnGroundExit();
+				}
 			}
 		}
-		Move(FaceDirection.Left);
-	}
 
-	public virtual void OnReceiveMoveRightCommand() {
-		if (inAir) {
-			if (!moveInAir) {
-				return;
+		if (!_hasMoved) {
+			if (_moveVelocityX != 0f) {
+				if (_moveVelocityX * (float) _faceDirection > brakePower) {
+					_moveVelocityX += -brakePower * (float) _faceDirection;
+				} else {
+					_moveVelocityX = 0f;
+				}
+			}
+		} else {
+			_hasMoved = false;
+		}
+
+		if (_freeVelocityX != 0f) {
+			int direction = _freeVelocityX > 0 ? 1 : -1;
+			if (_freeVelocityX * direction > freeBodyDrag) {
+				_freeVelocityX += -freeBodyDrag * direction;
+			} else {
+				_freeVelocityX = 0f;
+				if (OnFreeBodyExit != null) {
+					OnFreeBodyExit();
+				}
 			}
 		}
-		Move(FaceDirection.Right);
-
-	}
-
-	public virtual void OnReceiveJumpCommand() {
-		if (jumpTimes < maxJumpTimes) {
-			Jump();
+		
+		_physix.ApplyMovement(GLOBAL_MOVEMENT, _freeVelocityX + _moveVelocityX + _platformVelocityX, AxisType.x, ValueType.value, _velocityY + _platformVelocityY, AxisType.y, ValueType.value);
+		
+		if (_hasDodged) {
+			_hasDodged = false;
+			Teleport(_dodgeDistance);
 		}
 	}
-
-	public virtual void OnReceiveAccelerateCommand() {
-		Accelerate();
+	
+	public void Flip() {
+		_faceDirection = (FaceDirection) ((int) _faceDirection * -1);
+		Vector3 scale = transform.localScale;
+		scale.x *= -1;
+		transform.localScale = scale;
+		/*
+		scale = _bodyCollider.size;
+		scale.x *= -1;
+		_bodyCollider.size = scale;
+		*/
 	}
 
-	public virtual void OnReceiveCancelAccelerateCommand() {
-		CancelAccelerate();
+	public void Turn() {
+		_faceDirection = (FaceDirection) ((int) _faceDirection * -1);
+		transform.localRotation = (transform.localRotation.eulerAngles + new Vector3(0f, 180f, 0f)).ToQuaternion();
 	}
 
-	public virtual void OnReceiveAttackCommand() {
-		if (!dodging && !parrying) {
-			Attack();
+	public void Move(float velocity) {
+		/*
+		if ((float) _faceDirection * velocity <= 0f) {
+			Flip();
 		}
+		*/
+		_hasMoved = true;
+		_moveVelocityX = velocity;
 	}
 
-	public virtual void OnReceiveDodgeCommand() {
-		if (!parrying) {
-			Dodge();
+	public void Dodge(float distance) {
+		_hasDodged = true;
+		_dodgeDistance = distance;
+	}
+
+	private void Teleport(float distance) {
+		float sign;
+		string collision;
+		if (distance > 0) {
+			sign = 1;
+			collision = LEFT_COLLISION;
+		} else {
+			sign = -1;
+			collision = RIGHT_COLLISION;
 		}
-	}
-
-	public virtual void OnReceiveParryCommand() {
-		if (!dodging) {
-			Parry();
+		if (_physix.IsColliding(collision)) return;
+		
+		RaycastHit hitInfo;
+		
+		if (_rigidbody.SweepTest(new Vector3(sign, 0, 0), out hitInfo, distance * sign)) {
+			distance = hitInfo.point.x - transform.position.x - transform.lossyScale.x / 2;
 		}
+		
+		transform.position += new Vector3(distance, 0, 0);
 	}
 
-	public virtual void OnReceiveCancelParryCommand() {
-
+	public void Jump(float jumpPower) {
+		_velocityY = jumpPower;
+		
 	}
 
-	protected virtual void Turn() {
-		faceDirection = (FaceDirection)(-(int)faceDirection);
-		transform.Rotate(0, 180, 0);
-	}
-
-	protected virtual void Move(FaceDirection faceDirection) {
-		if (this.faceDirection != faceDirection) {
-			Turn();
-		}
-		temperFloat = speed * (accelerating ? acceleration : 1);
-		Debug.Log(temperFloat);
-		temperVector3.x = speed * (int)faceDirection;
-		characterController.Move(temperVector3);
-	}
-
-	protected virtual void Jump() {
-		jumpTimes++;
-	}
-
-	protected virtual void Accelerate() {
-		accelerating = true;
-	}
-
-	protected virtual void CancelAccelerate() {
-		accelerating = false;
-	}
-
-	protected virtual void Attack() {
-		attacking = true;
-
-	}
-
-	protected virtual void CancelAttack() {
-		attacking = false;
-
-	}
-
-	protected virtual void Dodge() {
-		dodging = true;
-
-	}
-
-	protected virtual void Parry() {
-		parrying = true;
-	}
-
-	protected virtual void CancelParry() {
-		parrying = false;
-	}
-
-	protected virtual IEnumerator ExeJumpTask() {
-
-		yield return null;
-	}
-
-	protected virtual IEnumerator ExeAttackTask() {
-		yield return weaponMotor.Attack();
-	}
-
-	protected virtual IEnumerator ExeDodgeTask() {
-		yield return null;
+	public void GetHit(float velocityX, float velocityY) {
+		_freeVelocityX += velocityX;
+		_velocityY += velocityY;
 	}
 }
 

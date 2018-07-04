@@ -3,7 +3,11 @@
 --- !u!78 &1
 TagManager:
   serializedVersion: 2
-  tags: []
+  tags:
+  - Local Player
+  - Remote Player
+  - Enemy
+  - Destructible
   layers:
   - Default
   - TransparentFX
@@ -15,10 +19,10 @@ TagManager:
   - 
   - PostProcessing
   - 
-  - 
-  - 
-  - 
-  - 
+  - Terrain
+  - Device
+  - Character
+  - Sprite
   - 
   - 
   - 

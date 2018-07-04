@@ -1,0 +1,38 @@
+ManifestFileVersion: 0
+CRC: 89828991
+Hashes:
+  AssetFileHash:
+    serializedVersion: 2
+    Hash: 5c056d03c3f42f61ba929d34e3e029f5
+  TypeTreeHash:
+    serializedVersion: 2
+    Hash: 51aa0831439b804aafe1b4f5c90840bb
+HashAppended: 0
+ClassTypes:
+- Class: 1
+  Script: {instanceID: 0}
+- Class: 4
+  Script: {instanceID: 0}
+- Class: 21
+  Script: {instanceID: 0}
+- Class: 23
+  Script: {instanceID: 0}
+- Class: 33
+  Script: {instanceID: 0}
+- Class: 43
+  Script: {instanceID: 0}
+- Class: 48
+  Script: {instanceID: 0}
+- Class: 65
+  Script: {instanceID: 0}
+- Class: 114
+  Script: {fileID: 11500000, guid: bc607304d46f448aa3a4d1aac3ca1918, type: 3}
+- Class: 114
+  Script: {fileID: 11500000, guid: 87edad9d146f44f7ace90c97602e842f, type: 3}
+- Class: 115
+  Script: {instanceID: 0}
+Assets:
+- Assets/Hotassets/Prefabs/body@default.prefab
+- Assets/Hotassets/Prefabs/ibsprite@hammer.prefab
+- Assets/Hotassets/Prefabs/eye@default.prefab
+Dependencies: []
