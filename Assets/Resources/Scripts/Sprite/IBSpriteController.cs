@@ -91,6 +91,7 @@ public abstract class IBSpriteController : MonoBehaviour {
 		if (transform.lossyScale.x * (float) characterMotor.FaceDirection < 0) {
 			Flip();
 		}
+		
 		if (_isFollowing) {
 			float offsetDistance = initialOffset.magnitude;
 			transform.position = Vector3.MoveTowards(transform.position, initialPosition, Mathf.LerpUnclamped(idleMovementSettings.minFollowVelocity * Time.deltaTime, idleMovementSettings.maxFollowVelocity * Time.deltaTime, distance / (idleMovementSettings.maxFollowDistance - offsetDistance)));
@@ -139,16 +140,20 @@ public abstract class IBSpriteController : MonoBehaviour {
 	}
 
 	public void EnterCharacterSyncState() {
+		/*
 		Vector3 scale = transform.localScale;
 		scale.x *= (float) characterMotor.FaceDirection;
 		transform.localScale = scale;
+		*/
 		transform.parent = characterMotor.transform;
 	}
 
 	public void ExitCharacterSyncState() {
+		/*
 		Vector3 scale = transform.localScale;
 		scale.x *= (float) characterMotor.FaceDirection;
 		transform.localScale = scale;
+		*/
 		transform.parent = _initialParent;
 	}
 

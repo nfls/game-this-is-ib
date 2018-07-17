@@ -53,11 +53,11 @@ public class InputMapper {
 		defaultKeyboardMap[MOVE_LEFT] = KeyDetector.ToKeyDetector("A");
 		defaultKeyboardMap[MOVE_RIGHT] = KeyDetector.ToKeyDetector("D");
 		defaultKeyboardMap[ACCELERATE] = KeyDetector.ToKeyDetector("N");
-		defaultKeyboardMap[JUMP] = KeyDetector.ToKeyDetector("K");
+		defaultKeyboardMap[JUMP] = KeyDetector.ToKeyDetector("W");
 		defaultKeyboardMap[ATTACK] = KeyDetector.ToKeyDetector("J");
-		defaultKeyboardMap[DODGE] = KeyDetector.ToKeyDetector("L");
+		defaultKeyboardMap[DODGE] = KeyDetector.ToKeyDetector("K");
 		defaultKeyboardMap[INTERACT] = KeyDetector.ToKeyDetector("U");
-		defaultKeyboardMap[RECOVER] = KeyDetector.ToKeyDetector("H");
+		defaultKeyboardMap[RECOVER] = KeyDetector.ToKeyDetector("F");
 		defaultKeyboardMap[SWITCH_PREV] = KeyDetector.ToKeyDetector("Q");
 		defaultKeyboardMap[SWITCH_NEXT] = KeyDetector.ToKeyDetector("E");
 		defaultKeyboardMap[SWITCH_CAMERA] = KeyDetector.ToKeyDetector("Tab");

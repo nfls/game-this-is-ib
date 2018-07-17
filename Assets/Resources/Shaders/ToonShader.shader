@@ -1,4 +1,4 @@
-﻿Shader "WilliamXie/ToonShader" {
+﻿Shader "这就是IB/ToonShader" {
 	Properties {
 		_ToonColor("Toon Color",color)=(1,1,1,1)
 		_ToonLevel("Toon Level",range(0,1))=0.5
@@ -6,7 +6,7 @@
 	}
 	SubShader {
 		pass{//平行光的的pass渲染
-		Tags{"LightMode"="ForwardBase"}
+		Tags{"LightMode" = "ForwardBase"}
 		Cull Back
 		CGPROGRAM
 		#pragma vertex vert
@@ -52,7 +52,7 @@
 		ENDCG
 		}
 		pass{//附加点光源的pass渲染
-		Tags{"LightMode"="ForwardAdd"}
+		Tags{"LightMode" = "ForwardAdd"}
 		Blend One One
 		Cull Back
 		ZWrite Off

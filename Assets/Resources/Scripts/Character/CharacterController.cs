@@ -1,7 +1,6 @@
 ﻿using System.Collections;
 using UnityEngine;
 using UnityEngine.Rendering;
-using Debug = UnityEngine.Debug;
 
 [RequireComponent(typeof(CharacterMotor))]
 public class CharacterController : MonoBehaviour {
@@ -21,7 +20,7 @@ public class CharacterController : MonoBehaviour {
 	public float jumpPowerDecay;
 	public float dodgeDistance;
 	public float dodgeInvincibilityTime;
-	public float dodgeCapacity;
+	public int dodgeCapacity;
 	public float dodgeCooldown;
 	public float stunnedRotation;
 	public IBSpriteController[] carriedIBSpriteControllers;
@@ -32,7 +31,7 @@ public class CharacterController : MonoBehaviour {
 	public TrailSettings dodgeTrailSettings;
 
 	public bool IsIBSpriteOn {
-		get { return currentIBSpriteControllerIndex >= 0; }
+		get { return _currentIBSpriteControllerIndex >= 0; }
 	}
 
 	public bool IsIBSpriteFull {
@@ -51,17 +50,28 @@ public class CharacterController : MonoBehaviour {
 		}
 	}
 
+	public bool IsDodgeCooldowning {
+		get { return _dodgeCooldownCoroutine != null; }
+	}
+
+	public float DodgeCooldownDuration {
+		get { return _dodgeCooldownDuration; }
+	}
+
 	protected bool _isInitiated;
 	protected bool _isAccelerating;
 	protected bool _isDodging;
 	protected bool _isStunned;
 	protected int _jumpTimes;
-	protected int currentIBSpriteControllerIndex = -1;
-	protected IBSpriteController currentIBSpriteController;
+	protected int _dodgeTimes;
+	protected int _currentIBSpriteControllerIndex = -1;
+	protected float _dodgeCooldownDuration;
+	protected IBSpriteController _currentIBSpriteController;
 	protected CharacterMotor _characterMotor;
 	protected TrailRenderer _trailRenderer;
 
-	protected Coroutine stunCoroutine;
+	protected Coroutine _stunCoroutine;
+	protected Coroutine _dodgeCooldownCoroutine;
 
 	private void Start() {
 		if (_isInitiated) return;
@@ -123,15 +133,17 @@ public class CharacterController : MonoBehaviour {
 	}
 
 	public void Dodge() {
-		if (_isStunned || _isDodging) return;
-		_characterMotor.Dodge(3 * (float) _characterMotor.FaceDirection);
+		if (_isStunned || _isDodging || _dodgeTimes == dodgeCapacity) return;
+		_dodgeTimes += 1;
+		_characterMotor.Dodge(dodgeDistance * (float) _characterMotor.FaceDirection);
 		StartCoroutine(ExeDodgeTask(dodgeInvincibilityTime));
+		if (_dodgeCooldownCoroutine == null) _dodgeCooldownCoroutine = StartCoroutine(ExeDodgeCooldownTask());
 	}
 
 	public void Attack() {
 		if (_isStunned) return;
-		if (!currentIBSpriteController) return;
-		currentIBSpriteController.Attack();
+		if (!_currentIBSpriteController) return;
+		_currentIBSpriteController.Attack();
 	}
 
 	public void Jump() {
@@ -150,53 +162,53 @@ public class CharacterController : MonoBehaviour {
 	public void SwitchOnIBSprite() {
 		if (carriedIBSpriteControllers.Length == 0) return;
 
-		currentIBSpriteControllerIndex = 0;
-		currentIBSpriteController = carriedIBSpriteControllers[0];
-		currentIBSpriteController.OnSwitchOn();
+		_currentIBSpriteControllerIndex = 0;
+		_currentIBSpriteController = carriedIBSpriteControllers[0];
+		_currentIBSpriteController.OnSwitchOn();
 	}
 
 	public void SwitchOffIBSprite() {
-		if (!currentIBSpriteController) return;
+		if (!_currentIBSpriteController) return;
 		
-		currentIBSpriteControllerIndex = -1;
-		currentIBSpriteController.OnSwitchOff();
+		_currentIBSpriteControllerIndex = -1;
+		_currentIBSpriteController.OnSwitchOff();
 	}
 
 	public void SwitchPreviousIBSprite() {
-		if (currentIBSpriteControllerIndex == -1) return;
+		if (_currentIBSpriteControllerIndex == -1) return;
 
-		int oldIndex = currentIBSpriteControllerIndex;
-		currentIBSpriteControllerIndex--;
-		if (currentIBSpriteControllerIndex < 0) {
-			currentIBSpriteControllerIndex = carriedIBSpriteControllers.Length;
+		int oldIndex = _currentIBSpriteControllerIndex;
+		_currentIBSpriteControllerIndex--;
+		if (_currentIBSpriteControllerIndex < 0) {
+			_currentIBSpriteControllerIndex = CarriedIBSpriteCount;
 		}
 		
-		IBSpriteController controller = carriedIBSpriteControllers[currentIBSpriteControllerIndex];
+		IBSpriteController controller = carriedIBSpriteControllers[_currentIBSpriteControllerIndex];
 		if (controller) {
-			currentIBSpriteController = controller;
-			currentIBSpriteController.OnSwitchOff();
-			currentIBSpriteController.OnSwitchOn();
+			_currentIBSpriteController = controller;
+			_currentIBSpriteController.OnSwitchOff();
+			_currentIBSpriteController.OnSwitchOn();
 		} else {
-			currentIBSpriteControllerIndex = oldIndex;
+			_currentIBSpriteControllerIndex = oldIndex;
 		}
 	}
 
 	public void SwitchNextIBSprite() {
-		if (currentIBSpriteControllerIndex == -1) return;
+		if (_currentIBSpriteControllerIndex == -1) return;
 		
-		int oldIndex = currentIBSpriteControllerIndex;
-		currentIBSpriteControllerIndex++;
-		if (currentIBSpriteControllerIndex == carriedIBSpriteControllers.Length) {
-			currentIBSpriteControllerIndex = 0;
+		int oldIndex = _currentIBSpriteControllerIndex;
+		_currentIBSpriteControllerIndex++;
+		if (_currentIBSpriteControllerIndex == CarriedIBSpriteCount) {
+			_currentIBSpriteControllerIndex = 0;
 		}
 
-		IBSpriteController controller = carriedIBSpriteControllers[currentIBSpriteControllerIndex];
+		IBSpriteController controller = carriedIBSpriteControllers[_currentIBSpriteControllerIndex];
 		if (controller) {
-			currentIBSpriteController = controller;
-			currentIBSpriteController.OnSwitchOff();
-			currentIBSpriteController.OnSwitchOn();
+			_currentIBSpriteController = controller;
+			_currentIBSpriteController.OnSwitchOff();
+			_currentIBSpriteController.OnSwitchOn();
 		} else {
-			currentIBSpriteControllerIndex = oldIndex;
+			_currentIBSpriteControllerIndex = oldIndex;
 		}
 	}
 
@@ -206,11 +218,11 @@ public class CharacterController : MonoBehaviour {
 		controller.characterMotor = _characterMotor;
 		if (autoSwitch) {
 			if (IsIBSpriteOn) {
-				currentIBSpriteController.OnSwitchOff();
+				_currentIBSpriteController.OnSwitchOff();
 			}
 
-			currentIBSpriteControllerIndex = CarriedIBSpriteCount - 1;
-			currentIBSpriteController = controller;
+			_currentIBSpriteControllerIndex = CarriedIBSpriteCount - 1;
+			_currentIBSpriteController = controller;
 			
 			controller.OnSwitchOn();
 		}
@@ -237,8 +249,8 @@ public class CharacterController : MonoBehaviour {
 
 	public void GetStunned(float stunnedTime) {
 		if (_isDodging) return;
-		if (stunCoroutine == null) {
-			currentIBSpriteController.CancelAttack();
+		if (_stunCoroutine == null) {
+			_currentIBSpriteController.CancelAttack();
 		} else {
 			ExitStunState();
 		}
@@ -261,6 +273,7 @@ public class CharacterController : MonoBehaviour {
 	}
 	
 	protected void EnableTrail(TrailSettings settings) {
+		_trailRenderer.Clear();
 		settings.InitRenderer(ref _trailRenderer);
 		_trailRenderer.emitting = true;
 	}
@@ -271,12 +284,12 @@ public class CharacterController : MonoBehaviour {
 
 	protected void EnterStunState(float stunnedTime) {
 		_isStunned = true;
-		stunCoroutine = StartCoroutine(ExeStunTask(stunnedTime));
+		_stunCoroutine = StartCoroutine(ExeStunTask(stunnedTime));
 	}
 
 	protected void ExitStunState() {
-		StopCoroutine(stunCoroutine);
-		stunCoroutine = null;
+		StopCoroutine(_stunCoroutine);
+		_stunCoroutine = null;
 		_isStunned = false;
 	}
 
@@ -291,6 +304,7 @@ public class CharacterController : MonoBehaviour {
 		if (hasDodgeTrail) {
 			EnableTrail(dodgeTrailSettings);
 		}
+		
 		yield return new WaitForSeconds(dodgeInvincibilityTime);
 		if (hasDodgeTrail) {
 			DisableTrail();
@@ -300,6 +314,23 @@ public class CharacterController : MonoBehaviour {
 				}
 			}
 		}
+		
 		_isDodging = false;
+	}
+
+	protected IEnumerator ExeDodgeCooldownTask() {
+		while (true) {
+			_dodgeCooldownDuration = dodgeCooldown;
+			while (_dodgeCooldownDuration > 0) {
+				yield return null;
+				_dodgeCooldownDuration -= Time.deltaTime;
+			}
+			_dodgeTimes -= 1;
+			if (_dodgeTimes == 0) {
+				break;
+			}
+		}
+
+		_dodgeCooldownCoroutine = null;
 	}
 }

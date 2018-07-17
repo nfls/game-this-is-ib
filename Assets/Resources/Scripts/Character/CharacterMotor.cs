@@ -50,19 +50,14 @@ public class CharacterMotor : MonoBehaviour {
 	private FaceDirection _faceDirection = FaceDirection.Right;
 
 	private bool _isGrounded;
-	private int _groundTouchCount;
 
 	private bool _hasMoved;
 	private bool _hasDodged;
 
 	private float _freeVelocityX;
 	private float _moveVelocityX;
-	private float _platformVelocityX;
 	private float _dodgeDistance;
 	private float _velocityY;
-	private float _platformVelocityY;
-
-	private Rigidbody _platformRigidbody;
 	
 	private void Start() {
 		_bodyCollider = GetComponent<BoxCollider>();
@@ -88,12 +83,12 @@ public class CharacterMotor : MonoBehaviour {
 		_physix.Collisions[1] = new Physix.PHYSIXCOLLISION {
 			Name = LEFT_COLLISION,
 			Active = true,
-			Ranges = new[] { new Physix.PHYSIXBOUNDS { x = true, greater = true, equals = true, value = 44f } }
+			Ranges = new[] { new Physix.PHYSIXBOUNDS { x = true, greater = true, equals = true, value = 45f } }
 		};
 		_physix.Collisions[2] = new Physix.PHYSIXCOLLISION {
 			Name = RIGHT_COLLISION,
 			Active = true,
-			Ranges = new[] { new Physix.PHYSIXBOUNDS { x = true, less = true, equals = true, value = -44f } }
+			Ranges = new[] { new Physix.PHYSIXBOUNDS { x = true, less = true, equals = true, value = -45f } }
 		};
 		_physix.Movements = new[] { new Physix.PHYSIXMOVE { Name = GLOBAL_MOVEMENT } };
 		_physix.Movements[0].x.equals = true;
@@ -109,17 +104,8 @@ public class CharacterMotor : MonoBehaviour {
 				if (OnGroundEnter != null) {
 					OnGroundEnter();
 				}
-
-				Collision collision = _physix.GetCollision(BOTTOM_COLLISION);
-				if (collision.rigidbody != null) {
-					_platformRigidbody = collision.rigidbody;
-				}
 			}
-
-			if (_platformRigidbody) {
-				_platformVelocityX = _platformRigidbody.velocity.x;
-				_platformVelocityY = _platformRigidbody.velocity.y;
-			}
+			
 		} else {
 			if (useGravity) {
 				_velocityY -= gravity;
@@ -127,9 +113,6 @@ public class CharacterMotor : MonoBehaviour {
 			
 			if (_isGrounded) {
 				_isGrounded = false;
-				_platformRigidbody = null;
-				_platformVelocityX = 0f;
-				_platformVelocityY = 0f;
 				
 				if (OnGroundExit != null) {
 					OnGroundExit();
@@ -161,7 +144,7 @@ public class CharacterMotor : MonoBehaviour {
 			}
 		}
 		
-		_physix.ApplyMovement(GLOBAL_MOVEMENT, _freeVelocityX + _moveVelocityX + _platformVelocityX, AxisType.x, ValueType.value, _velocityY + _platformVelocityY, AxisType.y, ValueType.value);
+		_physix.ApplyMovement(GLOBAL_MOVEMENT, _freeVelocityX + _moveVelocityX, AxisType.x, ValueType.value, _velocityY, AxisType.y, ValueType.value);
 		
 		if (_hasDodged) {
 			_hasDodged = false;
@@ -215,7 +198,7 @@ public class CharacterMotor : MonoBehaviour {
 		
 		RaycastHit hitInfo;
 		
-		if (_rigidbody.SweepTest(new Vector3(sign, 0, 0), out hitInfo, distance * sign)) {
+		if (_rigidbody.SweepTest(new Vector3(sign, 0, 0), out hitInfo, distance * sign, QueryTriggerInteraction.Ignore)) {
 			distance = hitInfo.point.x - transform.position.x - transform.lossyScale.x / 2;
 		}
 		

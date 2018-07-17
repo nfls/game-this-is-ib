@@ -24,9 +24,7 @@ public abstract class PlayerData {
 	public Color eyeOutlineColor;
 	public Color eyeColor;
 	public Color dodgeTrailColor;
-	public Color dodgeTrailOutlineColor;
 	public Color accelerationTrailColor;
-	public Color accelerationTrailOutlineColor;
 
 	public PlayerData() { }
 
@@ -52,9 +50,7 @@ public abstract class PlayerData {
 		eyeOutlineColor = new Color(data.eyeOutlineColor[0], data.eyeOutlineColor[1], data.eyeOutlineColor[2], data.eyeOutlineColor[3]);
 		eyeColor = new Color(data.eyeColor[0], data.eyeColor[1], data.eyeColor[2], data.eyeColor[3]);
 		dodgeTrailColor = new Color(data.dodgeTrailColor[0], data.dodgeTrailColor[1], data.dodgeTrailColor[2], data.dodgeTrailColor[3]);
-		dodgeTrailOutlineColor = new Color(data.dodgeTrailOutlineColor[0], data.dodgeTrailOutlineColor[1], data.dodgeTrailOutlineColor[2], data.dodgeTrailOutlineColor[3]);
 		accelerationTrailColor = new Color(data.accelerationTrailColor[0], data.accelerationTrailColor[1], data.accelerationTrailColor[2], data.accelerationTrailColor[3]);
-		accelerationTrailOutlineColor = new Color(data.accelerationTrailOutlineColor[0], data.accelerationTrailOutlineColor[1], data.accelerationTrailOutlineColor[2], data.accelerationTrailOutlineColor[3]);
 	}
 
 	public virtual void Cache(PlayerData data) {
@@ -79,14 +75,13 @@ public abstract class PlayerData {
 		eyeOutlineColor = data.eyeOutlineColor;
 		eyeColor = data.eyeColor;
 		dodgeTrailColor = data.dodgeTrailColor;
-		dodgeTrailOutlineColor = data.dodgeTrailOutlineColor;
 		accelerationTrailColor = data.accelerationTrailColor;
-		accelerationTrailOutlineColor = data.accelerationTrailOutlineColor;
 	}
 }
 
 public class LocalPlayerData : PlayerData {
 	
+	public bool hasFinishedStarterLevel;
 	public int numBronzeMeritCards;
 	public int numSilverMeritCards;
 	public int numGoldMeritCards;
@@ -96,6 +91,7 @@ public class LocalPlayerData : PlayerData {
 	public LocalPlayerData() { }
 
 	public LocalPlayerData(LocalPlayerDataProxy data) : base(data) {
+		hasFinishedStarterLevel = data.hasFinishedStarterLevel;
 		numBronzeMeritCards = data.numBronzeMeritCards;
 		numSilverMeritCards = data.numSilverMeritCards;
 		numGoldMeritCards = data.numGoldMeritCards;
@@ -107,6 +103,7 @@ public class LocalPlayerData : PlayerData {
 		base.Cache(data);
 		var d = data as LocalPlayerData;
 		if (d != null) {
+			hasFinishedStarterLevel = d.hasFinishedStarterLevel;
 			numBronzeMeritCards = d.numBronzeMeritCards;
 			numSilverMeritCards = d.numSilverMeritCards;
 			numGoldMeritCards = d.numGoldMeritCards;
@@ -136,7 +133,7 @@ public class RemotePlayerData : PlayerData {
 }
 
 public class PlayerDataProxy {
-	
+
 	public string name;
 	public float health;
 	public int speedIndex;
@@ -186,14 +183,13 @@ public class PlayerDataProxy {
 		eyeOutlineColor = new [] { data.eyeOutlineColor.r, data.eyeOutlineColor.g, data.eyeOutlineColor.b, data.eyeOutlineColor.a };
 		eyeColor = new [] { data.eyeColor.r, data.eyeColor.g, data.eyeColor.b, data.eyeColor.a };
 		dodgeTrailColor = new[] { data.dodgeTrailColor.r, data.dodgeTrailColor.g, data.dodgeTrailColor.b, data.dodgeTrailColor.a };
-		dodgeTrailOutlineColor = new[] { data.dodgeTrailOutlineColor.r, data.dodgeTrailOutlineColor.g, data.dodgeTrailOutlineColor.b, data.dodgeTrailOutlineColor.a };
 		accelerationTrailColor = new[] { data.accelerationTrailColor.r, data.accelerationTrailColor.g, data.accelerationTrailColor.b, data.accelerationTrailColor.a };
-		accelerationTrailOutlineColor = new[] { data.accelerationTrailOutlineColor.r, data.accelerationTrailOutlineColor.g, data.accelerationTrailOutlineColor.b, data.accelerationTrailOutlineColor.a };
 	}
 }
 
 public class LocalPlayerDataProxy : PlayerDataProxy {
 	
+	public bool hasFinishedStarterLevel;
 	public int numBronzeMeritCards;
 	public int numSilverMeritCards;
 	public int numGoldMeritCards;
@@ -203,6 +199,7 @@ public class LocalPlayerDataProxy : PlayerDataProxy {
 	public LocalPlayerDataProxy() { }
 
 	public LocalPlayerDataProxy(LocalPlayerData data) : base(data) {
+		hasFinishedStarterLevel = data.hasFinishedStarterLevel;
 		numBronzeMeritCards = data.numBronzeMeritCards;
 		numSilverMeritCards = data.numSilverMeritCards;
 		numGoldMeritCards = data.numGoldMeritCards;

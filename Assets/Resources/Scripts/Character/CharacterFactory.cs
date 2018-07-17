@@ -23,8 +23,8 @@ public static class CharacterFactory {
 		
 		Renderer[] bodyRenderers = body.GetComponentsInChildren<Renderer>();
 		foreach (Renderer renderer in bodyRenderers) {
-			renderer.material.SetColor(TrailSettings.OUTLINE_COLOR_KEYWORD, data.bodyOutlineColor);
-			renderer.material.SetColor(TrailSettings.MAIN_COLOR_KEYWORD, data.bodyColor);
+			renderer.material.SetColor(MaterialManager.OUTLINE_COLOR_KEYWORD, data.bodyOutlineColor);
+			renderer.material.SetColor(MaterialManager.TOON_COLOR_KEYWORD, data.bodyColor);
 		}
 
 		body.transform.parent = go.transform;
@@ -33,8 +33,8 @@ public static class CharacterFactory {
 		
 		Renderer[] eyeRenderers = eye.GetComponentsInChildren<Renderer>();
 		foreach (Renderer renderer in eyeRenderers) {
-			renderer.material.SetColor(TrailSettings.OUTLINE_COLOR_KEYWORD, data.eyeOutlineColor);
-			renderer.material.SetColor(TrailSettings.MAIN_COLOR_KEYWORD, data.eyeColor);
+			renderer.material.SetColor(MaterialManager.OUTLINE_COLOR_KEYWORD, data.eyeOutlineColor);
+			renderer.material.SetColor(MaterialManager.TOON_COLOR_KEYWORD, data.eyeColor);
 		}
 
 		eye.transform.parent = go.transform;
@@ -55,12 +55,10 @@ public static class CharacterFactory {
 		controller.carriedIBSpriteControllers = new IBSpriteController[ResourcesManager.playerAttributesData.ibSpriteCapacity[data.ibSpriteCapacityIndex].value];
 		controller.hasAccelerationTrail = true;
 		controller.accelerationTrailSettings = ResourcesManager.playerAttributesData.accelerationTrailSettings;
-		controller.accelerationTrailSettings.mainColor = data.accelerationTrailColor;
-		controller.accelerationTrailSettings.outlineColor = data.accelerationTrailOutlineColor;
+		controller.accelerationTrailSettings.color = data.accelerationTrailColor;
 		controller.hasDodgeTrail = true;
 		controller.dodgeTrailSettings = ResourcesManager.playerAttributesData.dodgeTrailSettings;
-		controller.dodgeTrailSettings.mainColor = data.dodgeTrailColor;
-		controller.dodgeTrailSettings.outlineColor = data.dodgeTrailOutlineColor;
+		controller.dodgeTrailSettings.color = data.dodgeTrailColor;
 		
 		LayerManager.SetAllLayers(go, LayerManager.CharacterLayer);
 		

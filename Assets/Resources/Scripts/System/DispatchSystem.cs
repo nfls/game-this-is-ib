@@ -3,7 +3,7 @@ using System.Collections.Generic;
 using UnityEngine;
 using UnityEngine.SceneManagement;
 
-public class DispatchSystem : MonoBehaviour {
+public class DispatchSystem : MonoSingleton {
 	
 	private static Dictionary<string, Action> globalDispatchesNoArgs = new Dictionary<string, Action>(3);
 	private static Dictionary<string, Action<DispatchArgs>> globalDispatchesWithArgs = new Dictionary<string, Action<DispatchArgs>>(3);

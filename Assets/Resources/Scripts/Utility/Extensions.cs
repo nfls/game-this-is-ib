@@ -3,6 +3,10 @@ using UnityEngine;
 
 public static class Extensions {
 
+	public static bool IsNullPath(this string path) {
+		return path == CommonUtils.NULL_STRING;
+	}
+
 	public static KeyCode[] Resize(this KeyCode[] array, int length) {
 		KeyCode[] newArray = new KeyCode[length];
 		for (int i = 0, len = array.Length; i < length; i++) {

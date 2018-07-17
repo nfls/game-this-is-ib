@@ -7,7 +7,7 @@ public sealed class AxisDetector : InputDetector {
 	private static readonly Dictionary<string, AxisDetector> axisDetectors;
 
 	static AxisDetector() {
-		axisDetectors = new Dictionary<string, AxisDetector>(57);
+		axisDetectors = new Dictionary<string, AxisDetector>(56);
 
 		for (int i = 1; i <= 28; i ++) {
 			string str = i.ToString();
