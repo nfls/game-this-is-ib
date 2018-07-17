@@ -1,5 +1,6 @@
 ﻿using System.Collections.Generic;
 using UnityEngine;
+using UnityEngine.Profiling;
 
 public class InputMapper {
 
@@ -73,6 +74,7 @@ public class InputMapper {
 	}
 
 	public void Refresh() {
+		Profiler.BeginSample("Input Operator");
 		if (isInControl) {
 			foreach (string name in _onPressedBindings.Keys) {
 				if (_inputMap[name].IsPressed) {
@@ -88,6 +90,7 @@ public class InputMapper {
 				if (_inputMap[name].IsReleased) _onReleasedBindings[name]();
 			}
 		}
+		Profiler.EndSample();
 	}
 
 	public void Reset() {
