@@ -35,17 +35,11 @@ public class Subject {
 	public static readonly Subject ExtendedEssay = new Subject("Extended Essay", "EE", SubjectGroup.Other);
 	public static readonly Subject TheoryOfKnowledge = new Subject("Theory Of Knowledge", "TOK", SubjectGroup.Other);
 
-	public static string[] Names {
-		get { return subjects.Keys.ToArray(); }
-	}
+	public static string[] Names => subjects.Keys.ToArray();
 
-	public static Subject[] Subjects {
-		get { return subjects.Values.ToArray(); }
-	}
+	public static Subject[] Subjects => subjects.Values.ToArray();
 
-	public static int Count {
-		get { return subjects.Count; }
-	}
+	public static int Count => subjects.Count;
 
 	private static readonly Dictionary<string, Subject> subjects;
 

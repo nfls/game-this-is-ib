@@ -41,18 +41,16 @@
 	        float _FlyThreshold;
 	        float _FlyFactor;
 	        
-	        struct v2f
-	        {
+	        struct v2f {
 	        	float4 pos : SV_POSITION;
 	        	float3 worldNormal : TEXCOORD0;
 	        	float2 uv : TEXCOORD1;
-	        	float3 lightDir:TEXCOORD2;
-	        	float3 viewDir:TEXCOORD3;
-	        	float3 normal:TEXCOORD4;
+	        	float3 lightDir : TEXCOORD2;
+	        	float3 viewDir : TEXCOORD3;
+	        	float3 normal : TEXCOORD4;
 	        };
 	        
-	        v2f vert(appdata_base v)
-	        {
+	        v2f vert(appdata_base v) {
 	        	v2f o;
 	        	// v.vertex.xyz+=v.normal * _DissolveThreshold * 0.5;
 	        	v.vertex.xyz += v.normal * saturate(_DissolveThreshold - _FlyThreshold) * _FlyFactor;
@@ -66,13 +64,11 @@
 	        	return o;
 	        }
 	        
-	        fixed4 frag(v2f i) : SV_Target
-	        {
+	        fixed4 frag(v2f i) : SV_Target {
 	        	//采样Dissolve Map
 	        	fixed4 dissolveValue = tex2D(_DissolveMap, i.uv);
 	        	//小于阈值的部分直接discard
-	        	if (dissolveValue.r < _DissolveThreshold)
-	        	{
+	        	if (dissolveValue.r < _DissolveThreshold) {
 	        		discard;
 	        	}
 	            

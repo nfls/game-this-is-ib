@@ -40,9 +40,10 @@ public sealed class KeyDetector : InputDetector {
 		return keyDetectors.ContainsKey(name) ? keyDetectors[name] : null;
 	}
 
-	public static KeyDetector getHelDetector() {
+	public static KeyDetector GetHeldDetector() {
 		foreach (KeyDetector detector in keyDetectors.Values) {
 			if (Input.GetKey(detector.keyCode)) {
+				Debug.Log(detector.Name);
 				return detector;
 			}
 		}

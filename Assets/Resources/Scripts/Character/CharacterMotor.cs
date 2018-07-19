@@ -28,21 +28,13 @@ public class CharacterMotor : MonoBehaviour {
 	public event OnGroundExitHandler OnGroundExit;
 	public event OnFreeBodyExitHandler OnFreeBodyExit;
 
-	public bool IsGrounded {
-		get { return _isGrounded; }
-	}
+	public bool IsGrounded => _isGrounded;
 
-	public FaceDirection FaceDirection {
-		get { return _faceDirection; }
-	}
+	public FaceDirection FaceDirection => _faceDirection;
 
-	public float VelocityX {
-		get { return _freeVelocityX + _moveVelocityX; }
-	}
+	public float VelocityX => _freeVelocityX + _moveVelocityX;
 
-	public float VelocityY {
-		get { return _velocityY; }
-	}
+	public float VelocityY => _velocityY;
 
 	private BoxCollider _bodyCollider;
 	private Rigidbody _rigidbody;

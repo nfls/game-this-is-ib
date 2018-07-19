@@ -10,8 +10,7 @@ public static class ResourcesManager {
 	private const string ITEM_PREFIX = "item";
 	private const string IB_SPRITE_PREFIX = "ibsprite";
 	private const string PROJECTILE_PREFIX = "projectile";
-	private const string TERRAIN_PREFIX = "terrain";
-	private const string DEVICE_PREFIX = "device";
+	private const string PARTICLE_PREFIX = "particle";
 	private const string BODY_PREFIX = "body";
 	private const string EYE_PREFIX = "eye";
 	private const string ENEMY_PREFIX = "enemy";
@@ -35,38 +34,19 @@ public static class ResourcesManager {
 	public static VersionData versionData;
 	public static PlayerAttributesData playerAttributesData;
 
-	public static bool IsCompleted {
-		get { return File.Exists(DataPath) && File.Exists(PrefabPath); }
-	}
+	public static bool IsCompleted => File.Exists(DataPath) && File.Exists(PrefabPath);
 
 	private static Dictionary<string, ItemAttributesData> itemDataDictionary;
 	private static Dictionary<string, IBSpriteAttributesData> ibSpriteDataDictionary;
 
-	private static Dictionary<string, GameObject> items;
-	private static Dictionary<string, GameObject> ibSprites;
-	private static Dictionary<string, GameObject> projectiles;
-	private static Dictionary<string, GameObject> terrains;
-	private static Dictionary<string, GameObject> devices;
-	private static Dictionary<string, GameObject> bodies;
-	private static Dictionary<string, GameObject> eyes;
-	private static Dictionary<string, GameObject> enemies;
-	private static Dictionary<string, GameObject> bosses;
-
-	static ResourcesManager() {
-		itemDataDictionary = new Dictionary<string, ItemAttributesData>(5);
-		ibSpriteDataDictionary = new Dictionary<string, IBSpriteAttributesData>(5);
-
-		items = new Dictionary<string, GameObject>(5);
-		ibSprites = new Dictionary<string, GameObject>(5);
-		projectiles = new Dictionary<string, GameObject>(5);
-		terrains = new Dictionary<string, GameObject>(5);
-		devices = new Dictionary<string, GameObject>(5);
-
-		bodies = new Dictionary<string, GameObject>(5);
-		eyes = new Dictionary<string, GameObject>(5);
-		enemies = new Dictionary<string, GameObject>(5);
-		bosses = new Dictionary<string, GameObject>(5);
-	}
+	private static Dictionary<string, GameObject> items = new Dictionary<string, GameObject>(5);
+	private static Dictionary<string, GameObject> ibSprites = new Dictionary<string, GameObject>(5);
+	private static Dictionary<string, GameObject> projectiles = new Dictionary<string, GameObject>(5);
+	private static Dictionary<string, GameObject> particles = new Dictionary<string, GameObject>(5);
+	private static Dictionary<string, GameObject> bodies = new Dictionary<string, GameObject>(5);
+	private static Dictionary<string, GameObject> eyes = new Dictionary<string, GameObject>(5);
+	private static Dictionary<string, GameObject> enemies = new Dictionary<string, GameObject>(5);
+	private static Dictionary<string, GameObject> bosses = new Dictionary<string, GameObject>(5);
 
 	public static void Init() {
 		if (IsCompleted) {
@@ -90,8 +70,7 @@ public static class ResourcesManager {
 				switch (prefix) {
 					case ITEM_PREFIX: itemDataDictionary[name] = bundle.LoadAsset<ItemAttributesData>(path);
 						break;
-					case IB_SPRITE_PREFIX: ibSpriteDataDictionary[name] =
- bundle.LoadAsset<IBSpriteAttributesData>(path);
+					case IB_SPRITE_PREFIX: ibSpriteDataDictionary[name] = bundle.LoadAsset<IBSpriteAttributesData>(path);
 						break;
 				}
 			}
@@ -99,9 +78,7 @@ public static class ResourcesManager {
 #else
 		string dataPath = "Assets/Hotassets/Data";
 		versionData = AssetDatabase.LoadAssetAtPath<VersionData>(dataPath + "/" + VERSION_DATA_NAME + ".asset");
-		playerAttributesData =
-			AssetDatabase.LoadAssetAtPath<PlayerAttributesData>(
-				dataPath + "/" + PLAYER_ATTRIBUTES_DATA_NAME + ".asset");
+		playerAttributesData = AssetDatabase.LoadAssetAtPath<PlayerAttributesData>(dataPath + "/" + PLAYER_ATTRIBUTES_DATA_NAME + ".asset");
 		DirectoryInfo info = new DirectoryInfo(Application.dataPath + "/Hotassets/Data");
 		FileInfo[] files = info.GetFiles("*.asset", SearchOption.TopDirectoryOnly);
 		foreach (var file in files) {
@@ -141,6 +118,8 @@ public static class ResourcesManager {
 					break;
 				case PROJECTILE_PREFIX: projectiles[name] = bundle.LoadAsset<GameObject>(path);
 					break;
+				case PARTICLE_PREFIX: particles[name] = bundle.LoadAsset<GameObject>(path);
+					break;
 				case BODY_PREFIX: bodies[name] = bundle.LoadAsset<GameObject>(path);
 					break;
 				case EYE_PREFIX: eyes[name] = bundle.LoadAsset<GameObject>(path);
@@ -170,6 +149,9 @@ public static class ResourcesManager {
 						break;
 					case PROJECTILE_PREFIX:
 						projectiles[name] = AssetDatabase.LoadAssetAtPath<GameObject>(prefabPath + "/" + path);
+						break;
+					case PARTICLE_PREFIX:
+						particles[name] = AssetDatabase.LoadAssetAtPath<GameObject>(prefabPath + "/" + path);
 						break;
 					case BODY_PREFIX:
 						bodies[name] = AssetDatabase.LoadAssetAtPath<GameObject>(prefabPath + "/" + path);
@@ -201,12 +183,8 @@ public static class ResourcesManager {
 		return GameObject.Instantiate(projectiles[name]);
 	}
 
-	public static GameObject GetTerrain(string name) {
-		return GameObject.Instantiate(terrains[name]);
-	}
-
-	public static GameObject GetDevice(string name) {
-		return GameObject.Instantiate(devices[name]);
+	public static GameObject GetParticle(string name) {
+		return GameObject.Instantiate(particles[name]);
 	}
 
 	public static GameObject GetBody(string name) {

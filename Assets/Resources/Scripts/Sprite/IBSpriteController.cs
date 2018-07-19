@@ -12,14 +12,9 @@ public abstract class IBSpriteController : MonoBehaviour {
 	public IdleMovementSettings idleMovementSettings;
 	public TrailSettings idleTrailSettings;
 
-	public bool IsAttacking {
-		get { return _isAttacking; }
-	}
-
-	public bool IsSyncing {
-		get { return _isSyncing; }
-	}
-
+	public bool IsAttacking => _isAttacking;
+	public bool IsSyncing => _isSyncing;
+	
 	public Vector3 InitialPosition {
 		get {
 			Vector3 offset = initialOffset;
@@ -28,9 +23,7 @@ public abstract class IBSpriteController : MonoBehaviour {
 		}
 	}
 
-	public Quaternion InitialRotation {
-		get { return initialRotation.ToQuaternion(); }
-	}
+	public Quaternion InitialRotation => initialRotation.ToQuaternion();
 
 	protected bool _isInitiated;
 	protected bool _isAttacking;

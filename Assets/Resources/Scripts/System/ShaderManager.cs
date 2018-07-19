@@ -1,4 +1,4 @@
-﻿public class MaterialManager : MonoSingleton {
+﻿public class ShaderManager : MonoSingleton {
 
 	public const string OUTLINED_TOON_SHADER_NAME = "这就是IB/OutlinedToonShader";
 	public const string TOON_SHADER_NAME = "这就是IB/ToonShader";

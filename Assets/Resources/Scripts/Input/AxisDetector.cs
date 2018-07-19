@@ -34,18 +34,13 @@ public sealed class AxisDetector : InputDetector {
 			axisDetectors["Axis" + str + " Negative"] = negativeDetector;
 		}
 	}
+	
+	public AxisDirection Direction => _direction;
+	public float Offset => _offset;
 
 	private float _deadZone;
 	private AxisDirection _direction;
 	private float _offset;
-
-	public AxisDirection Direction {
-		get { return _direction; }
-	}
-
-	public float Offset {
-		get { return _offset; }
-	}
 
 	private AxisDetector(string name, AxisDirection direction, float deadZone = .15f) {
 		_name = name;
@@ -79,6 +74,7 @@ public sealed class AxisDetector : InputDetector {
 	public static AxisDetector GetHeldDetector() {
 		foreach (AxisDetector detector in axisDetectors.Values) {
 			if (Input.GetAxis(detector.Name) * (float) detector._direction > detector._deadZone) {
+				Debug.Log(detector.Name + " | " + detector.Direction);
 				return detector;
 			}
 		}

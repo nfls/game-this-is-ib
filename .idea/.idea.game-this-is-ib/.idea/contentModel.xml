@@ -12,8 +12,12 @@
             </e>
           </e>
         </e>
+        <e p="BloodSFX" t="Include">
+          <e p="README.txt" t="Include" />
+        </e>
         <e p="Editor" t="Include">
           <e p="AssetBundleTool.cs" t="Include" />
+          <e p="CameraBackgroundColorAttributeDrawer.cs" t="Include" />
           <e p="DataTool.cs" t="Include" />
           <e p="InputManagerTool.cs" t="Include" />
           <e p="InterlocutionDataEditorWindow.cs" t="Include" />
@@ -43,6 +47,10 @@
         </e>
         <e p="Resources" t="Include">
           <e p="Scripts" t="Include">
+            <e p="Camera" t="Include">
+              <e p="CameraBackgroundColorAttribute.cs" t="Include" />
+              <e p="CameraManager.cs" t="Include" />
+            </e>
             <e p="Character" t="Include">
               <e p="CharacterController.cs" t="Include" />
               <e p="CharacterFactory.cs" t="Include" />
@@ -66,6 +74,11 @@
               <e p="SignalReceiver.cs" t="Include" />
               <e p="SignalSender.cs" t="Include" />
               <e p="ZoneTrigger.cs" t="Include" />
+            </e>
+            <e p="Effect" t="Include">
+              <e p="BurstParticleController.cs" t="Include" />
+              <e p="ParticleController.cs" t="Include" />
+              <e p="ParticlePool.cs" t="Include" />
             </e>
             <e p="Game" t="Include">
               <e p="LevelController.cs" t="Include" />
@@ -108,7 +121,7 @@
             <e p="System" t="Include">
               <e p="DispatchSystem.cs" t="Include" />
               <e p="LayerManager.cs" t="Include" />
-              <e p="MaterialManager.cs" t="Include" />
+              <e p="ShaderManager.cs" t="Include" />
               <e p="TagManager.cs" t="Include" />
               <e p="TimeManager.cs" t="Include" />
             </e>
@@ -143,9 +156,7 @@
       <e p="Library" t="ExcludeRecursive" />
       <e p="obj" t="ExcludeRecursive" />
       <e p="packages" t="ExcludeRecursive" />
-      <e p="Temp" t="ExcludeRecursive">
-        <e p="bin" t="ExcludeRecursive" />
-      </e>
+      <e p="Temp/bin" t="ExcludeRecursive" />
     </e>
     <e p="$USER_HOME$/Library/Caches/Rider2018.1/resharper-host/local/Transient/ReSharperHost/v12/SolutionCaches/_game-this-is-ib.-1397334290.00" t="ExcludeRecursive" />
   </component>

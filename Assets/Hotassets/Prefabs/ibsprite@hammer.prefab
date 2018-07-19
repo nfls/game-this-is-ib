@@ -201,6 +201,7 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: bc607304d46f448aa3a4d1aac3ca1918, type: 3}
   m_Name: 
   m_EditorClassIdentifier: 
+  hitSound: {fileID: 8300000, guid: 90e9e70c517224f58a65882d57775fa2, type: 3}
   name: 
   detectsLocalPlayer: 0
   detectsRemotePlayer: 0

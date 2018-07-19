@@ -5,9 +5,7 @@ public abstract class SignalReceiver : DeviceController {
 	public SignalReceiverType type;
 	public int activiationCount;
 	
-	public bool IsActivated {
-		get { return _isActivated; }
-	}
+	public bool IsActivated => _isActivated;
 
 	protected bool _isActivated;
 	protected int _count;

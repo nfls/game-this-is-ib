@@ -8,36 +8,16 @@ public abstract class InputDetector : IInputDetectable {
 	protected bool _isReleased;
 	protected float _lastPressTime = -1f;
 
-	public string Name {
-		get {
-			return _name;
-		}
-	}
+	public string Name => _name;
 
-	public bool IsPressed {
-		get {
-			return _isPressed;
-		}
-	}
+	public bool IsPressed => _isPressed;
 
-	public bool IsHeld {
-		get {
-			return _isHeld;
-		}
-	}
+	public bool IsHeld => _isHeld;
 
-	public bool IsReleased {
-		get {
-			return _isReleased;
-		}
-	}
+	public bool IsReleased => _isReleased;
 
-	public float ChargeTime {
-		get {
-			return Time.time - _lastPressTime;
-		}
-	}
-	
+	public float ChargeTime => Time.time - _lastPressTime;
+
 	public abstract void Refresh();
 
 	public void Reset() {

@@ -30,13 +30,8 @@ public class CharacterController : MonoBehaviour {
 	public bool hasDodgeTrail;
 	public TrailSettings dodgeTrailSettings;
 
-	public bool IsIBSpriteOn {
-		get { return _currentIBSpriteControllerIndex >= 0; }
-	}
-
-	public bool IsIBSpriteFull {
-		get { return carriedIBSpriteControllers[carriedIBSpriteControllers.Length - 1] != null; }
-	}
+	public bool IsIBSpriteOn => _currentIBSpriteControllerIndex >= 0;
+	public bool IsIBSpriteFull => carriedIBSpriteControllers[carriedIBSpriteControllers.Length - 1] != null;
 
 	public int CarriedIBSpriteCount {
 		get {
@@ -50,13 +45,8 @@ public class CharacterController : MonoBehaviour {
 		}
 	}
 
-	public bool IsDodgeCooldowning {
-		get { return _dodgeCooldownCoroutine != null; }
-	}
-
-	public float DodgeCooldownDuration {
-		get { return _dodgeCooldownDuration; }
-	}
+	public bool IsDodgeCooldowning => _dodgeCooldownCoroutine != null;
+	public float DodgeCooldownDuration => _dodgeCooldownDuration;
 
 	protected bool _isInitiated;
 	protected bool _isAccelerating;
@@ -259,7 +249,9 @@ public class CharacterController : MonoBehaviour {
 	}
 
 	protected void SprayBlood() {
-		
+		BurstParticleController blood = ParticlePool.Get<BurstParticleController>("cubeblood");
+		blood.transform.position = transform.position;
+		blood.Spray();
 	}
 	
 	protected void Die() {

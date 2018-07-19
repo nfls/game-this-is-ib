@@ -9,10 +9,8 @@ public class DynamicPlatformController : DeviceController {
 	public RigidbodyInterpolation interpolation = RigidbodyInterpolation.Interpolate;
 	public List<Vector3> destinations;
 
-	public Vector3 DeltaMovement {
-		get { return _deltaMovement; }
-	}
-	
+	public Vector3 DeltaMovement => _deltaMovement;
+
 	protected bool _isInverse;
 	protected int _currentDestinationIndex;
 	protected Vector3 _currentDestination;

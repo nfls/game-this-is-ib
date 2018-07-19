@@ -17,9 +17,9 @@ public class TrailSettings {
 	[HideInInspector] public Material material;
 
 	public void Init() {
-		material = new Material(Shader.Find(MaterialManager.SINGLE_COLOR_SHADER_NAME));
-		material.SetColor(MaterialManager.TOON_COLOR_KEYWORD, color);
-		material.SetFloat(MaterialManager.BRIGHTNESS_KEYWORD, brightness);
+		material = new Material(Shader.Find(ShaderManager.SINGLE_COLOR_SHADER_NAME));
+		material.SetColor(ShaderManager.TOON_COLOR_KEYWORD, color);
+		material.SetFloat(ShaderManager.BRIGHTNESS_KEYWORD, brightness);
 	}
 
 	public void InitRenderer(ref TrailRenderer renderer) {

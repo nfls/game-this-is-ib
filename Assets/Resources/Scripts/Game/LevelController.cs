@@ -1,29 +1,23 @@
-﻿using System.Collections;
+﻿using System;
+using System.Collections;
 using UnityEngine;
 
 public class LevelController : MonoBehaviour {
 	
-	public int Width {
-		get { return _width; }
-	}
+	[CameraBackgroundColor]
+	public Color backgroundColor;
 	
-	public int Height {
-		get { return _height; }
-	}
+	public int Width => _width;
+	public int Height => _height;
 
-	public CharacterController LocalPlayer {
-		get { return _localPlayer; }
-	}
+	public CharacterController LocalPlayer => _localPlayer;
+	public CharacterController RemotePlayer => _remotePlayer;
 
-	public CharacterController RemotePlayer {
-		get { return _remotePlayer; }
-	}
-
+	protected bool _isShifiting;
 	[SerializeField]
 	protected int _width;
 	[SerializeField]
 	protected int _height;
-	protected bool _isShifiting;
 
 	protected CharacterController _localPlayer;
 	protected CharacterController _remotePlayer;
@@ -42,13 +36,22 @@ public class LevelController : MonoBehaviour {
 
 		terrains = terrainRoot.GetComponentsInChildren<TerrainController>();
 		devices = deviceRoot.GetComponentsInChildren<DeviceController>();
+		
+		#if UNITY_EDITOR
+		Activate();
+		#endif
 	}
 
-	public void Shift(Vector3 destination, float time) {
-		
+	public void Shift(Vector3 destination, float time, Action finishAction) {
+		if (_shiftCoroutine != null) {
+			StopCoroutine(_shiftCoroutine);
+		}
+
+		_shiftCoroutine = StartCoroutine(ExeShiftCoroutine(destination, time, finishAction));
 	}
 
 	public void Activate() {
+		Camera.main.backgroundColor = backgroundColor;
 		foreach (var device in devices) {
 			device.Replay();
 		}
@@ -73,14 +76,23 @@ public class LevelController : MonoBehaviour {
 		}
 	}
 
-	protected IEnumerator ExeShiftCoroutine(Vector3 destination, float time) {
-		float speed = (destination - transform.position).magnitude / time;
-		
-		while (time > 0) {
+	protected IEnumerator ExeShiftCoroutine(Vector3 destination, float time, Action finishAction) {
+		_isShifiting = true;
+		Vector3 originalPos = transform.position;
+		float originalTime = Time.time;
+		float targetTime = originalTime + time;
+		float currentTime;
+		do {
 			yield return null;
-			time -= Time.time;
-			
-		}
+			currentTime = Time.time;
+			transform.position = Vector3.LerpUnclamped(originalPos, destination, (currentTime - originalTime) / time);
+		} while (currentTime < targetTime);
+
+		transform.position = destination;
+		_shiftCoroutine = null;
+		_isShifiting = false;
+		
+		finishAction();
 	}
 	
 	#if UNITY_EDITOR

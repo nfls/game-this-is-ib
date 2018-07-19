@@ -10,9 +10,12 @@ public class TestSceneController : MonoBehaviour {
 		LocalDataManager.Init();
 		ResourcesManager.Init();
 		PlayerManager.Init();
-		SingletonManager.AddSingleton<MaterialManager>();
+		
+		SingletonManager.AddSingleton<ShaderManager>();
 		SingletonManager.AddSingleton<DispatchSystem>();
+		SingletonManager.AddSingleton<CameraManager>();
 		SingletonManager.AddSingleton<TimeManager>();
+		SingletonManager.AddSingleton<ParticlePool>();
 		SingletonManager.AddSingleton<InputManager>();
 		
 		GameObject localPlayer = CharacterFactory.GenerateLocalPlayer();
@@ -24,11 +27,6 @@ public class TestSceneController : MonoBehaviour {
 		localPlayer.GetComponent<CharacterController>().EquipIBSprite(hammer.GetComponent<IBSpriteController>(), true);
 
 		localPlayer.transform.position = localPlayer.transform.position + new Vector3(2, 0, 0);
-
-		DeviceController[] devices = FindObjectsOfType<DeviceController>();
-		foreach (var device in devices) {
-			device.Replay();
-		}
 
 		if (bgm) {
 			AudioSource source = GetComponent<AudioSource>();

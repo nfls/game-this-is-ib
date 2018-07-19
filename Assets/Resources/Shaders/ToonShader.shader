@@ -17,6 +17,11 @@
 		float4 _ToonColor;
 		float _ToonSteps;
 		float _ToonLevel;
+		
+		struct appdata {
+		    float4 vertex : POSITION;
+		    float3 normal : NORMAL;
+		};
 
 		struct v2f {
 			float4 pos:SV_POSITION;
@@ -25,7 +30,7 @@
 			float3 normal:TEXCOORD2;
 		};
 		
-		v2f vert (appdata_full v) {
+		v2f vert (appdata v) {
 			v2f o;
 			o.pos=UnityObjectToClipPos(v.vertex);//切换到世界坐标
 			o.normal=v.normal;
@@ -65,6 +70,11 @@
 		float4 _ToonColor;
 		float _ToonSteps;
 		float _ToonLevel;
+		
+		struct appdata {
+		    float4 vertex : POSITION;
+		    float3 normal : NORMAL;
+		};
 
 		struct v2f {
 			float4 pos:SV_POSITION;
@@ -73,7 +83,7 @@
 			float3 normal:TEXCOORD2;
 		};
 
-		v2f vert (appdata_full v) {
+		v2f vert (appdata v) {
 			v2f o;
 			o.pos=UnityObjectToClipPos(v.vertex);
 			o.normal=v.normal;

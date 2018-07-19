@@ -1,6 +1,8 @@
 ﻿using UnityEngine;
 
-public class SingletonManager : MonoBehaviour {
+public class SingletonManager : MonoSingleton {
+	
+	public static Transform SingletonRoot => singletonRoot;
 
 	private static Transform singletonRoot;
 

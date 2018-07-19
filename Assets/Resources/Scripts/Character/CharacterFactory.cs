@@ -23,8 +23,8 @@ public static class CharacterFactory {
 		
 		Renderer[] bodyRenderers = body.GetComponentsInChildren<Renderer>();
 		foreach (Renderer renderer in bodyRenderers) {
-			renderer.material.SetColor(MaterialManager.OUTLINE_COLOR_KEYWORD, data.bodyOutlineColor);
-			renderer.material.SetColor(MaterialManager.TOON_COLOR_KEYWORD, data.bodyColor);
+			renderer.material.SetColor(ShaderManager.OUTLINE_COLOR_KEYWORD, data.bodyOutlineColor);
+			renderer.material.SetColor(ShaderManager.TOON_COLOR_KEYWORD, data.bodyColor);
 		}
 
 		body.transform.parent = go.transform;
@@ -33,8 +33,8 @@ public static class CharacterFactory {
 		
 		Renderer[] eyeRenderers = eye.GetComponentsInChildren<Renderer>();
 		foreach (Renderer renderer in eyeRenderers) {
-			renderer.material.SetColor(MaterialManager.OUTLINE_COLOR_KEYWORD, data.eyeOutlineColor);
-			renderer.material.SetColor(MaterialManager.TOON_COLOR_KEYWORD, data.eyeColor);
+			renderer.material.SetColor(ShaderManager.OUTLINE_COLOR_KEYWORD, data.eyeOutlineColor);
+			renderer.material.SetColor(ShaderManager.TOON_COLOR_KEYWORD, data.eyeColor);
 		}
 
 		eye.transform.parent = go.transform;

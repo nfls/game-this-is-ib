@@ -6,7 +6,7 @@ public class TerrainController : MonoBehaviour {
 		get { return _color; }
 		set {
 			_color = value;
-			_material.SetColor(MaterialManager.TOON_COLOR_KEYWORD, _color);
+			_material.SetColor(ShaderManager.TOON_COLOR_KEYWORD, _color);
 		}
 	}
 
@@ -14,13 +14,18 @@ public class TerrainController : MonoBehaviour {
 		get { return _outlineColor; }
 		set {
 			_outlineColor = value;
-			_material.SetColor(MaterialManager.OUTLINE_COLOR_KEYWORD, _outlineColor);
+			_material.SetColor(ShaderManager.OUTLINE_COLOR_KEYWORD, _outlineColor);
 		}
 	}
 
-	[SerializeField] protected Color _color = new Color(0, 1f, 1f, 1f);
-	[SerializeField] protected Color _outlineColor = new Color(.2f, .2f, .2f, 1f);
+	[SerializeField]
+	protected Color _color = new Color(0, 1f, 1f, 1f);
+	[SerializeField]
+	protected Color _outlineColor = new Color(.2f, .2f, .2f, 1f);
+
+	protected Renderer _renderer;
 	protected Material _material;
+	protected MaterialPropertyBlock _props;
 
 	private void Start() {
 		_material = GetComponent<Renderer>().material;

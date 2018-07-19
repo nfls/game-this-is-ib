@@ -3,6 +3,8 @@
 [RequireComponent(typeof(Collider))]
 public class DamageTrigger : MonoBehaviour {
 
+	public AudioClip hitSound;
+
 	public string name;
 	public bool detectsLocalPlayer;
 	public bool detectsRemotePlayer;
@@ -16,22 +18,32 @@ public class DamageTrigger : MonoBehaviour {
 	public float hitVelocityY;
 	public float stunnedTime;
 
-	protected Collider collider;
+	protected Collider _collider;
+	protected AudioSource _audioSource;
 
 	private void Start() {
-		collider = GetComponent<Collider>();
-		collider.isTrigger = true;
+		_collider = GetComponent<Collider>();
+		_collider.isTrigger = true;
 	}
 
 	public void Enable() {
-		collider.enabled = true;
+		_collider.enabled = true;
 	}
 
 	public void Disable() {
-		collider.enabled = false;
+		_collider.enabled = false;
 	}
 
 	private void OnTriggerEnter(Collider other) {
+		/*
+		BurstParticleController burstParticle = ParticlePool.Get<BurstParticleController>("cubeblood");
+		burstParticle.transform.position = transform.position;
+		burstParticle.Spray();
+		*/
+		if (hitSound) {
+			AudioSource.PlayClipAtPoint(hitSound, transform.position);
+		}
+		
 		if (detectsLocalPlayer) {
 			if (other.CompareTag(TagManager.LOCAL_PLAYER_TAG)) {
 				DamageCharacter(other);

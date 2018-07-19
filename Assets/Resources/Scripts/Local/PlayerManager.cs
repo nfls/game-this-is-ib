@@ -6,17 +6,9 @@ public static class PlayerManager {
 	
 	public static readonly string PlayerDataPath = LocalDataManager.DataStorageRoot + "/pData";
 
-	public static bool HasRemotePlayer {
-		get { return remotePlayerData != null; }
-	}
-
-	public static LocalPlayerData LocalPlayerData {
-		get { return localPlayerData; }
-	}
-
-	public static RemotePlayerData RemotePlayerData {
-		get { return remotePlayerData; }
-	}
+	public static bool HasRemotePlayer => remotePlayerData != null;
+	public static LocalPlayerData LocalPlayerData => localPlayerData;
+	public static RemotePlayerData RemotePlayerData => remotePlayerData;
 
 	private static LocalPlayerData localPlayerData;
 	private static RemotePlayerData remotePlayerData;
