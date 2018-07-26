@@ -32,8 +32,8 @@ public static class PlayerManager {
 	public static void GeneratePlayerData() {
 		Debug.Log("Generate Player Data");
 		localPlayerDataCache = new LocalPlayerData();
-		localPlayerDataCache.name = ResourcesManager.playerAttributesData.name;
-		localPlayerDataCache.health = ResourcesManager.playerAttributesData.health;
+		localPlayerDataCache.name = ResourcesManager.PlayerAttributesData.name;
+		localPlayerDataCache.health = ResourcesManager.PlayerAttributesData.health;
 		localPlayerDataCache.carriedIBSprites = new List<string>();
 		localPlayerDataCache.ibSprites = new Dictionary<string, int>();
 		localPlayerDataCache.bodyStyle = "default";

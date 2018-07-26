@@ -350,7 +350,7 @@ MonoBehaviour:
   openLag: 0
   closeLag: 0.5
   openDirection: 2
-  operationSound: {fileID: 8300000, guid: 7550e06ca892348e2a1eaa2616a28411, type: 3}
+  operationSound: dooroperate
 --- !u!114 &114786454289336230
 MonoBehaviour:
   m_ObjectHideFlags: 1

@@ -457,14 +457,14 @@ InputManager:
     m_Name: Submit
     descriptiveName: 
     descriptiveNegativeName: 
-    negativeButton: k
-    positiveButton: j
+    negativeButton: 
+    positiveButton: return
     altNegativeButton: 
-    altPositiveButton: 
+    altPositiveButton: enter
     gravity: 0
     dead: 0
     sensitivity: 1
-    snap: 1
+    snap: 0
     invert: 0
     type: 0
     axis: 27
@@ -473,14 +473,14 @@ InputManager:
     m_Name: Cancel
     descriptiveName: 
     descriptiveNegativeName: 
-    negativeButton: j
-    positiveButton: k
+    negativeButton: 
+    positiveButton: escape
     altNegativeButton: 
     altPositiveButton: 
     gravity: 0
     dead: 0
     sensitivity: 1
-    snap: 1
+    snap: 0
     invert: 0
     type: 0
     axis: 27

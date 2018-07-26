@@ -1,7 +1,7 @@
 ﻿using System.Collections;
 using UnityEngine;
 
-[RequireComponent(typeof(DamageTrigger))]
+[RequireComponent(typeof(IBSpriteTrigger))]
 public class PendulumSpriteController : IBSpriteController {
 
 	public float attackRotation;
@@ -9,7 +9,7 @@ public class PendulumSpriteController : IBSpriteController {
 	public RotateBackMode rotateBackMode;
 	public TrailSettings attackTrailSettings;
 
-	protected DamageTrigger _damageTrigger;
+	protected IBSpriteTrigger ibSpriteTrigger;
 	protected Coroutine _attackCoroutine;
 	protected Coroutine _rotateCoroutine;
 
@@ -17,8 +17,13 @@ public class PendulumSpriteController : IBSpriteController {
 		base.Init();
 		
 		attackTrailSettings.Init();
-		_damageTrigger = GetComponent<DamageTrigger>();
-		_damageTrigger.Disable();
+		ibSpriteTrigger = GetComponent<IBSpriteTrigger>();
+		ibSpriteTrigger.Disable();
+		ibSpriteTrigger.detectionSettings = detectionSettings;
+		ibSpriteTrigger.OnDetectCharacterEnter += OnDetectCharacterEnter;
+		ibSpriteTrigger.OnDetectCharacterExit += OnDetectCharacterExit;
+		ibSpriteTrigger.OnDetectDestructibleEnter += OnDetectDestrutibleEnter;
+		ibSpriteTrigger.OnDetectCharacterExit += OnDetectDestrutibleExit;
 	}
 
 	protected override void ExeAttackTask() {
@@ -62,12 +67,14 @@ public class PendulumSpriteController : IBSpriteController {
 		ResetPositionAndRotation();
 		EnableTrail(attackTrailSettings);
 		EnterCharacterSyncState();
-		_damageTrigger.Enable();
 		while (_commandBufferCount > 0) {
+			ibSpriteTrigger.Enable();
 			_rotateCoroutine = StartCoroutine(ExeRotateCoroutine(RotationDirection.Clockwise));
 			yield return _rotateCoroutine;
 			_rotateCoroutine = null;
+			ibSpriteTrigger.Disable();
 
+			ibSpriteTrigger.Enable();
 			if (rotateBackMode == RotateBackMode.Immediate) {
 				yield return null;
 				ResetPositionAndRotation();
@@ -77,14 +84,42 @@ public class PendulumSpriteController : IBSpriteController {
 				ResetPositionAndRotation();
 			}
 
+			ibSpriteTrigger.Disable();
 			_commandBufferCount--;
 		}
-		_damageTrigger.Disable();
 		_isCommandBufferFull = false;
 		ExitCharacterSyncState();
 		DisableTrail();
 		_attackCoroutine = null;
 		_isAttacking = false;
+	}
+
+	protected override void OnDetectCharacterEnter(IBSpriteTrigger trigger, Collider detectedCollider) {
+		CharacterController character = detectedCollider.GetComponentInParent<CharacterController>();
+		
+		if (attackEffectSettings.doesHit) {
+			character.GetHit(attackEffectSettings.hitVelocityX, attackEffectSettings.hitVelocityY);
+		}
+
+		if (attackEffectSettings.doesStun) {
+			character.GetStunned(GetStunAngle(attackEffectSettings.stunAngle, trigger.transform, detectedCollider.transform), attackEffectSettings.stunTime);
+		}
+
+		if (attackEffectSettings.doesDamage) {
+			character.GetDamaged(attackEffectSettings.damage);
+		}
+	}
+
+	protected override void OnDetectDestrutibleEnter(IBSpriteTrigger trigger, Collider detectedCollider) {
+		
+	}
+	
+	protected override void OnDetectCharacterExit(IBSpriteTrigger trigger, Collider detectedCollider) {
+		
+	}
+
+	protected override void OnDetectDestrutibleExit(IBSpriteTrigger trigger, Collider detectedCollider) {
+		
 	}
 }
 

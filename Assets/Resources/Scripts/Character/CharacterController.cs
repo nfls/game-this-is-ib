@@ -1,4 +1,5 @@
-﻿using System.Collections;
+﻿using System;
+using System.Collections;
 using UnityEngine;
 using UnityEngine.Rendering;
 
@@ -22,7 +23,8 @@ public class CharacterController : MonoBehaviour {
 	public float dodgeInvincibilityTime;
 	public int dodgeCapacity;
 	public float dodgeCooldown;
-	public float stunnedRotation;
+	public string bloodType = "cubeblood";
+	public string bloodSpraySound = "bloodspray";
 	public IBSpriteController[] carriedIBSpriteControllers;
 
 	public bool hasAccelerationTrail;
@@ -202,10 +204,21 @@ public class CharacterController : MonoBehaviour {
 		}
 	}
 
-	public void EquipIBSprite(IBSpriteController controller, bool autoSwitch = false) {
+	public void EquipIBSprite(IBSpriteController controller, bool autoSwitch = true) {
 		if (IsIBSpriteFull) return;
 		carriedIBSpriteControllers[CarriedIBSpriteCount] = controller;
 		controller.characterMotor = _characterMotor;
+		DetectionSettings detectionSettings = new DetectionSettings();
+		if (CompareTag(TagManager.ENEMY_TAG)) {
+			detectionSettings.detectsLocalPlayer = true;
+			detectionSettings.detectsRemotePlayer = true;
+		} else {
+			detectionSettings.detectsEnemy = true;
+			detectionSettings.detectsDevice = true;
+		}
+		
+		controller.detectionSettings = detectionSettings;
+		
 		if (autoSwitch) {
 			if (IsIBSpriteOn) {
 				_currentIBSpriteController.OnSwitchOff();
@@ -237,21 +250,22 @@ public class CharacterController : MonoBehaviour {
 		_characterMotor.GetHit(velocityX, velocityY);
 	}
 
-	public void GetStunned(float stunnedTime) {
+	public void GetStunned(float stunnedAngle, float stunnedTime) {
 		if (_isDodging) return;
 		if (_stunCoroutine == null) {
-			_currentIBSpriteController.CancelAttack();
+			_currentIBSpriteController?.CancelAttack();
 		} else {
 			ExitStunState();
 		}
 		
-		EnterStunState(stunnedTime);
+		EnterStunState(stunnedAngle, stunnedTime);
 	}
 
 	protected void SprayBlood() {
-		BurstParticleController blood = ParticlePool.Get<BurstParticleController>("cubeblood");
+		BurstParticleController blood = ParticlePool.Get<BurstParticleController>(bloodType);
 		blood.transform.position = transform.position;
 		blood.Spray();
+		AudioManager.PlayAtPoint(bloodSpraySound, transform.position);
 	}
 	
 	protected void Die() {
@@ -274,9 +288,9 @@ public class CharacterController : MonoBehaviour {
 		_trailRenderer.emitting = false;
 	}
 
-	protected void EnterStunState(float stunnedTime) {
+	protected void EnterStunState(float stunnedAngle, float stunnedTime) {
 		_isStunned = true;
-		_stunCoroutine = StartCoroutine(ExeStunTask(stunnedTime));
+		_stunCoroutine = StartCoroutine(ExeStunTask(stunnedAngle, stunnedTime));
 	}
 
 	protected void ExitStunState() {
@@ -285,8 +299,8 @@ public class CharacterController : MonoBehaviour {
 		_isStunned = false;
 	}
 
-	protected IEnumerator ExeStunTask(float stunnedTime) {
-		transform.Rotate(0f, 0f, stunnedRotation * (float) _characterMotor.FaceDirection);
+	protected IEnumerator ExeStunTask(float stunnedAngle, float stunnedTime) {
+		transform.rotation = new Vector3(0, 0, stunnedAngle * (float) _characterMotor.FaceDirection).ToQuaternion();
 		yield return new WaitForSeconds(stunnedTime);
 		transform.rotation = Quaternion.identity;
 	}

@@ -11,4 +11,7 @@
 	public const string OUTLINE_DISTANCE_KEYWORD = "_OutlineDistance";
 	public const string TOON_LEVEL_KEYWORD = "_ToonLevel";
 	public const string TOON_STEPS_KEYWORD = "_ToonSteps";
+	public const string DISSOLVE_COLOR_KEYWORD = "_DissolveColor";
+	public const string DISSOLVE_EDGE_COLOR_KEYWORD = "_DissolveEdgeColor";
+	public const string DISSOLVE_THRESHOLD_KEYWORD = "_DissolveThreshold";
 }

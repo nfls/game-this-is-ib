@@ -20,17 +20,17 @@ public class InputMapper {
 	private static readonly Dictionary<string, InputDetector> OSXDefaultXboxOneMap;
 	private static readonly Dictionary<string, InputDetector> defaultKeyboardMap;
 	
-	public delegate void OnPressed();
-	public delegate void OnHeld();
-	public delegate void OnReleased();
+	public delegate void OnPressHandler();
+	public delegate void OnHoldHandler();
+	public delegate void OnReleaseHandler();
 
 	public bool isInControl;
 
 	public int Count => _inputMap.Count;
 
-	private Dictionary<string, OnPressed> _onPressedBindings;
-	private Dictionary<string, OnHeld> _onHeldBindings;
-	private Dictionary<string, OnReleased> _onReleasedBindings;
+	private Dictionary<string, OnPressHandler> _onPressedBindings;
+	private Dictionary<string, OnHoldHandler> _onHeldBindings;
+	private Dictionary<string, OnReleaseHandler> _onReleasedBindings;
 	private Dictionary<string, InputDetector> _inputMap;
 
 	static InputMapper() {
@@ -65,9 +65,9 @@ public class InputMapper {
 
 	public InputMapper() {
 		_inputMap = new Dictionary<string, InputDetector>(10);
-		_onPressedBindings = new Dictionary<string, OnPressed>(10);
-		_onHeldBindings = new Dictionary<string, OnHeld>(10);
-		_onReleasedBindings = new Dictionary<string, OnReleased>(10);
+		_onPressedBindings = new Dictionary<string, OnPressHandler>(10);
+		_onHeldBindings = new Dictionary<string, OnHoldHandler>(10);
+		_onReleasedBindings = new Dictionary<string, OnReleaseHandler>(10);
 		Reset();
 	}
 
@@ -91,7 +91,7 @@ public class InputMapper {
 
 	public void Reset() {
 		_inputMap.Clear();
-		foreach (var pair in OSXDefaultXboxOneMap) {
+		foreach (var pair in /* OSXDefaultXboxOneMap */ defaultKeyboardMap) {
 			Remap(pair.Key, pair.Value);
 		}
 	}
@@ -106,19 +106,19 @@ public class InputMapper {
 		_inputMap[name] = detector;
 	}
 	
-	public bool BindPressEvent(string name, OnPressed e) {
+	public bool BindPressEvent(string name, OnPressHandler e) {
 		bool binded = _onPressedBindings.ContainsKey(name);
 		_onPressedBindings[name] = e;
 		return binded;
 	}
 
-	public bool BindHoldEvent(string name, OnHeld e) {
+	public bool BindHoldEvent(string name, OnHoldHandler e) {
 		bool binded = _onHeldBindings.ContainsKey(name);
 		_onHeldBindings[name] = e;
 		return binded;
 	}
 
-	public bool BindReleaseEvent(string name, OnReleased e) {
+	public bool BindReleaseEvent(string name, OnReleaseHandler e) {
 		bool binded = _onReleasedBindings.ContainsKey(name);
 		_onReleasedBindings[name] = e;
 		return binded;
@@ -148,21 +148,21 @@ public class InputMapper {
 		return true;
 	}
 
-	public OnPressed GetPressEvent(string name) {
+	public OnPressHandler GetPressEvent(string name) {
 		if (_onPressedBindings.ContainsKey(name)) {
 			return _onPressedBindings[name];
 		}
 		return null;
 	}
 
-	public OnHeld GetHoldEvent(string name) {
+	public OnHoldHandler GetHoldEvent(string name) {
 		if (_onHeldBindings.ContainsKey(name)) {
 			return _onHeldBindings[name];
 		}
 		return null;
 	}
 
-	public OnReleased GetReleaseEvent(string name) {
+	public OnReleaseHandler GetReleaseEvent(string name) {
 		if (_onReleasedBindings.ContainsKey(name)) {
 			return _onReleasedBindings[name];
 		}

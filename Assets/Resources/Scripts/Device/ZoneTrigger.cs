@@ -1,4 +1,5 @@
 ﻿using System.Collections.Generic;
+using System.Diagnostics;
 using Cinemachine;
 using UnityEngine;
 
@@ -33,7 +34,7 @@ public class ZoneTrigger : SignalSender {
 		}
 	}
 
-	#if UNITY_EDITOR
+#if UNITY_EDITOR
 	protected override void OnDrawGizmos() {
 		base.OnDrawGizmos();
 		var pos = transform.position;
@@ -52,5 +53,5 @@ public class ZoneTrigger : SignalSender {
 		Gizmos.color = Color.red;
 		Gizmos.DrawWireCube(pos, scale);
 	}
-	#endif
+#endif
 }

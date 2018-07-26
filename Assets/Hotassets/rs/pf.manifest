@@ -1,12 +1,12 @@
 ManifestFileVersion: 0
-CRC: 89828991
+CRC: 1939085927
 Hashes:
   AssetFileHash:
     serializedVersion: 2
-    Hash: 5c056d03c3f42f61ba929d34e3e029f5
+    Hash: 1863f3a7b8ce0186bb266d55b40f8870
   TypeTreeHash:
     serializedVersion: 2
-    Hash: 51aa0831439b804aafe1b4f5c90840bb
+    Hash: a3b03d616168464ac4b9c8f2b23af818
 HashAppended: 0
 ClassTypes:
 - Class: 1
@@ -25,14 +25,23 @@ ClassTypes:
   Script: {instanceID: 0}
 - Class: 65
   Script: {instanceID: 0}
+- Class: 83
+  Script: {instanceID: 0}
 - Class: 114
   Script: {fileID: 11500000, guid: bc607304d46f448aa3a4d1aac3ca1918, type: 3}
 - Class: 114
+  Script: {fileID: 11500000, guid: 5ccf339689b9743a491133ad29039199, type: 3}
+- Class: 114
   Script: {fileID: 11500000, guid: 87edad9d146f44f7ace90c97602e842f, type: 3}
 - Class: 115
+  Script: {instanceID: 0}
+- Class: 198
+  Script: {instanceID: 0}
+- Class: 199
   Script: {instanceID: 0}
 Assets:
 - Assets/Hotassets/Prefabs/body@default.prefab
 - Assets/Hotassets/Prefabs/ibsprite@hammer.prefab
 - Assets/Hotassets/Prefabs/eye@default.prefab
+- Assets/Hotassets/Prefabs/particle@cubeblood.prefab
 Dependencies: []

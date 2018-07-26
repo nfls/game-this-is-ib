@@ -8,14 +8,14 @@ public abstract class ProjectileController : MonoBehaviour {
 	protected bool _fired;
 	protected float _startTime;
 	protected TrailRenderer _trailRenderer;
-	protected DamageTrigger _damageTrigger;
+	protected IBSpriteTrigger ibSpriteTrigger;
 	
 	private void Start() {
 		trailSettings.Init();
 		_trailRenderer = GetComponent<TrailRenderer>();
 		
-		_damageTrigger = GetComponent<DamageTrigger>();
-		_damageTrigger.Disable();
+		ibSpriteTrigger = GetComponent<IBSpriteTrigger>();
+		ibSpriteTrigger.Disable();
 	}
 
 	public void Update() {
@@ -31,7 +31,7 @@ public abstract class ProjectileController : MonoBehaviour {
 		_fired = true;
 		_startTime = Time.time;
 		trailSettings.InitRenderer(ref _trailRenderer);
-		_damageTrigger.Enable();
+		ibSpriteTrigger.Enable();
 	}
 
 	protected abstract void Move();

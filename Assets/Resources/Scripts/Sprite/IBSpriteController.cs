@@ -1,4 +1,5 @@
 ﻿using System;
+using System.Collections.Generic;
 using UnityEngine;
 using UnityEngine.Rendering;
 
@@ -8,7 +9,10 @@ public abstract class IBSpriteController : MonoBehaviour {
 	public Vector3 initialOffset;
 	public Vector3 initialRotation;
 	public int commandBufferLength;
+	public string attackSound;
 
+	public AttackEffectSettings attackEffectSettings;
+	public DetectionSettings detectionSettings;
 	public IdleMovementSettings idleMovementSettings;
 	public TrailSettings idleTrailSettings;
 
@@ -33,6 +37,7 @@ public abstract class IBSpriteController : MonoBehaviour {
 	protected int _commandBufferCount;
 	protected Transform _initialParent;
 	protected TrailRenderer _trailRenderer;
+	protected AudioSource _audioSource;
 
 	public virtual void OnSwitchOn() {
 		gameObject.SetActive(true);
@@ -75,6 +80,12 @@ public abstract class IBSpriteController : MonoBehaviour {
 		_trailRenderer.emitting = false;
 		
 		idleTrailSettings.Init();
+
+		_audioSource = gameObject.AddComponent<AudioSource>();
+		_audioSource.loop = false;
+		_audioSource.spatialBlend = 1f;
+		_audioSource.playOnAwake = false;
+		_audioSource.volume = 1f;
 	}
 
 	protected void IdleUpdate() {
@@ -138,6 +149,7 @@ public abstract class IBSpriteController : MonoBehaviour {
 		scale.x *= (float) characterMotor.FaceDirection;
 		transform.localScale = scale;
 		*/
+		_isSyncing = true;
 		transform.parent = characterMotor.transform;
 	}
 
@@ -147,6 +159,7 @@ public abstract class IBSpriteController : MonoBehaviour {
 		scale.x *= (float) characterMotor.FaceDirection;
 		transform.localScale = scale;
 		*/
+		_isSyncing = false;
 		transform.parent = _initialParent;
 	}
 
@@ -159,13 +172,35 @@ public abstract class IBSpriteController : MonoBehaviour {
 		_trailRenderer.emitting = false;
 	}
 
-	[Serializable]
-	public class IdleMovementSettings {
-		
-		public float floatingVelocity;
-		public float minFollowVelocity;
-		public float maxFollowVelocity;
-		public float minFollowDistance;
-		public float maxFollowDistance;
+	protected abstract void OnDetectCharacterEnter(IBSpriteTrigger trigger, Collider detectedCollider);
+	protected abstract void OnDetectDestrutibleEnter(IBSpriteTrigger trigger, Collider detectedCollider);
+	protected abstract void OnDetectCharacterExit(IBSpriteTrigger trigger, Collider detectedCollider);
+	protected abstract void OnDetectDestrutibleExit(IBSpriteTrigger trigger, Collider detectedCollider);
+
+	protected float GetStunAngle(float angle, Transform attacker, Transform receiver) {
+		return angle * (receiver.position.x - attacker.position.x > 0 ? 1 : -1);
 	}
+}
+
+[Serializable]
+public class AttackEffectSettings {
+
+	public bool doesHit;
+	public bool doesStun;
+	public bool doesDamage;
+	public float hitVelocityX;
+	public float hitVelocityY;
+	public float stunTime;
+	public float stunAngle;
+	public float damage;
+}
+
+[Serializable]
+public class IdleMovementSettings {
+		
+	public float floatingVelocity;
+	public float minFollowVelocity;
+	public float maxFollowVelocity;
+	public float minFollowDistance;
+	public float maxFollowDistance;
 }

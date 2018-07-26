@@ -8,7 +8,8 @@ public static class AssetBundleTool {
 	public static void BundleData() {
 		string dataPath = Application.dataPath + "/Hotassets/Data";
 		DirectoryInfo dataDir = new DirectoryInfo(dataPath);
-		FileInfo[] dataFiles = dataDir.GetFiles("*.asset", SearchOption.AllDirectories);
+		FileInfo[] dataFiles = dataDir.GetFiles(new[] {"*.asset", "*.txt"}, SearchOption.AllDirectories);
+		
 		string[] dataNames = new string[dataFiles.Length];
 		EditorUtility.DisplayProgressBar("自动打包", "提取数据文件[0]", 0f);
 		for (int i = 0, l = dataNames.Length; i < l; i++) {
@@ -52,7 +53,7 @@ public static class AssetBundleTool {
 	public static void BundleAll() {
 		string dataPath = Application.dataPath + "/Hotassets/Data";
 		DirectoryInfo dataDir = new DirectoryInfo(dataPath);
-		FileInfo[] dataFiles = dataDir.GetFiles("*.asset", SearchOption.AllDirectories);
+		FileInfo[] dataFiles = dataDir.GetFiles(new[] {"*.asset", "*.txt"}, SearchOption.AllDirectories);
 		string[] dataNames = new string[dataFiles.Length];
 		EditorUtility.DisplayProgressBar("自动打包", "提取数据文件[0]", 0f);
 		for (int i = 0, l = dataNames.Length; i < l; i++) {

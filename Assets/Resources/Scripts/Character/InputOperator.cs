@@ -1,4 +1,6 @@
 ﻿public sealed class InputOperator : CharacterOperator {
+	
+	public InputMapper InputMapper => _inputMapper;
 
 	private InputMapper _inputMapper;
 		
@@ -15,6 +17,7 @@
 		_inputMapper.BindPressEvent(InputMapper.ATTACK, _characterController.Attack);
 		_inputMapper.BindPressEvent(InputMapper.SWITCH_PREV, _characterController.SwitchPreviousIBSprite);
 		_inputMapper.BindPressEvent(InputMapper.SWITCH_NEXT, _characterController.SwitchNextIBSprite);
+		// _inputMapper.BindPressEvent(InputMapper.INTERACT, UIManager.Interact);
 
 		_inputMapper.isInControl = true;
 	}

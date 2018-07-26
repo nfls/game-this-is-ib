@@ -4,7 +4,7 @@ using UnityEngine;
 public class ParticlePool : MonoSingleton {
 
 	private static Transform particleRoot;
-	private static Dictionary<string, Queue<ParticleController>> idleParticles = new Dictionary<string, Queue<ParticleController>>(3);
+	private static readonly Dictionary<string, Queue<ParticleController>> idleParticles = new Dictionary<string, Queue<ParticleController>>(3);
 
 	private void Start() {
 		GameObject go = new GameObject("Particle Root");
@@ -15,7 +15,7 @@ public class ParticlePool : MonoSingleton {
 	public static ParticleController Get(string name) {
 		Queue<ParticleController> particles;
 		if (!idleParticles.ContainsKey(name)) {
-			particles = new Queue<ParticleController>(3);
+			particles = new Queue<ParticleController>(5);
 			idleParticles[name] = particles;
 		} else {
 			particles = idleParticles[name];

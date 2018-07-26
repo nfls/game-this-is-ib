@@ -93,9 +93,7 @@ public class CharacterMotor : MonoBehaviour {
 			if (!_isGrounded) {
 				_velocityY = 0f;
 				_isGrounded = true;
-				if (OnGroundEnter != null) {
-					OnGroundEnter();
-				}
+				OnGroundEnter?.Invoke();
 			}
 			
 		} else {
@@ -105,10 +103,8 @@ public class CharacterMotor : MonoBehaviour {
 			
 			if (_isGrounded) {
 				_isGrounded = false;
-				
-				if (OnGroundExit != null) {
-					OnGroundExit();
-				}
+
+				OnGroundExit?.Invoke();
 			}
 		}
 
@@ -130,9 +126,7 @@ public class CharacterMotor : MonoBehaviour {
 				_freeVelocityX += -freeBodyDrag * direction;
 			} else {
 				_freeVelocityX = 0f;
-				if (OnFreeBodyExit != null) {
-					OnFreeBodyExit();
-				}
+				OnFreeBodyExit?.Invoke();
 			}
 		}
 		

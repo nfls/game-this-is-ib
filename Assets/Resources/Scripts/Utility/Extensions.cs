@@ -1,4 +1,6 @@
 ﻿using System;
+using System.Collections.Generic;
+using System.IO;
 using UnityEngine;
 
 public static class Extensions {
@@ -36,5 +38,16 @@ public static class Extensions {
 
 	public static Quaternion ToQuaternion(this Vector3 rotation) {
 		return Quaternion.Euler(rotation);
+	}
+
+	public static FileInfo[] GetFiles(this DirectoryInfo directory, string[] searchPatterns, SearchOption option) {
+		List<FileInfo> files = new List<FileInfo>();
+		foreach (var pattern in searchPatterns) {
+			foreach (var file in directory.GetFiles(pattern, option)) {
+				files.Add(file);
+			}
+		}
+
+		return files.ToArray();
 	}
 }

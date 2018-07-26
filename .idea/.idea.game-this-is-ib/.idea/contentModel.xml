@@ -12,9 +12,6 @@
             </e>
           </e>
         </e>
-        <e p="BloodSFX" t="Include">
-          <e p="README.txt" t="Include" />
-        </e>
         <e p="Editor" t="Include">
           <e p="AssetBundleTool.cs" t="Include" />
           <e p="CameraBackgroundColorAttributeDrawer.cs" t="Include" />
@@ -24,6 +21,29 @@
           <e p="InterlocutionSubjectAttributeDrawer.cs" t="Include" />
           <e p="MaterialTool.cs" t="Include" />
           <e p="SubjectAttributeDrawer.cs" t="Include" />
+        </e>
+        <e p="EZ Camera Shake" t="Include">
+          <e p="Demo" t="Include">
+            <e p="Sample Scripts" t="Include">
+              <e p="ShakeByDistance.cs" t="Include" />
+              <e p="ShakeOnKeyPress.cs" t="Include" />
+              <e p="ShakeOnTrigger.cs" t="Include" />
+            </e>
+            <e p="ShakeDemo.cs" t="Include" />
+          </e>
+          <e p="Scripts" t="Include">
+            <e p="CameraShakeInstance.cs" t="Include" />
+            <e p="CameraShakePresets.cs" t="Include" />
+            <e p="CameraShaker.cs" t="Include" />
+            <e p="Utilities" t="Include">
+              <e p="CameraUtilities.cs" t="Include" />
+            </e>
+          </e>
+        </e>
+        <e p="Hotassets" t="Include">
+          <e p="Data" t="Include">
+            <e p="InterlocutionData.txt" t="Include" />
+          </e>
         </e>
         <e p="local" t="Include">
           <e p="InterlocutionData.txt" t="Include" />
@@ -71,8 +91,10 @@
               <e p="DeviceController.cs" t="Include" />
               <e p="DoorController.cs" t="Include" />
               <e p="DynamicPlatformController.cs" t="Include" />
+              <e p="InterlocutionController.cs" t="Include" />
               <e p="SignalReceiver.cs" t="Include" />
               <e p="SignalSender.cs" t="Include" />
+              <e p="SpawnPoint.cs" t="Include" />
               <e p="ZoneTrigger.cs" t="Include" />
             </e>
             <e p="Effect" t="Include">
@@ -109,9 +131,9 @@
               <e p="LaunchSceneController.cs" t="Include" />
             </e>
             <e p="Sprite" t="Include">
-              <e p="DamageTrigger.cs" t="Include" />
               <e p="IBSpriteController.cs" t="Include" />
               <e p="IBSpriteFactory.cs" t="Include" />
+              <e p="IBSpriteTrigger.cs" t="Include" />
               <e p="PendulumSpriteController.cs" t="Include" />
               <e p="Projectile" t="Include">
                 <e p="ProjectileController.cs" t="Include" />
@@ -119,7 +141,10 @@
               <e p="ShooterSpriteController.cs" t="Include" />
             </e>
             <e p="System" t="Include">
+              <e p="AudioManager.cs" t="Include" />
               <e p="DispatchSystem.cs" t="Include" />
+              <e p="InteractionController.cs" t="Include" />
+              <e p="InteractionSystem.cs" t="Include" />
               <e p="LayerManager.cs" t="Include" />
               <e p="ShaderManager.cs" t="Include" />
               <e p="TagManager.cs" t="Include" />
@@ -136,10 +161,12 @@
             </e>
             <e p="UI" t="Include">
               <e p="UIManager.cs" t="Include" />
+              <e p="WorldSpaceTipController.cs" t="Include" />
             </e>
             <e p="Utility" t="Include">
               <e p="CommonUtils.cs" t="Include" />
               <e p="Extensions.cs" t="Include" />
+              <e p="MacXboxControllerRumbleUtil.cs" t="Include" />
               <e p="MonoSingleton.cs" t="Include" />
               <e p="SingletonManager.cs" t="Include" />
             </e>
@@ -156,7 +183,9 @@
       <e p="Library" t="ExcludeRecursive" />
       <e p="obj" t="ExcludeRecursive" />
       <e p="packages" t="ExcludeRecursive" />
-      <e p="Temp/bin" t="ExcludeRecursive" />
+      <e p="Temp" t="ExcludeRecursive">
+        <e p="bin" t="ExcludeRecursive" />
+      </e>
     </e>
     <e p="$USER_HOME$/Library/Caches/Rider2018.1/resharper-host/local/Transient/ReSharperHost/v12/SolutionCaches/_game-this-is-ib.-1397334290.00" t="ExcludeRecursive" />
   </component>

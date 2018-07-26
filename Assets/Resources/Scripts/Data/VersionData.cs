@@ -15,7 +15,7 @@ public class VersionData : ScriptableObject {
 		return false;
 	}
 
-	public bool NeedsUpdaten(VersionData versionData) {
+	public bool NeedsUpdate(VersionData versionData) {
 		return false;
 	}
 

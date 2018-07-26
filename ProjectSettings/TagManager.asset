@@ -8,6 +8,7 @@ TagManager:
   - Remote Player
   - Enemy
   - Destructible
+  - Interactive
   layers:
   - Default
   - TransparentFX

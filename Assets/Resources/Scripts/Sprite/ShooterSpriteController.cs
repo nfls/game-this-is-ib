@@ -99,6 +99,22 @@ public class ShooterSpriteController : IBSpriteController {
 		_attackCoroutine = null;
 		_isAttacking = false;
 	}
+	
+	protected override void OnDetectCharacterEnter(IBSpriteTrigger trigger, Collider detectedCollider) {
+		
+	}
+
+	protected override void OnDetectDestrutibleEnter(IBSpriteTrigger trigger, Collider detectedCollider) {
+		
+	}
+	
+	protected override void OnDetectCharacterExit(IBSpriteTrigger trigger, Collider detectedCollider) {
+		
+	}
+
+	protected override void OnDetectDestrutibleExit(IBSpriteTrigger trigger, Collider detectedCollider) {
+		
+	}
 }
 
 public enum RecoilDirection {
