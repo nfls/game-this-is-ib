@@ -1,31 +1,23 @@
 ﻿using UnityEngine;
 using UnityEngine.Events;
 
-[RequireComponent(typeof(Collider))]
 public class InteractionController : MonoBehaviour {
 
 	public bool oneTime;
-	public bool remoteInteractive;
+	public PanelShowDirection showDirection;
 	public float horizontalOffset;
 	public float verticalOffset;
-	public Sprite icon;
+	[Multiline]
 	public string text;
-	public UnityAction interactionAction;
-	
-	public bool interactive {
-		get;
-		private set;
-	}
+	public UnityEvent interactionEvent;
 
+	public bool Interactive => interactive;
+
+	private bool interactive = true;
 	private Collider _trigger;
 
-	private void Start() {
-		_trigger = GetComponent<Collider>();
-		if (!_trigger.isTrigger) _trigger.isTrigger = true;
-	}
-
 	public void Interact() {
-		interactionAction?.Invoke();
+		interactionEvent?.Invoke();
 		if (oneTime) interactive = false;
 	}
 
@@ -35,5 +27,10 @@ public class InteractionController : MonoBehaviour {
 
 	public void Disable() {
 		interactive = false;
+	}
+	
+	public enum PanelShowDirection {
+		BottomToTop = 0,
+		TopToBottom = 1
 	}
 }

@@ -1,6 +1,5 @@
 ﻿using System.Collections.Generic;
 using UnityEngine;
-using UnityEngine.Profiling;
 
 public class InputMapper {
 
@@ -91,7 +90,7 @@ public class InputMapper {
 
 	public void Reset() {
 		_inputMap.Clear();
-		foreach (var pair in /* OSXDefaultXboxOneMap */ defaultKeyboardMap) {
+		foreach (var pair in defaultKeyboardMap) {
 			Remap(pair.Key, pair.Value);
 		}
 	}

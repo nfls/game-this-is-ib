@@ -1,5 +1,6 @@
 using UnityEngine;
 using System.Collections;
+using UnityEngine.Profiling;
 
 public enum AxisType {x,y,z,xy,xz,yz,xyz}
 public enum ValueType {value, min, max, valuemin, valuemax, minmax, valueminmax}
@@ -14,6 +15,7 @@ public Vector3 PauseVelocity = Vector3.zero;
 private Vector3 PauseAngularVelocity = Vector3.zero;
 [HideInInspector]
 public Rigidbody rigidbody;
+public LayerMask CollisionIgnoreMask = 0;
 public PHYSIXCOLLISION[] Collisions;
 public PHYSIXMOVE[] Movements;
 private float collisioncount = 0;
@@ -85,7 +87,6 @@ public class PHYSIXCOLLISION {
 	public bool Display = false;
 	public Transform localTransform;
 	public PHYSIXBOUNDS[] Ranges;
-	public LayerMask IgnoreMask = 0;
 	
 	public PHYSIXCOLLISION () {
 	Name = "New Collision";
@@ -101,7 +102,6 @@ public class PHYSIXCOLLISION {
 	Display = false;
 	Ranges = new PHYSIXBOUNDS[1];
 	Ranges[0] = new PHYSIXBOUNDS();
-	IgnoreMask = 0;
 	}
 
 	public void Equals (PHYSIXCOLLISION rhs) {
@@ -619,26 +619,28 @@ if(rigidbody == null){rigidbody = transform.GetComponent<Rigidbody>();}
 }
 
 void LateUpdate (){
-if(collisioncount == 0){
-for (int c = 0; c < Collisions.Length; c++) {
-Collisions[c].Normal = Vector3.zero;
-Collisions[c].Point = Vector3.zero;
-Collisions[c].Count = 0;
-Collisions[c].Active = false;
-for (int b2 = 0; b2 < Collisions[c].Ranges.Length; b2++) {
-Collisions[c].Ranges[b2].Active = false;
+int l = Collisions.Length;
+if(collisioncount == 0) {
+for (int c = 0; c < l; c++) {
+var collision = Collisions[c];
+collision.Normal = Vector3.zero;
+collision.Point = Vector3.zero;
+collision.Count = 0;
+collision.Active = false;
+for (int b2 = 0, len = collision.Ranges.Length; b2 < len; b2++) {
+collision.Ranges[b2].Active = false;
 }
 }
 }
-for (int c2 = 0; c2 < Collisions.Length; c2++) {
+for (int c2 = 0; c2 < l; c2++) {
 Collisions[c2].Enter = false;
 Collisions[c2].Exit = false;
 }
-for (int c3 = 0; c3 < Collisions.Length; c3++) {
-	bool collide = (Collisions[c3].Active && collisioncount != 0);
-	if(Collisions[c3].ExitB != !collide){Collisions[c3].Exit = !collide; Collisions[c3].ExitB = !collide;}
-	if(Collisions[c3].EnterB != collide){Collisions[c3].Enter = collide; Collisions[c3].EnterB = collide;}
-	}
+for (int c3 = 0; c3 < l; c3++) {
+bool collide = (Collisions[c3].Active && collisioncount != 0);
+if(Collisions[c3].ExitB != !collide){Collisions[c3].Exit = !collide; Collisions[c3].ExitB = !collide;}
+if(Collisions[c3].EnterB != collide){Collisions[c3].Enter = collide; Collisions[c3].EnterB = collide;}
+}
 if(TriggerStays.Length != 0){ResizeArray(ref TriggerStays, 0);}
 if(TriggerEnters.Length != 0){ResizeArray(ref TriggerEnters, 0);}
 if(TriggerExits.Length != 0){ResizeArray(ref TriggerExits, 0);}
@@ -660,11 +662,19 @@ TriggerExits[TriggerExits.Length-1] = collider;
 }
 
 
-void OnCollisionEnter ( Collision collider  ){collisioncount++;HandleCollision(collider);}
-void OnCollisionExit (){collisioncount--;}
+void OnCollisionEnter(Collision collider) {
+	if (CollisionIgnoreMask != (CollisionIgnoreMask | (1 << collider.gameObject.layer))) {
+		collisioncount++;
+		HandleCollision(collider);
+	}
+}
 
-void OnCollisionStay ( Collision collider  ){
-	HandleCollision(collider);
+void OnCollisionExit(Collision collider) {
+	if (CollisionIgnoreMask != (CollisionIgnoreMask | (1 << collider.gameObject.layer))) collisioncount--;
+}
+
+void OnCollisionStay(Collision collider) {
+	if (CollisionIgnoreMask != (CollisionIgnoreMask | (1 << collider.gameObject.layer))) HandleCollision(collider);
 }
 
 void HandleCollision ( Collision collider){
@@ -683,8 +693,7 @@ void HandleCollision ( Collision collider){
 	ContactPoint[] points = collider.contacts;
 	//Debug.Log(points[i].normal * -90);
 	for (int c2 = 0; c2 < Collisions.Length; c2++) {
-	if(Collisions[c2].IgnoreMask == (Collisions[c2].IgnoreMask | (1 << collider.gameObject.layer))){continue;}
-	bool  localBool = (Collisions[c2].localTransform != null);
+	bool localBool = (Collisions[c2].localTransform != null);
 	Vector3 pointpointpoint = (points[0].normal);
 	Vector3 pointpoint= (localBool ? Collisions[c2].localTransform.InverseTransformDirection(points[0].normal) : pointpointpoint);
 	Vector3 poooooint= points[0].point;
@@ -693,9 +702,17 @@ void HandleCollision ( Collision collider){
 	if(Collisions[c2].Ranges[b].x){norm = pointpoint.x;}
 	if(Collisions[c2].Ranges[b].y){norm = pointpoint.y;}
 	if(Collisions[c2].Ranges[b].z){norm = pointpoint.z;}
-	if((Collisions[c2].Ranges[b].greater && norm < AngleToNormal(Collisions[c2].Ranges[b].value)) ||
-	(Collisions[c2].Ranges[b].less && norm > AngleToNormal(Collisions[c2].Ranges[b].value)) ||
-	(Collisions[c2].Ranges[b].equals && RoundToPower(norm, 3) == RoundToPower(AngleToNormal(Collisions[c2].Ranges[b].value), 3))){Collisions[c2].Ranges[b].Active = true; Collisions[c2].Normal += pointpointpoint; Collisions[c2].Point += poooooint; Collisions[c2].Count++; Collisions[c2].collision = collider;Collisions[c2].tag = collider.transform.tag;}
+		if ((Collisions[c2].Ranges[b].greater && norm < AngleToNormal(Collisions[c2].Ranges[b].value)) ||
+		    (Collisions[c2].Ranges[b].less && norm > AngleToNormal(Collisions[c2].Ranges[b].value)) ||
+		    (Collisions[c2].Ranges[b].equals && RoundToPower(norm, 3) ==
+		     RoundToPower(AngleToNormal(Collisions[c2].Ranges[b].value), 3))) {
+			Collisions[c2].Ranges[b].Active = true;
+			Collisions[c2].Normal += pointpointpoint;
+			Collisions[c2].Point += poooooint;
+			Collisions[c2].Count++;
+			Collisions[c2].collision = collider;
+			// Collisions[c2].tag = collider.transform.tag;
+		}
 	}
 }
 for (int c3 = 0; c3 < Collisions.Length; c3++) {

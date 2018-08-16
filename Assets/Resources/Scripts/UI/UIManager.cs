@@ -1,30 +1,22 @@
-﻿using System.Collections.Generic;
-using UnityEngine;
+﻿using UnityEngine;
 
 public class UIManager : MonoSingleton {
 
 	private static WorldSpaceTipController interactionTipController;
 	
 	private void Start () {
-		interactionTipController = null;
+		interactionTipController = ResourcesManager.GetUI("world_space_tip").GetComponent<WorldSpaceTipController>();
 	}
 
-	private static void InternalShowInteractionTip(Sprite icon, string text) {
-		interactionTipController.icon = icon;
-		interactionTipController.text = text;
-		
-		interactionTipController.Show();
-	}
-
-	public static void ShowInteractionTip(Sprite icon, string text) {
+	public static void ShowInteractionTip(string text, Vector3 position, Vector2 pivot) {
 		if (interactionTipController.IsShowing) {
 			interactionTipController.Hide();
 		}
-
-		InternalShowInteractionTip(icon, text);
+		
+		interactionTipController.Show(text, position, pivot);
 	}
 
-	public static void HideInteractionTip(InteractionController interactionController) {
+	public static void HideInteractionTip() {
 		interactionTipController.Hide();
 	}
 }

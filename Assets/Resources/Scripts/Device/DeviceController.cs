@@ -5,7 +5,7 @@ public abstract class DeviceController : MonoBehaviour {
 
 	protected bool _isEnabled;
 
-	protected virtual void Start() { }
+	protected virtual void Awake() { }
 
 	public virtual void Replay() {
 		Play();

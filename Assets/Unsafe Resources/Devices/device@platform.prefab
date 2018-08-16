@@ -23,7 +23,6 @@ GameObject:
   - component: {fileID: 23391335992273526}
   - component: {fileID: 65338910827863500}
   - component: {fileID: 114706467218677386}
-  - component: {fileID: 114846162480436476}
   m_Layer: 11
   m_Name: device@platform
   m_TagString: Untagged
@@ -55,11 +54,11 @@ MeshRenderer:
   m_ReceiveShadows: 0
   m_DynamicOccludee: 1
   m_MotionVectors: 1
-  m_LightProbeUsage: 0
+  m_LightProbeUsage: 1
   m_ReflectionProbeUsage: 0
   m_RenderingLayerMask: 4294967295
   m_Materials:
-  - {fileID: 2100000, guid: 7542762f3f55b47ae9ca406d5eac779f, type: 2}
+  - {fileID: 2100000, guid: 50ac0917448914a81bc972f9fa67a419, type: 2}
   m_StaticBatchInfo:
     firstSubMesh: 0
     subMeshCount: 0
@@ -113,16 +112,3 @@ MonoBehaviour:
   speed: 0
   interpolation: 1
   destinations: []
---- !u!114 &114846162480436476
-MonoBehaviour:
-  m_ObjectHideFlags: 1
-  m_CorrespondingSourceObject: {fileID: 0}
-  m_PrefabInternal: {fileID: 100100000}
-  m_GameObject: {fileID: 1968924285912396}
-  m_Enabled: 1
-  m_EditorHideFlags: 0
-  m_Script: {fileID: 11500000, guid: 06a376f0f9284fc1924961f1b9d6378e, type: 3}
-  m_Name: 
-  m_EditorClassIdentifier: 
-  _color: {r: 0, g: 1, b: 1, a: 1}
-  _outlineColor: {r: 0.2, g: 0.2, b: 0.2, a: 1}

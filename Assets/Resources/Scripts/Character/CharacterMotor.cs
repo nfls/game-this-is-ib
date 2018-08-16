@@ -1,4 +1,5 @@
-﻿using UnityEngine;
+﻿using System;
+using UnityEngine;
 
 [RequireComponent(typeof(BoxCollider))]
 public class CharacterMotor : MonoBehaviour {
@@ -11,7 +12,7 @@ public class CharacterMotor : MonoBehaviour {
 	private static readonly Vector3 ZeroVector3 = Vector3.zero;
 	private static readonly Quaternion IdentityQuaternion = Quaternion.identity;
 
-	public bool useGravity = true;
+	public bool usesGravity = true;
 	public float gravity = 1f;
 	public float mass = 1f;
 	public float brakePower = 2f;
@@ -19,16 +20,14 @@ public class CharacterMotor : MonoBehaviour {
 
 	public RigidbodyInterpolation interpolation = RigidbodyInterpolation.Interpolate;
 	public CollisionDetectionMode collisionDetectionMode;
-	
-	public delegate void OnGroundEnterHandler();
-	public delegate void OnGroundExitHandler();
-	public delegate void OnFreeBodyExitHandler();
 
-	public event OnGroundEnterHandler OnGroundEnter;
-	public event OnGroundExitHandler OnGroundExit;
-	public event OnFreeBodyExitHandler OnFreeBodyExit;
+	public event Action onGroundEnter;
+	public event Action onGroundExit;
+	public event Action onFreeBodyExit;
 
 	public bool IsGrounded => _isGrounded;
+
+	public BoxCollider BodyCollider => _bodyCollider;
 
 	public FaceDirection FaceDirection => _faceDirection;
 
@@ -51,7 +50,7 @@ public class CharacterMotor : MonoBehaviour {
 	private float _dodgeDistance;
 	private float _velocityY;
 	
-	private void Start() {
+	private void Awake() {
 		_bodyCollider = GetComponent<BoxCollider>();
 		
 		// Config Rigidbody
@@ -63,9 +62,11 @@ public class CharacterMotor : MonoBehaviour {
 		_rigidbody.collisionDetectionMode = collisionDetectionMode;
 		_rigidbody.constraints = (int) RigidbodyConstraints.FreezePositionZ + (int) RigidbodyConstraints.FreezeRotationX + (int) RigidbodyConstraints.FreezeRotationY + RigidbodyConstraints.FreezeRotationZ;
 		_rigidbody.interpolation = interpolation;
+		_rigidbody.collisionDetectionMode = CollisionDetectionMode.ContinuousDynamic;
 		
-		// Condig Physix
+		// Config Physix
 		_physix = gameObject.AddComponent<Physix>();
+		_physix.CollisionIgnoreMask = 1 << LayerManager.ProjectileLayer;
 		_physix.Collisions = new Physix.PHYSIXCOLLISION[3];
 		_physix.Collisions[0] = new Physix.PHYSIXCOLLISION {
 			Name = BOTTOM_COLLISION,
@@ -93,28 +94,22 @@ public class CharacterMotor : MonoBehaviour {
 			if (!_isGrounded) {
 				_velocityY = 0f;
 				_isGrounded = true;
-				OnGroundEnter?.Invoke();
+				onGroundEnter?.Invoke();
 			}
 			
 		} else {
-			if (useGravity) {
-				_velocityY -= gravity;
-			}
+			if (usesGravity) _velocityY -= gravity;
 			
 			if (_isGrounded) {
 				_isGrounded = false;
-
-				OnGroundExit?.Invoke();
+				onGroundExit?.Invoke();
 			}
 		}
 
 		if (!_hasMoved) {
 			if (_moveVelocityX != 0f) {
-				if (_moveVelocityX * (float) _faceDirection > brakePower) {
-					_moveVelocityX += -brakePower * (float) _faceDirection;
-				} else {
-					_moveVelocityX = 0f;
-				}
+				if (_moveVelocityX * (float) _faceDirection > brakePower) _moveVelocityX += -brakePower * (float) _faceDirection;
+				else _moveVelocityX = 0f;
 			}
 		} else {
 			_hasMoved = false;
@@ -126,7 +121,7 @@ public class CharacterMotor : MonoBehaviour {
 				_freeVelocityX += -freeBodyDrag * direction;
 			} else {
 				_freeVelocityX = 0f;
-				OnFreeBodyExit?.Invoke();
+				onFreeBodyExit?.Invoke();
 			}
 		}
 		
@@ -184,16 +179,14 @@ public class CharacterMotor : MonoBehaviour {
 		
 		RaycastHit hitInfo;
 		
-		if (_rigidbody.SweepTest(new Vector3(sign, 0, 0), out hitInfo, distance * sign, QueryTriggerInteraction.Ignore)) {
-			distance = hitInfo.point.x - transform.position.x - transform.lossyScale.x / 2;
-		}
+		if (_rigidbody.SweepTest(new Vector3(sign, 0, 0), out hitInfo, distance * sign, QueryTriggerInteraction.Ignore))
+			distance = hitInfo.point.x - transform.position.x - transform.localScale.x / 2;
 		
 		transform.position += new Vector3(distance, 0, 0);
 	}
 
 	public void Jump(float jumpPower) {
 		_velocityY = jumpPower;
-		
 	}
 
 	public void GetHit(float velocityX, float velocityY) {

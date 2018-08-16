@@ -6,13 +6,11 @@ using UnityEngine.Rendering;
 [RequireComponent(typeof(CharacterMotor))]
 public class CharacterController : MonoBehaviour {
 
-	public delegate void OnDamagedHandler(float damage);
-	public delegate void OnDeathHandler();
-
-	public event OnDamagedHandler OnDamaged;
-	public event OnDeathHandler OnDeath;
+	public event Action<float> onDamaged;
+	public event Action onDeath;
+	public event Action<CharacterController> onJump;
 	
-	public string name;
+	public string characterName;
 	public float health;
 	public float speed;
 	public float acceleration;
@@ -23,8 +21,8 @@ public class CharacterController : MonoBehaviour {
 	public float dodgeInvincibilityTime;
 	public int dodgeCapacity;
 	public float dodgeCooldown;
-	public string bloodType = "cubeblood";
-	public string bloodSpraySound = "bloodspray";
+	public string bloodType = "cube_blood";
+	public string bloodSpraySound = "blood_spray_0";
 	public IBSpriteController[] carriedIBSpriteControllers;
 
 	public bool hasAccelerationTrail;
@@ -50,7 +48,6 @@ public class CharacterController : MonoBehaviour {
 	public bool IsDodgeCooldowning => _dodgeCooldownCoroutine != null;
 	public float DodgeCooldownDuration => _dodgeCooldownDuration;
 
-	protected bool _isInitiated;
 	protected bool _isAccelerating;
 	protected bool _isDodging;
 	protected bool _isStunned;
@@ -65,16 +62,9 @@ public class CharacterController : MonoBehaviour {
 	protected Coroutine _stunCoroutine;
 	protected Coroutine _dodgeCooldownCoroutine;
 
-	private void Start() {
-		if (_isInitiated) return;
-		Init();
-	}
-
-	public virtual void Init() {
-		_isInitiated = true;
-		
+	public virtual void Awake() {
 		_characterMotor = GetComponent<CharacterMotor>();
-		_characterMotor.OnGroundEnter += ResetJumpTimes;
+		_characterMotor.onGroundEnter += ResetJumpTimes;
 		
 		_trailRenderer = gameObject.AddComponent<TrailRenderer>();
 		_trailRenderer.shadowCastingMode = ShadowCastingMode.Off;
@@ -82,9 +72,6 @@ public class CharacterController : MonoBehaviour {
 		_trailRenderer.allowOcclusionWhenDynamic = true;
 		_trailRenderer.autodestruct = false;
 		_trailRenderer.emitting = false;
-		
-		accelerationTrailSettings.Init();
-		dodgeTrailSettings.Init();
 	}
 
 	public void MoveLeft() {
@@ -132,10 +119,15 @@ public class CharacterController : MonoBehaviour {
 		if (_dodgeCooldownCoroutine == null) _dodgeCooldownCoroutine = StartCoroutine(ExeDodgeCooldownTask());
 	}
 
-	public void Attack() {
+	public void OnReceiveAttackCommand() {
 		if (_isStunned) return;
 		if (!_currentIBSpriteController) return;
-		_currentIBSpriteController.Attack();
+		_currentIBSpriteController.OnReceiveAttackCommand();
+	}
+
+	public void OnFinishAttackCommand() {
+		if (!_currentIBSpriteController) return;
+		_currentIBSpriteController.OnFinishAttackCommand();
 	}
 
 	public void Jump() {
@@ -148,6 +140,7 @@ public class CharacterController : MonoBehaviour {
 
 			_jumpTimes++;
 			_characterMotor.Jump(power);
+			onJump?.Invoke(this);
 		}
 	}
 
@@ -172,13 +165,13 @@ public class CharacterController : MonoBehaviour {
 		int oldIndex = _currentIBSpriteControllerIndex;
 		_currentIBSpriteControllerIndex--;
 		if (_currentIBSpriteControllerIndex < 0) {
-			_currentIBSpriteControllerIndex = CarriedIBSpriteCount;
+			_currentIBSpriteControllerIndex = CarriedIBSpriteCount - 1;
 		}
 		
 		IBSpriteController controller = carriedIBSpriteControllers[_currentIBSpriteControllerIndex];
 		if (controller) {
 			_currentIBSpriteController = controller;
-			_currentIBSpriteController.OnSwitchOff();
+			carriedIBSpriteControllers[oldIndex].OnSwitchOff();
 			_currentIBSpriteController.OnSwitchOn();
 		} else {
 			_currentIBSpriteControllerIndex = oldIndex;
@@ -197,7 +190,7 @@ public class CharacterController : MonoBehaviour {
 		IBSpriteController controller = carriedIBSpriteControllers[_currentIBSpriteControllerIndex];
 		if (controller) {
 			_currentIBSpriteController = controller;
-			_currentIBSpriteController.OnSwitchOff();
+			carriedIBSpriteControllers[oldIndex].OnSwitchOff();
 			_currentIBSpriteController.OnSwitchOn();
 		} else {
 			_currentIBSpriteControllerIndex = oldIndex;
@@ -212,12 +205,16 @@ public class CharacterController : MonoBehaviour {
 		if (CompareTag(TagManager.ENEMY_TAG)) {
 			detectionSettings.detectsLocalPlayer = true;
 			detectionSettings.detectsRemotePlayer = true;
+			detectionSettings.detectsEnemy = false;
+			detectionSettings.detectsDevice = false;
 		} else {
+			detectionSettings.detectsLocalPlayer = false;
+			detectionSettings.detectsRemotePlayer = false;
 			detectionSettings.detectsEnemy = true;
 			detectionSettings.detectsDevice = true;
 		}
 		
-		controller.detectionSettings = detectionSettings;
+		controller.DetectionSettings = detectionSettings;
 		
 		if (autoSwitch) {
 			if (IsIBSpriteOn) {
@@ -235,8 +232,8 @@ public class CharacterController : MonoBehaviour {
 		if (_isDodging) return;
 		SprayBlood();
 		health -= damage;
-		if (OnDamaged != null) {
-			OnDamaged(damage);
+		if (onDamaged != null) {
+			onDamaged(damage);
 		}
 		
 		if (health <= 0f) {
@@ -262,16 +259,19 @@ public class CharacterController : MonoBehaviour {
 	}
 
 	protected void SprayBlood() {
-		BurstParticleController blood = ParticlePool.Get<BurstParticleController>(bloodType);
+		BurstParticleController blood = ParticleManager.Get<BurstParticleController>(bloodType);
 		blood.transform.position = transform.position;
-		blood.Spray();
+		blood.Burst();
 		AudioManager.PlayAtPoint(bloodSpraySound, transform.position);
 	}
 	
 	protected void Die() {
-		if (OnDeath != null) {
-			OnDeath();
-		}
+		onDeath?.Invoke();
+
+		BurstParticleController death = ParticleManager.Get<BurstParticleController>("gun_smoke");
+		death.transform.position = transform.position;
+		death.Burst();
+		Destroy(gameObject);
 	}
 
 	protected void ResetJumpTimes() {

@@ -22,27 +22,30 @@
           <e p="MaterialTool.cs" t="Include" />
           <e p="SubjectAttributeDrawer.cs" t="Include" />
         </e>
-        <e p="EZ Camera Shake" t="Include">
-          <e p="Demo" t="Include">
-            <e p="Sample Scripts" t="Include">
-              <e p="ShakeByDistance.cs" t="Include" />
-              <e p="ShakeOnKeyPress.cs" t="Include" />
-              <e p="ShakeOnTrigger.cs" t="Include" />
-            </e>
-            <e p="ShakeDemo.cs" t="Include" />
-          </e>
-          <e p="Scripts" t="Include">
-            <e p="CameraShakeInstance.cs" t="Include" />
-            <e p="CameraShakePresets.cs" t="Include" />
-            <e p="CameraShaker.cs" t="Include" />
-            <e p="Utilities" t="Include">
-              <e p="CameraUtilities.cs" t="Include" />
-            </e>
-          </e>
-        </e>
         <e p="Hotassets" t="Include">
           <e p="Data" t="Include">
             <e p="InterlocutionData.txt" t="Include" />
+          </e>
+        </e>
+        <e p="JMO Assets" t="Include">
+          <e p="Cartoon FX" t="Include">
+            <e p="CartoonFX Free.txt" t="Include" />
+            <e p="Scripts" t="Include">
+              <e p="CFX_AutoDestructShuriken.cs" t="Include" />
+              <e p="CFX_AutoRotate.cs" t="Include" />
+              <e p="CFX_LightFlicker.cs" t="Include" />
+              <e p="CFX_LightIntensityFade.cs" t="Include" />
+            </e>
+            <e p="Shaders" t="Include">
+              <e p="CFX3 Multiply Color.shader" t="Include" />
+              <e p="CFXM_MobileParticleAdd_Alpha8.shader" t="Include" />
+            </e>
+          </e>
+          <e p="Cartoon FX Easy Editor" t="Include">
+            <e p="CartoonFX Easy Editor Readme.txt" t="Include" />
+            <e p="Editor" t="Include">
+              <e p="CFXEasyEditor.cs" t="Include" />
+            </e>
           </e>
         </e>
         <e p="local" t="Include">
@@ -77,6 +80,7 @@
               <e p="CharacterMotor.cs" t="Include" />
               <e p="CharacterOperator.cs" t="Include" />
               <e p="InputOperator.cs" t="Include" />
+              <e p="SillyAIOperator.cs" t="Include" />
             </e>
             <e p="Data" t="Include">
               <e p="IBSpriteAttributesData.cs" t="Include" />
@@ -100,7 +104,9 @@
             <e p="Effect" t="Include">
               <e p="BurstParticleController.cs" t="Include" />
               <e p="ParticleController.cs" t="Include" />
-              <e p="ParticlePool.cs" t="Include" />
+              <e p="ParticleDecalController.cs" t="Include" />
+              <e p="ParticleDecalManager.cs" t="Include" />
+              <e p="ParticleManager.cs" t="Include" />
             </e>
             <e p="Game" t="Include">
               <e p="LevelController.cs" t="Include" />
@@ -131,14 +137,22 @@
               <e p="LaunchSceneController.cs" t="Include" />
             </e>
             <e p="Sprite" t="Include">
+              <e p="ComplexNewtonSpriteController.cs" t="Include" />
+              <e p="ComplexShooterSpriteController.cs" t="Include" />
+              <e p="ComplexThrowerSpriteController.cs" t="Include" />
               <e p="IBSpriteController.cs" t="Include" />
               <e p="IBSpriteFactory.cs" t="Include" />
               <e p="IBSpriteTrigger.cs" t="Include" />
+              <e p="NewtonThrowerSpriteController.cs" t="Include" />
               <e p="PendulumSpriteController.cs" t="Include" />
               <e p="Projectile" t="Include">
+                <e p="GravityProjectileController.cs" t="Include" />
+                <e p="NewtonProjectileController.cs" t="Include" />
                 <e p="ProjectileController.cs" t="Include" />
+                <e p="ProjectileManager.cs" t="Include" />
               </e>
               <e p="ShooterSpriteController.cs" t="Include" />
+              <e p="ThrowerSpriteController.cs" t="Include" />
             </e>
             <e p="System" t="Include">
               <e p="AudioManager.cs" t="Include" />
@@ -150,10 +164,8 @@
               <e p="TagManager.cs" t="Include" />
               <e p="TimeManager.cs" t="Include" />
             </e>
-            <e p="Terrain" t="Include">
-              <e p="TerrainController.cs" t="Include" />
-            </e>
             <e p="Test" t="Include">
+              <e p="TestMonoBehaviour.cs" t="Include" />
               <e p="TestSceneController.cs" t="Include" />
             </e>
             <e p="Trail" t="Include">
@@ -168,11 +180,13 @@
               <e p="Extensions.cs" t="Include" />
               <e p="MacXboxControllerRumbleUtil.cs" t="Include" />
               <e p="MonoSingleton.cs" t="Include" />
+              <e p="PrimitiveHelper.cs" t="Include" />
               <e p="SingletonManager.cs" t="Include" />
             </e>
           </e>
           <e p="Shaders" t="Include">
             <e p="DissolutionToonShader.shader" t="Include" />
+            <e p="OutlinedTextureToonShader.shader" t="Include" />
             <e p="OutlinedToonShader.shader" t="Include" />
             <e p="SingleColorShader.shader" t="Include" />
             <e p="ToonShader.shader" t="Include" />

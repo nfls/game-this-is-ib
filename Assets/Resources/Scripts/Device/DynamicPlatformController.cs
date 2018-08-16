@@ -1,5 +1,6 @@
 ﻿using System.Collections;
 using System.Collections.Generic;
+using System.Diagnostics;
 using UnityEngine;
 
 public class DynamicPlatformController : DeviceController {
@@ -11,37 +12,35 @@ public class DynamicPlatformController : DeviceController {
 
 	public Vector3 DeltaMovement => _deltaMovement;
 
-	protected bool _isInverse;
-	protected int _currentDestinationIndex;
-	protected Vector3 _currentDestination;
-	protected Vector3 _deltaMovement;
-	protected Vector3 _lastPosition;
-	protected List<CharacterMotor> _characters;
-	protected Rigidbody _rigidbody;
-	protected Coroutine _checkCoroutine;
+	private bool _isInverse;
+	private int _currentDestinationIndex;
+	private Vector3 _currentDestination;
+	private Vector3 _deltaMovement;
+	private Vector3 _lastPosition;
+	private List<CharacterController> _characters;
+	private Rigidbody _rigidbody;
+	private Coroutine _checkCoroutine;
 
-	protected override void Start() {
-		base.Start();
+	protected override void Awake() {
+		base.Awake();
 		
-		_characters = new List<CharacterMotor>(2);
+		_characters = new List<CharacterController>(2);
 		
 		_rigidbody = gameObject.AddComponent<Rigidbody>();
 		_rigidbody.isKinematic = true;
 		_rigidbody.interpolation = interpolation;
 	}
 
-	private void Update() {
-		Vector3 pos = transform.position;
-		_deltaMovement = pos - _lastPosition;
-		_lastPosition = pos;
-		foreach (var motor in _characters) {
-			motor.transform.position += _deltaMovement;
-		}
+	private void FixedUpdate() {
+		if (_isEnabled) _rigidbody.MovePosition(Vector3.MoveTowards(transform.position, _currentDestination, speed * Time.deltaTime));
 	}
 
-	private void FixedUpdate() {
+	private void Update() {
 		if (_isEnabled) {
-			_rigidbody.MovePosition(Vector3.MoveTowards(transform.position, _currentDestination, speed * Time.deltaTime));
+			Vector3 pos = transform.position;
+			_deltaMovement = pos - _lastPosition;
+			_lastPosition = pos;
+			foreach (var character in _characters) character.transform.position += _deltaMovement;	
 		}
 	}
 
@@ -51,20 +50,22 @@ public class DynamicPlatformController : DeviceController {
 			_currentDestinationIndex = 1;
 			_currentDestination = destinations[1];
 		}
+		
 		Play();
 	}
 
 	public override void Play() {
 		base.Play();
-		_checkCoroutine = StartCoroutine(ExeCheckTask());
+		_checkCoroutine = StartCoroutine(ExeCheckCoroutine());
 	}
 
 	public override void Pause() {
 		base.Pause();
-		if (_checkCoroutine != null) StopCoroutine(_checkCoroutine);
+		StopCoroutine(_checkCoroutine);
+		_checkCoroutine = null;
 	}
 
-	protected IEnumerator ExeCheckTask() {
+	private IEnumerator ExeCheckCoroutine() {
 		while (true) {
 			yield return new WaitForEndOfFrame();
 			if (transform.position == _currentDestination) {
@@ -100,26 +101,33 @@ public class DynamicPlatformController : DeviceController {
 		}
 	}
 
+	private void AddCharacter(CharacterController controller) {
+		_characters.Add(controller);
+	}
+
+	private void RemoveCharacter(CharacterController controller) {
+		_characters.Remove(controller);
+	}
+
 	private void OnCollisionEnter(Collision other) {
 		if (other.gameObject.layer == LayerManager.CharacterLayer) {
-			CharacterMotor motor = other.transform.GetComponent<CharacterMotor>();
-			if (motor) {
-				_characters.Add(motor);
+			CharacterController controller = other.transform.GetComponent<CharacterController>();
+			if (controller) {
+				AddCharacter(controller);
 			}
 		}
 	}
 
 	private void OnCollisionExit(Collision other) {
 		if (other.gameObject.layer == LayerManager.CharacterLayer) {
-			CharacterMotor motor = other.transform.GetComponent<CharacterMotor>();
-			if (motor) {
-				_characters.Remove(motor);
+			CharacterController controller = other.transform.GetComponent<CharacterController>();
+			if (controller) {
+				RemoveCharacter(controller);
 			}
 		}
 	}
 
-#if UNITY_EDITOR
-	private Color color = new Color(0, .7f, .3f, .4f);
+	[Conditional("UNITY_EDITOR")]
 	private void OnDrawGizmos() {
 		Gizmos.color = Color.green;
 		for (int i = 0; i < destinations.Count - 1; i++) {
@@ -131,7 +139,7 @@ public class DynamicPlatformController : DeviceController {
 		}
 		
 		Vector3 size = new Vector3(.3f, .3f, .3f);
-
+		Color color = new Color(0, .7f, .3f, .4f);
 		for (int i = 0; i < destinations.Count; i ++) {
 			Gizmos.color = color;
 			Gizmos.DrawCube(destinations[i], size);
@@ -140,6 +148,7 @@ public class DynamicPlatformController : DeviceController {
 		}
 	}
 	
+	[Conditional("UNITY_EDITOR")]
 	private void OnDrawGizmosSelected() {
 		Gizmos.color = Color.red;
 		for (int i = 0; i < destinations.Count - 1; i++) {
@@ -152,7 +161,6 @@ public class DynamicPlatformController : DeviceController {
 			Gizmos.DrawWireCube(destinations[i], size);
 		}
 	}
-#endif
 
 	public enum LoopType {
 		DontLoop,

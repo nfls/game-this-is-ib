@@ -8,7 +8,7 @@ public class DoorController : SignalReceiver {
 	public float openLag;
 	public float closeLag;
 	public DoorOpenDirection openDirection;
-	public string operationSound = "dooroperation";
+	public string operationSound = "door_operate";
 
 	protected Vector3 _originalPanelScale;
 	protected Vector3 _originalTopPanelPosition;
@@ -20,8 +20,8 @@ public class DoorController : SignalReceiver {
 	protected Coroutine _openCoroutine;
 	protected Coroutine _closeCoroutine;
 
-	protected override void Start() {
-		base.Start();
+	protected override void Awake() {
+		base.Awake();
 		
 		_audioSource = gameObject.AddComponent<AudioSource>();
 		_audioSource.playOnAwake = false;

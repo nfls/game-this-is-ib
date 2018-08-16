@@ -22,7 +22,6 @@ GameObject:
   - component: {fileID: 33313502472121360}
   - component: {fileID: 23416517509497310}
   - component: {fileID: 65630381287662464}
-  - component: {fileID: 114293413733607154}
   m_Layer: 10
   m_Name: terrain@floor
   m_TagString: Untagged
@@ -97,16 +96,3 @@ BoxCollider:
   serializedVersion: 2
   m_Size: {x: 1, y: 1, z: 1}
   m_Center: {x: 0, y: 0, z: 0}
---- !u!114 &114293413733607154
-MonoBehaviour:
-  m_ObjectHideFlags: 1
-  m_CorrespondingSourceObject: {fileID: 0}
-  m_PrefabInternal: {fileID: 100100000}
-  m_GameObject: {fileID: 1550187947882768}
-  m_Enabled: 1
-  m_EditorHideFlags: 0
-  m_Script: {fileID: 11500000, guid: 06a376f0f9284fc1924961f1b9d6378e, type: 3}
-  m_Name: 
-  m_EditorClassIdentifier: 
-  _color: {r: 0, g: 1, b: 1, a: 1}
-  _outlineColor: {r: 0.2, g: 0.2, b: 0.2, a: 1}

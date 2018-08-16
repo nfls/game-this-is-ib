@@ -1,4 +1,5 @@
-﻿using UnityEngine;
+﻿using System.Diagnostics;
+using UnityEngine;
 
 public abstract class SignalReceiver : DeviceController {
 
@@ -46,7 +47,7 @@ public abstract class SignalReceiver : DeviceController {
 
 	public abstract void OnDeactivate();
 	
-	#if UNITY_EDITOR
+	[Conditional("UNITY_EDITOR")]
 	protected virtual void OnDrawGizmos() {
 		var pos = transform.position;
 		Gizmos.color = Color.green;
@@ -55,13 +56,13 @@ public abstract class SignalReceiver : DeviceController {
 		Gizmos.DrawSphere(pos, .4f);
 	}
 
+	[Conditional("UNITY_EDITOR")]
 	protected virtual void OnDrawGizmosSelected() {
 		var pos = transform.position;
 		Gizmos.color = Color.red;
 		Gizmos.DrawWireSphere(pos, .6f);
 		Gizmos.DrawSphere(pos, .4f);
 	}
-	#endif
 }
 
 public enum SignalReceiverType {

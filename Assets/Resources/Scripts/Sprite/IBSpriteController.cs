@@ -1,5 +1,4 @@
 ﻿using System;
-using System.Collections.Generic;
 using UnityEngine;
 using UnityEngine.Rendering;
 
@@ -10,9 +9,9 @@ public abstract class IBSpriteController : MonoBehaviour {
 	public Vector3 initialRotation;
 	public int commandBufferLength;
 	public string attackSound;
+	public string hitSound;
 
 	public AttackEffectSettings attackEffectSettings;
-	public DetectionSettings detectionSettings;
 	public IdleMovementSettings idleMovementSettings;
 	public TrailSettings idleTrailSettings;
 
@@ -29,7 +28,11 @@ public abstract class IBSpriteController : MonoBehaviour {
 
 	public Quaternion InitialRotation => initialRotation.ToQuaternion();
 
-	protected bool _isInitiated;
+	public abstract DetectionSettings DetectionSettings {
+		get;
+		set;
+	}
+
 	protected bool _isAttacking;
 	protected bool _isFollowing;
 	protected bool _isSyncing;
@@ -45,9 +48,7 @@ public abstract class IBSpriteController : MonoBehaviour {
 	}
 
 	public virtual void OnSwitchOff() {
-		if (_isAttacking) {
-			CancelAttack();
-		}
+		if (_isAttacking) CancelAttack();
 		
 		gameObject.SetActive(false);
 	}
@@ -55,21 +56,8 @@ public abstract class IBSpriteController : MonoBehaviour {
 	protected abstract void ExeAttackTask();
 
 	protected abstract void CancelAttackTask();
-
-	private void Start() {
-		if (_isInitiated) return;
-		
-		Init();
-	}
-
-	private void Update() {
-		if (!_isAttacking) {
-			IdleUpdate();
-		}
-	}
-
-	public virtual void Init() {
-		_isInitiated = true;
+	
+	protected virtual void Awake() {
 		_initialParent = transform.parent;
 
 		_trailRenderer = gameObject.AddComponent<TrailRenderer>();
@@ -78,8 +66,6 @@ public abstract class IBSpriteController : MonoBehaviour {
 		_trailRenderer.allowOcclusionWhenDynamic = true;
 		_trailRenderer.autodestruct = false;
 		_trailRenderer.emitting = false;
-		
-		idleTrailSettings.Init();
 
 		_audioSource = gameObject.AddComponent<AudioSource>();
 		_audioSource.loop = false;
@@ -87,42 +73,44 @@ public abstract class IBSpriteController : MonoBehaviour {
 		_audioSource.playOnAwake = false;
 		_audioSource.volume = 1f;
 	}
-
-	protected void IdleUpdate() {
-		Vector3 initialPosition = InitialPosition;
-		Vector3 displacement = initialPosition - transform.position;
-		float distance = displacement.magnitude;
-		if (transform.lossyScale.x * (float) characterMotor.FaceDirection < 0) {
-			Flip();
-		}
+	
+	private void Update() {
+		if (!_isAttacking) {
+			Vector3 initialPosition = InitialPosition;
+			Vector3 displacement = initialPosition - transform.position;
+			float distance = displacement.magnitude;
+			if (transform.lossyScale.x * (float) characterMotor.FaceDirection < 0) Flip();
 		
-		if (_isFollowing) {
-			float offsetDistance = initialOffset.magnitude;
-			transform.position = Vector3.MoveTowards(transform.position, initialPosition, Mathf.LerpUnclamped(idleMovementSettings.minFollowVelocity * Time.deltaTime, idleMovementSettings.maxFollowVelocity * Time.deltaTime, distance / (idleMovementSettings.maxFollowDistance - offsetDistance)));
-			if (transform.position.Equals(initialPosition)) {
-				_isFollowing = false;
-				DisableTrail();
-			}
-		} else if (!_isFollowing) {
-			if (distance > idleMovementSettings.maxFollowDistance) {
-				ResetPositionAndRotation();
-			} else if (distance > idleMovementSettings.minFollowDistance) {
-				_isFollowing = true;
-				EnableTrail(idleTrailSettings);
-			} else {
-				transform.Translate(0, Mathf.Sign(Mathf.Sin(Time.time)) * idleMovementSettings.floatingVelocity * Time.deltaTime, 0);
+			if (_isFollowing) {
+				float offsetDistance = initialOffset.magnitude;
+				transform.position = Vector3.MoveTowards(transform.position, initialPosition, Mathf.LerpUnclamped(idleMovementSettings.minFollowVelocity * Time.deltaTime, idleMovementSettings.maxFollowVelocity * Time.deltaTime, distance / (idleMovementSettings.maxFollowDistance - offsetDistance)));
+				if (transform.position.Equals(initialPosition)) {
+					_isFollowing = false;
+					DisableTrail();
+				}
+			} else if (!_isFollowing) {
+				if (distance > idleMovementSettings.maxFollowDistance) {
+					ResetPositionAndRotation();
+				} else if (distance > idleMovementSettings.minFollowDistance) {
+					_isFollowing = true;
+					EnableTrail(idleTrailSettings);
+				} else {
+					transform.Translate(0, Mathf.Sign(Mathf.Sin(Time.time)) * idleMovementSettings.floatingVelocity * Time.deltaTime, 0);
+				}
 			}
 		}
 	}
 
-	public void Attack() {
+	public virtual void OnReceiveAttackCommand() {
 		if (!_isCommandBufferFull && _commandBufferCount < commandBufferLength) {
 			_commandBufferCount++;
-			if (_commandBufferCount == commandBufferLength) {
-				_isCommandBufferFull = true;
-			}
+			if (_commandBufferCount == commandBufferLength) _isCommandBufferFull = true;
 			ExeAttackTask();
 		}
+	}
+
+	public virtual void OnFinishAttackCommand() {
+		
 	}
 
 	public void CancelAttack() {
@@ -172,13 +160,37 @@ public abstract class IBSpriteController : MonoBehaviour {
 		_trailRenderer.emitting = false;
 	}
 
-	protected abstract void OnDetectCharacterEnter(IBSpriteTrigger trigger, Collider detectedCollider);
-	protected abstract void OnDetectDestrutibleEnter(IBSpriteTrigger trigger, Collider detectedCollider);
-	protected abstract void OnDetectCharacterExit(IBSpriteTrigger trigger, Collider detectedCollider);
-	protected abstract void OnDetectDestrutibleExit(IBSpriteTrigger trigger, Collider detectedCollider);
+	protected virtual void OnDetectCharacterEnter(IBSpriteTrigger trigger, Collider detectedCollider) {
+		CharacterController character = detectedCollider.GetComponentInParent<CharacterController>();
+		float hitDirection = GetHitDirection(detectedCollider.transform, characterMotor.transform);
+		
+		if (attackEffectSettings.doesHit) {
+			character.GetHit(attackEffectSettings.hitVelocityX * hitDirection, attackEffectSettings.hitVelocityY);
+		}
 
-	protected float GetStunAngle(float angle, Transform attacker, Transform receiver) {
-		return angle * (receiver.position.x - attacker.position.x > 0 ? 1 : -1);
+		if (attackEffectSettings.doesStun) {
+			character.GetStunned(hitDirection * attackEffectSettings.stunAngle, attackEffectSettings.stunTime);
+		}
+
+		if (attackEffectSettings.doesDamage) {
+			character.GetDamaged(attackEffectSettings.damage);
+		}
+	}
+
+	protected virtual void OnDetectDestructibleEnter(IBSpriteTrigger trigger, Collider detectedCollider) {
+		
+	}
+
+	protected virtual void OnDetectCharacterExit(IBSpriteTrigger trigger, Collider detectedCollider) {
+		
+	}
+
+	protected virtual void OnDetectDestructibleExit(IBSpriteTrigger trigger, Collider detectedCollider) {
+		
+	}
+
+	protected float GetHitDirection(Transform receiver, Transform attacker) {
+		return receiver.position.x - attacker.position.x > 0 ? 1 : -1;
 	}
 }
 

@@ -2,10 +2,12 @@
 
 public static class LayerManager {
 
+	public static readonly int InteractionLayer = LayerMask.NameToLayer("Interaction");
 	public static readonly int TerrainLayer = LayerMask.NameToLayer("Terrain");
 	public static readonly int DeviceLayer = LayerMask.NameToLayer("Device");
 	public static readonly int CharacterLayer = LayerMask.NameToLayer("Character");
 	public static readonly int SpriteLayer = LayerMask.NameToLayer("Sprite");
+	public static readonly int ProjectileLayer = LayerMask.NameToLayer("Projectile");
 	
 	public static void SetAllLayers(GameObject go, int layer) {
 		go.layer = layer;

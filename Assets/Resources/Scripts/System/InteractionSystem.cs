@@ -3,33 +3,62 @@ using UnityEngine;
 
 public class InteractionSystem : MonoBehaviour {
 
-	private InputOperator _inputOperator;
+	public Collider Trigger => _trigger;
+
 	private InteractionController _interactionController;
 	private Collider _trigger;
+	private Rigidbody _rigidbody;
 	private List<InteractionController> _potentialInteractionControllers = new List<InteractionController>(2);
 
-	private void Init(InputOperator inputOperator) {
-		_inputOperator = inputOperator;
-		
-		_trigger = gameObject.AddComponent<Collider>();
+	private void Awake() {
+		_trigger = gameObject.AddComponent<BoxCollider>();
 		_trigger.isTrigger = true;
+
+		_rigidbody = gameObject.AddComponent<Rigidbody>();
+		_rigidbody.isKinematic = true;
 	}
 
-	private void Update() {
-		transform.position = _inputOperator.transform.position;
-	}
-	
-	private void Interact() {
-		if (_interactionController) _interactionController.Interact();
+	public void Interact() {
+		if (_interactionController) {
+			_interactionController.Interact();
+			if (!_interactionController.Interactive) {
+				_potentialInteractionControllers.Remove(_interactionController);
+				Refresh();
+			}
+		}
 	}
 
-	private void CalculateInteractionController() {
+	private void Refresh() {
+		if (CalculateInteractionController()) {
+			if (_interactionController) {
+				float direction = transform.position.x - _interactionController.transform.position.x > 0 ? 1 : -1;
+				Vector3 originalPos = _interactionController.transform.position;
+				Vector3 position = new Vector3 {
+					x = direction * _interactionController.horizontalOffset + originalPos.x,
+					y = _interactionController.verticalOffset + originalPos.y,
+					z = -2.1f
+				};
+
+				Vector2 pivot = new Vector2 {
+					x = direction == 1 ? 0 : 1,
+					y = (float) _interactionController.showDirection
+				};
+
+				UIManager.ShowInteractionTip(_interactionController.text, position, pivot);
+			} else {
+				UIManager.HideInteractionTip();
+			}
+		}
+	}
+
+	private bool CalculateInteractionController() {
 		if (_potentialInteractionControllers.Count == 0) {
 			_interactionController = null;
-			return;
+			return true;
 		}
 
-		float minSqrDistance = 999f;
+		InteractionController oldInteractionController = _interactionController;
+		float minSqrDistance = 9999f;
 		foreach (var interactionController in _potentialInteractionControllers) {
 			float sqrDistance = (interactionController.transform.position - transform.position).sqrMagnitude;
 			if (sqrDistance < minSqrDistance) {
@@ -37,24 +66,27 @@ public class InteractionSystem : MonoBehaviour {
 				_interactionController = interactionController;
 			}
 		}
+
+		if (_interactionController != oldInteractionController) return true;
+		return false;
 	}
 
 	private void OnTriggerEnter(Collider other) {
 		if (other.CompareTag(TagManager.INTERACTIVE_TAG)) {
-			InteractionController controller = other.GetComponent<InteractionController>();
-			if (controller.interactive) {
+			InteractionController controller = other.GetComponentInParent<InteractionController>();
+			if (controller.Interactive) {
 				_potentialInteractionControllers.Add(controller);
-				CalculateInteractionController();
+				Refresh();
 			}
 		}
 	}
 
 	private void OnTriggerExit(Collider other) {
 		if (other.CompareTag(TagManager.INTERACTIVE_TAG)) {
-			InteractionController controller = other.GetComponent<InteractionController>();
-			if (controller.interactive) {
+			InteractionController controller = other.GetComponentInParent<InteractionController>();
+			if (controller.Interactive) {
 				_potentialInteractionControllers.Remove(controller);
-				CalculateInteractionController();
+				Refresh();
 			}
 		}
 	}

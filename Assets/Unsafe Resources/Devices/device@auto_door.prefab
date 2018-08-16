@@ -22,7 +22,6 @@ GameObject:
   - component: {fileID: 33709627641729226}
   - component: {fileID: 23462026880804078}
   - component: {fileID: 65341941296236512}
-  - component: {fileID: 114745747809670508}
   m_Layer: 11
   m_Name: Bottom Panel
   m_TagString: Untagged
@@ -91,7 +90,6 @@ GameObject:
   - component: {fileID: 33219956225644552}
   - component: {fileID: 23600471494047234}
   - component: {fileID: 65695484692317316}
-  - component: {fileID: 114879018181648026}
   m_Layer: 11
   m_Name: Top Panel
   m_TagString: Untagged
@@ -319,19 +317,6 @@ MonoBehaviour:
   detectedTags:
   - Local Player
   - Remote Player
---- !u!114 &114745747809670508
-MonoBehaviour:
-  m_ObjectHideFlags: 1
-  m_CorrespondingSourceObject: {fileID: 0}
-  m_PrefabInternal: {fileID: 100100000}
-  m_GameObject: {fileID: 1142915065899870}
-  m_Enabled: 1
-  m_EditorHideFlags: 0
-  m_Script: {fileID: 11500000, guid: 06a376f0f9284fc1924961f1b9d6378e, type: 3}
-  m_Name: 
-  m_EditorClassIdentifier: 
-  _color: {r: 0, g: 1, b: 1, a: 1}
-  _outlineColor: {r: 0.2, g: 0.2, b: 0.2, a: 1}
 --- !u!114 &114777774982672914
 MonoBehaviour:
   m_ObjectHideFlags: 1
@@ -350,7 +335,7 @@ MonoBehaviour:
   openLag: 0
   closeLag: 0.5
   openDirection: 2
-  operationSound: dooroperate
+  operationSound: door_operate
 --- !u!114 &114786454289336230
 MonoBehaviour:
   m_ObjectHideFlags: 1
@@ -370,16 +355,3 @@ MonoBehaviour:
   detectedTags:
   - Local Player
   - Remote Player
---- !u!114 &114879018181648026
-MonoBehaviour:
-  m_ObjectHideFlags: 1
-  m_CorrespondingSourceObject: {fileID: 0}
-  m_PrefabInternal: {fileID: 100100000}
-  m_GameObject: {fileID: 1948530057665008}
-  m_Enabled: 1
-  m_EditorHideFlags: 0
-  m_Script: {fileID: 11500000, guid: 06a376f0f9284fc1924961f1b9d6378e, type: 3}
-  m_Name: 
-  m_EditorClassIdentifier: 
-  _color: {r: 0, g: 1, b: 1, a: 1}
-  _outlineColor: {r: 0.2, g: 0.2, b: 0.2, a: 1}

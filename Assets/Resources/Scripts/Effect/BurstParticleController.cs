@@ -1,6 +1,6 @@
-﻿public class BurstParticleController : ParticleController {
+﻿public sealed class BurstParticleController : ParticleController {
 
-	public void Spray() {
+	public void Burst() {
 		_system.Clear();
 		_system.Play();
 		_started = true;

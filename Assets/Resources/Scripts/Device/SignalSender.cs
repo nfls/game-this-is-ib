@@ -1,4 +1,5 @@
 ﻿using System.Collections.Generic;
+using System.Diagnostics;
 using UnityEngine;
 
 public abstract class SignalSender : DeviceController {
@@ -41,7 +42,7 @@ public abstract class SignalSender : DeviceController {
 		}
 	}
 	
-	#if UNITY_EDITOR
+	[Conditional("UNITY_EDITOR")]
 	protected virtual void OnDrawGizmos() {
 		var pos = transform.position;
 		Gizmos.color = Color.black;
@@ -56,6 +57,7 @@ public abstract class SignalSender : DeviceController {
 		}
 	}
 
+	[Conditional("UNITY_EDITOR")]
 	protected virtual void OnDrawGizmosSelected() {
 		var pos = transform.position;
 		Gizmos.color = Color.black;
@@ -69,5 +71,4 @@ public abstract class SignalSender : DeviceController {
 			Gizmos.DrawLine(pos, receiver.transform.position + new Vector3(0, .1f, 0));
 		}
 	}
-	#endif
 }

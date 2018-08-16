@@ -6,7 +6,7 @@ Material:
   m_ObjectHideFlags: 0
   m_CorrespondingSourceObject: {fileID: 0}
   m_PrefabInternal: {fileID: 0}
-  m_Name: CharacterMaterial
+  m_Name: CharacterBodyMaterial
   m_Shader: {fileID: 4800000, guid: ce011198ca7494594a760dfe48a186c0, type: 3}
   m_ShaderKeywords: 
   m_LightmapFlags: 4
@@ -66,7 +66,7 @@ Material:
     - _Mode: 0
     - _OcclusionStrength: 1
     - _OutlineDistance: 1
-    - _OutlineWidth: 0.0375
+    - _OutlineWidth: 0.08
     - _Parallax: 0.02
     - _SmoothnessTextureChannel: 0
     - _SpecularHighlights: 1

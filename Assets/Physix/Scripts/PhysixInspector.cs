@@ -194,8 +194,8 @@ static LayerMask LayerMaskField( string label, LayerMask layerMask) {
 			GUILayout.BeginHorizontal();
 			GUILayout.Space(25);
 			GUILayout.BeginVertical();
-			
-			//DisplayCollisions
+			PHYSIX.CollisionIgnoreMask = LayerMaskField("Collision Ignore Mask", PHYSIX.CollisionIgnoreMask);
+			// DisplayCollisions
 			for (int i = 0; i < PHYSIX.Collisions.Length; i++) {
 			GUILayout.BeginHorizontal();
 			PHYSIX.Collisions[i].Display = GUILayout.Toggle(PHYSIX.Collisions[i].Display, PHYSIX.Collisions[i].Name, "Button");
@@ -253,7 +253,6 @@ static LayerMask LayerMaskField( string label, LayerMask layerMask) {
 					GUILayout.EndVertical();
 					GUILayout.EndHorizontal();
 					PHYSIX.Collisions[i].localTransform = (Transform)EditorGUILayout.ObjectField("Local Transform", (Transform)PHYSIX.Collisions[i].localTransform, typeof(Transform), true);
-					PHYSIX.Collisions[i].IgnoreMask = LayerMaskField("IgnoreLayers", PHYSIX.Collisions[i].IgnoreMask);
 					GUILayout.EndVertical();
 					GUILayout.EndHorizontal();
 				}

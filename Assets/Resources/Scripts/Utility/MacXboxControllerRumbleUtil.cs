@@ -308,15 +308,19 @@ public static class MacXboxControllerRumbleUtil {
 		}
 	}
 
-	private static Dictionary<int, IntPtr> availableDevices = new Dictionary<int, IntPtr>();
+	private static readonly Dictionary<int, IntPtr> availableDevices = new Dictionary<int, IntPtr>();
 
-	static MacXboxControllerRumbleUtil() {
+	public static void Init() {
 		SDL_Init(SDL_INIT_HAPTIC);
 	}
 
+	public static void Quit() {
+		SDL_Quit();
+	}
+
 	public static bool Rumble(int deviceIndex, float strength, int milliseconds) {
-		if (!CheckAndInitDevice(deviceIndex)) return false;
 		if (milliseconds < 0) return false;
+		if (!CheckAndInitDevice(deviceIndex)) return false;
 		IntPtr device = availableDevices[deviceIndex];
 		return SDL_HapticRumblePlay(device, strength, (uint) milliseconds) == SDL_SUCCESS;
 	}

@@ -19,12 +19,12 @@ TagManager:
   - 
   - 
   - PostProcessing
-  - 
+  - Interaction
   - Terrain
   - Device
   - Character
   - Sprite
-  - 
+  - Projectile
   - 
   - 
   - 

@@ -5,7 +5,7 @@ public abstract class CharacterOperator : MonoBehaviour {
 	
 	protected CharacterController _characterController;
 
-	public virtual void Start() {
+	protected virtual void Awake() {
 		_characterController = GetComponent<CharacterController>();
 	}
 }

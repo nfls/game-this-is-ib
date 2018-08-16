@@ -1,6 +1,6 @@
 {
   "dependencies": {
-    "com.unity.cinemachine": "2.1.13",
+    "com.unity.cinemachine": "2.2.0",
     "com.unity.postprocessing": "2.0.7-preview",
     "com.unity.assetbundlebrowser": "1.6.0",
     "com.unity.probuilder": "3.0.9",

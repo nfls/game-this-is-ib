@@ -15,7 +15,7 @@ public static class CharacterFactory {
 		TagManager.SetAllTags(player, TagManager.REMOTE_PLAYER_TAG);
 		return player;
 	}
-
+	
 	private static GameObject GeneratePlayer(PlayerData data) {
 		GameObject go = new GameObject();
 		

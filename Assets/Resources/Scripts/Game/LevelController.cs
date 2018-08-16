@@ -25,16 +25,14 @@ public class LevelController : MonoBehaviour {
 	protected Transform terrainRoot;
 	protected Transform deviceRoot;
 
-	protected TerrainController[] terrains;
 	protected DeviceController[] devices;
 
 	protected Coroutine _shiftCoroutine;
 
-	private void Start() {
+	private void Awake() {
 		terrainRoot = transform.Find("Terrains");
 		deviceRoot = transform.Find("Devices");
 
-		terrains = terrainRoot.GetComponentsInChildren<TerrainController>();
 		devices = deviceRoot.GetComponentsInChildren<DeviceController>();
 		
 		#if UNITY_EDITOR
@@ -95,10 +93,10 @@ public class LevelController : MonoBehaviour {
 		finishAction();
 	}
 	
-	#if UNITY_EDITOR
+#if UNITY_EDITOR
 	private void OnDrawGizmos() {
 		Gizmos.color = Color.red;
 		Gizmos.DrawWireCube(transform.position, new Vector3(1.01f, 1.01f, 2.02f));
 	}
-	#endif
+#endif
 }

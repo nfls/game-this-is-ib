@@ -1,29 +1,34 @@
 ﻿using System.Collections;
 using UnityEngine;
 
+[RequireComponent(typeof(Collider))]
 [RequireComponent(typeof(IBSpriteTrigger))]
 public class PendulumSpriteController : IBSpriteController {
 
+	public Vector3 hitShake;
+	public TimeEffectRequest hitTimeEffect;
 	public float attackRotation;
 	public float rotateSpeed;
 	public RotateBackMode rotateBackMode;
 	public TrailSettings attackTrailSettings;
 
-	protected IBSpriteTrigger ibSpriteTrigger;
+	public override DetectionSettings DetectionSettings {
+		get { return _ibSpriteTrigger.detectionSettings; }
+		set { _ibSpriteTrigger.detectionSettings = value; }
+	}
+
+	protected IBSpriteTrigger _ibSpriteTrigger;
 	protected Coroutine _attackCoroutine;
 	protected Coroutine _rotateCoroutine;
 
-	public override void Init() {
-		base.Init();
+	protected override void Awake() {
+		base.Awake();
 		
-		attackTrailSettings.Init();
-		ibSpriteTrigger = GetComponent<IBSpriteTrigger>();
-		ibSpriteTrigger.Disable();
-		ibSpriteTrigger.detectionSettings = detectionSettings;
-		ibSpriteTrigger.OnDetectCharacterEnter += OnDetectCharacterEnter;
-		ibSpriteTrigger.OnDetectCharacterExit += OnDetectCharacterExit;
-		ibSpriteTrigger.OnDetectDestructibleEnter += OnDetectDestrutibleEnter;
-		ibSpriteTrigger.OnDetectCharacterExit += OnDetectDestrutibleExit;
+		_ibSpriteTrigger = GetComponent<IBSpriteTrigger>();
+		_ibSpriteTrigger.onDetectCharacterEnter = OnDetectCharacterEnter;
+		_ibSpriteTrigger.onDetectCharacterExit = OnDetectCharacterExit;
+		_ibSpriteTrigger.onDetectDestructibleEnter = OnDetectDestructibleEnter;
+		_ibSpriteTrigger.onDetectDestructibleExit = OnDetectDestructibleExit;
 	}
 
 	protected override void ExeAttackTask() {
@@ -55,9 +60,7 @@ public class PendulumSpriteController : IBSpriteController {
 			float r = rotateSpeed * Time.deltaTime;
 			transform.RotateAround(characterMotor.transform.position, Vector3.back * (float) characterMotor.FaceDirection, r * (float) direction);
 			rotation -= r;
-			if (rotation < 0) {
-				break;
-			}
+			if (rotation < 0) break;
 		}
 	}
 
@@ -68,13 +71,14 @@ public class PendulumSpriteController : IBSpriteController {
 		EnableTrail(attackTrailSettings);
 		EnterCharacterSyncState();
 		while (_commandBufferCount > 0) {
-			ibSpriteTrigger.Enable();
+			_ibSpriteTrigger.Enable();
+			if (!string.IsNullOrEmpty(attackSound)) _audioSource.PlayOneShot(ResourcesManager.GetAudio(attackSound));
 			_rotateCoroutine = StartCoroutine(ExeRotateCoroutine(RotationDirection.Clockwise));
 			yield return _rotateCoroutine;
 			_rotateCoroutine = null;
-			ibSpriteTrigger.Disable();
+			_ibSpriteTrigger.Disable();
 
-			ibSpriteTrigger.Enable();
+			_ibSpriteTrigger.Enable();
 			if (rotateBackMode == RotateBackMode.Immediate) {
 				yield return null;
 				ResetPositionAndRotation();
@@ -84,7 +88,7 @@ public class PendulumSpriteController : IBSpriteController {
 				ResetPositionAndRotation();
 			}
 
-			ibSpriteTrigger.Disable();
+			_ibSpriteTrigger.Disable();
 			_commandBufferCount--;
 		}
 		_isCommandBufferFull = false;
@@ -95,31 +99,10 @@ public class PendulumSpriteController : IBSpriteController {
 	}
 
 	protected override void OnDetectCharacterEnter(IBSpriteTrigger trigger, Collider detectedCollider) {
-		CharacterController character = detectedCollider.GetComponentInParent<CharacterController>();
-		
-		if (attackEffectSettings.doesHit) {
-			character.GetHit(attackEffectSettings.hitVelocityX, attackEffectSettings.hitVelocityY);
-		}
-
-		if (attackEffectSettings.doesStun) {
-			character.GetStunned(GetStunAngle(attackEffectSettings.stunAngle, trigger.transform, detectedCollider.transform), attackEffectSettings.stunTime);
-		}
-
-		if (attackEffectSettings.doesDamage) {
-			character.GetDamaged(attackEffectSettings.damage);
-		}
-	}
-
-	protected override void OnDetectDestrutibleEnter(IBSpriteTrigger trigger, Collider detectedCollider) {
-		
-	}
-	
-	protected override void OnDetectCharacterExit(IBSpriteTrigger trigger, Collider detectedCollider) {
-		
-	}
-
-	protected override void OnDetectDestrutibleExit(IBSpriteTrigger trigger, Collider detectedCollider) {
-		
+		base.OnDetectCharacterEnter(trigger, detectedCollider);
+		if (!string.IsNullOrEmpty(hitSound)) _audioSource.PlayOneShot(ResourcesManager.GetAudio(hitSound));
+		CameraManager.Shake(trigger.transform.position, hitShake);
+		TimeManager.HandleRequest(hitTimeEffect);
 	}
 }
 

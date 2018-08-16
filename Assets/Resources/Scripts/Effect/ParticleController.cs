@@ -8,12 +8,15 @@ public class ParticleController : MonoBehaviour {
 	protected bool _started;
 	protected ParticleSystem _system;
 
+	private void Awake() {
+		_system = GetComponent<ParticleSystem>();
+	}
+
 	protected virtual void Update() {
-		if (_started && !_system.isPlaying) ParticlePool.Recycle(this);
+		if (_started && !_system.isPlaying) ParticleManager.Recycle(this);
 	}
 	
 	public virtual void Init() {
-		if (!_system) _system = GetComponent<ParticleSystem>();
 		_started = true;
 	}
 

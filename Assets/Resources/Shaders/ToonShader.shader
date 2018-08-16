@@ -5,7 +5,7 @@
 		_ToonSteps("Toon Steps",range(0,9))=3
 	}
 	SubShader {
-		pass{//平行光的的pass渲染
+		pass{ //平行光的的pass渲染
 		Tags{"LightMode" = "ForwardBase"}
 		Cull Back
 		CGPROGRAM
@@ -56,6 +56,7 @@
 		}
 		ENDCG
 		}
+		/*
 		pass{//附加点光源的pass渲染
 		Tags{"LightMode" = "ForwardAdd"}
 		Blend One One
@@ -115,5 +116,6 @@
 		}
 		ENDCG
 		}
+		*/
 	}
 }

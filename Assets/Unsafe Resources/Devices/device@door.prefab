@@ -38,7 +38,6 @@ GameObject:
   - component: {fileID: 33256658222153886}
   - component: {fileID: 23762040880080388}
   - component: {fileID: 65929663360939304}
-  - component: {fileID: 114264023693859386}
   m_Layer: 11
   m_Name: Top Panel
   m_TagString: Untagged
@@ -57,7 +56,6 @@ GameObject:
   - component: {fileID: 33876389008706222}
   - component: {fileID: 23521444498412354}
   - component: {fileID: 65858869556749094}
-  - component: {fileID: 114123949204590622}
   m_Layer: 11
   m_Name: Bottom Panel
   m_TagString: Untagged
@@ -214,32 +212,6 @@ BoxCollider:
   serializedVersion: 2
   m_Size: {x: 1, y: 1, z: 1}
   m_Center: {x: 0, y: 0, z: 0}
---- !u!114 &114123949204590622
-MonoBehaviour:
-  m_ObjectHideFlags: 1
-  m_CorrespondingSourceObject: {fileID: 0}
-  m_PrefabInternal: {fileID: 100100000}
-  m_GameObject: {fileID: 1845854918817568}
-  m_Enabled: 1
-  m_EditorHideFlags: 0
-  m_Script: {fileID: 11500000, guid: 06a376f0f9284fc1924961f1b9d6378e, type: 3}
-  m_Name: 
-  m_EditorClassIdentifier: 
-  _color: {r: 0, g: 1, b: 1, a: 1}
-  _outlineColor: {r: 0.2, g: 0.2, b: 0.2, a: 1}
---- !u!114 &114264023693859386
-MonoBehaviour:
-  m_ObjectHideFlags: 1
-  m_CorrespondingSourceObject: {fileID: 0}
-  m_PrefabInternal: {fileID: 100100000}
-  m_GameObject: {fileID: 1808980378253896}
-  m_Enabled: 1
-  m_EditorHideFlags: 0
-  m_Script: {fileID: 11500000, guid: 06a376f0f9284fc1924961f1b9d6378e, type: 3}
-  m_Name: 
-  m_EditorClassIdentifier: 
-  _color: {r: 0, g: 1, b: 1, a: 1}
-  _outlineColor: {r: 0.2, g: 0.2, b: 0.2, a: 1}
 --- !u!114 &114972383525669904
 MonoBehaviour:
   m_ObjectHideFlags: 1
@@ -258,4 +230,4 @@ MonoBehaviour:
   openLag: 0
   closeLag: 0.5
   openDirection: 2
-  operationSound: dooroperate
+  operationSound: door_operate

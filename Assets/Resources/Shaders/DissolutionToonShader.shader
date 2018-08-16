@@ -20,8 +20,8 @@
 		    "RenderType" = "Opaque"
 		    "LightMode" = "ForwardBase"
 		}
-		Pass
-		{
+		
+		Pass {
 		
 			CGPROGRAM
 			#include "UnityCG.cginc"
@@ -84,7 +84,7 @@
 	        	c=_ToonColor*_LightColor0*(diff);
             
 	        	float percentage = _DissolveThreshold / dissolveValue.r;
-	        	//如果当前百分比 - 颜色权重 - 边缘颜色
+	        	//如果当前百分比 - 颜色权重 - 边缘颜色u
 	        	float lerpEdge = sign(percentage - _ColorFactor - _DissolveEdge);
 	        	//貌似sign返回的值还得saturate一下，否则是一个很奇怪的值
 	        	fixed3 edgeColor = lerp(_DissolveEdgeColor.rgb, _DissolveColor.rgb, saturate(lerpEdge));

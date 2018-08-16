@@ -240,7 +240,7 @@ public static class ResourcesManager {
 #else
 		string audioPath = "Assets/Hotassets/Audios";
 		DirectoryInfo info = new DirectoryInfo(Application.dataPath + "/Hotassets/Audios");
-		FileInfo[] files = info.GetFiles(new[] { "*.mp3", "*.wav" }, SearchOption.TopDirectoryOnly);
+		FileInfo[] files = info.GetFiles(new[] { "*.mp3", "*.wav", "*.aif" }, SearchOption.TopDirectoryOnly);
 		foreach (var file in files) {
 			string path = file.Name;
 			if (path.Contains(SPLIT_MARK)) {
