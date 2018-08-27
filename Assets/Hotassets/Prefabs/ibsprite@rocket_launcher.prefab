@@ -186,12 +186,13 @@ MonoBehaviour:
   fireShake: {x: 1.5, y: 1.5, z: 1.5}
   fireEffect: gun_smoke
   hitEffect: 
-  lifespan: 8
+  lifespan: 4
   recoilTime: 0.15
   recoilDistance: 0.6
   recoilRotation: 25
-  launchPerFire: 4
-  regenerationInterval: 0.5
+  isTracer: 0
+  launchPerFire: 1
+  regenerationInterval: 1.5
   correctionPower: 2
   lockBoxOffset: {x: 0, y: 1, z: 0}
   lockBoxSize: {x: 15, y: -3, z: 3}

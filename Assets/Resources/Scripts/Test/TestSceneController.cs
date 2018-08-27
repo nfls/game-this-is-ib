@@ -29,14 +29,14 @@ public class TestSceneController : MonoBehaviour {
 		localPlayer.AddComponent<InputOperator>().InteractionSystem = interactionSystem.AddComponent<InteractionSystem>();
 		virtualCamera.Follow = localPlayer.transform;
 		virtualCamera.LookAt = localPlayer.transform;
-		GameObject sprite0 = IBSpriteFactory.GenerateIBSprite("complex_newton_thrower");
+		GameObject sprite0 = IBSpriteFactory.GenerateIBSprite("up_punch");
 		GameObject sprite1 = IBSpriteFactory.GenerateIBSprite("hammer");
 		GameObject sprite2 = IBSpriteFactory.GenerateIBSprite("rocket_launcher");
 		localPlayer.GetComponent<CharacterController>().EquipIBSprite(sprite0.GetComponent<IBSpriteController>());
 		localPlayer.GetComponent<CharacterController>().EquipIBSprite(sprite1.GetComponent<IBSpriteController>());
 		localPlayer.GetComponent<CharacterController>().EquipIBSprite(sprite2.GetComponent<IBSpriteController>());
-		// localPlayer.transform.position = new Vector3(3, 1f, 0);
-		localPlayer.transform.position = new Vector3(4, 8, 0);
+		localPlayer.transform.position = new Vector3(3, 1f, 0);
+		// localPlayer.transform.position = new Vector3(4, 8, 0);
 		GameObject enemy1 = CharacterFactory.GenerateLocalPlayer();
 		TagManager.SetAllTags(enemy1, TagManager.ENEMY_TAG);
 		enemy1.name = "Enemy 1";

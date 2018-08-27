@@ -7,6 +7,7 @@ using Debug = UnityEngine.Debug;
 
 public class LauncherSpriteController : ShooterSpriteController {
 
+	public bool isTracer;
 	public int launchPerFire = 1;
 	public float regenerationInterval = 2f;
 	public float correctionPower;
@@ -90,6 +91,7 @@ public class LauncherSpriteController : ShooterSpriteController {
 			RocketProjectileController rocket = _rocketControllers[i];
 			if (!rocket) continue;
 			rocket.power = firePower;
+			if (isTracer && locked) rocket.target = target.transform;
 			rocket.targetPos = targetPos;
 			float rad = rocket.transform.eulerAngles.z * Mathf.Deg2Rad;
 			rocket.Fire(new Vector3(Mathf.Cos(rad) * face, Mathf.Sin(rad), 0).normalized * firePower);

@@ -1,7 +1,8 @@
 ﻿using UnityEngine;
 
 public class RocketProjectileController : ProjectileController {
-	
+
+	public Transform target;
 	public Vector3 targetPos;
 	public float correctionPower;
 	public float power;
@@ -14,6 +15,7 @@ public class RocketProjectileController : ProjectileController {
 	}
 
 	protected override void Move() {
+		if (target != null) targetPos = target.position;
 		Vector3 diff = targetPos - transform.position;
 		Vector3 dir = diff.normalized;
 		if (_towardsRight) {
