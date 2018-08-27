@@ -5,13 +5,6 @@
       <e p="Assembly-CSharp-Editor.csproj" t="IncludeRecursive" />
       <e p="Assembly-CSharp.csproj" t="IncludeRecursive" />
       <e p="Assets" t="Include">
-        <e p="2DGamekit" t="Include">
-          <e p="Utilities" t="Include">
-            <e p="Cinemachine" t="Include">
-              <e p="ReleaseNotes.txt" t="Include" />
-            </e>
-          </e>
-        </e>
         <e p="Editor" t="Include">
           <e p="AssetBundleTool.cs" t="Include" />
           <e p="CameraBackgroundColorAttributeDrawer.cs" t="Include" />
@@ -143,6 +136,7 @@
               <e p="IBSpriteController.cs" t="Include" />
               <e p="IBSpriteFactory.cs" t="Include" />
               <e p="IBSpriteTrigger.cs" t="Include" />
+              <e p="LauncherSpriteController.cs" t="Include" />
               <e p="NewtonThrowerSpriteController.cs" t="Include" />
               <e p="PendulumSpriteController.cs" t="Include" />
               <e p="Projectile" t="Include">
@@ -150,13 +144,14 @@
                 <e p="NewtonProjectileController.cs" t="Include" />
                 <e p="ProjectileController.cs" t="Include" />
                 <e p="ProjectileManager.cs" t="Include" />
+                <e p="RocketProjectileController.cs" t="Include" />
               </e>
               <e p="ShooterSpriteController.cs" t="Include" />
               <e p="ThrowerSpriteController.cs" t="Include" />
+              <e p="ThrustSpriteController.cs" t="Include" />
             </e>
             <e p="System" t="Include">
               <e p="AudioManager.cs" t="Include" />
-              <e p="DispatchSystem.cs" t="Include" />
               <e p="InteractionController.cs" t="Include" />
               <e p="InteractionSystem.cs" t="Include" />
               <e p="LayerManager.cs" t="Include" />
@@ -180,6 +175,7 @@
               <e p="Extensions.cs" t="Include" />
               <e p="MacXboxControllerRumbleUtil.cs" t="Include" />
               <e p="MonoSingleton.cs" t="Include" />
+              <e p="PhysicsVisualizer.cs" t="Include" />
               <e p="PrimitiveHelper.cs" t="Include" />
               <e p="SingletonManager.cs" t="Include" />
             </e>

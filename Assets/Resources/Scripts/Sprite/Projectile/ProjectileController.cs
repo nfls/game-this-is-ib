@@ -24,16 +24,6 @@ public class ProjectileController : MonoBehaviour {
 		get { return _ibSpriteTrigger.onDetectCharacterExit; }
 		set { _ibSpriteTrigger.onDetectCharacterExit = value; }
 	}
-	
-	public Action<IBSpriteTrigger, Collider> OnDetectDestructibleEnter {
-		get { return _ibSpriteTrigger.onDetectDestructibleEnter; }
-		set { _ibSpriteTrigger.onDetectDestructibleEnter = value; }
-	}
-	
-	public Action<IBSpriteTrigger, Collider> OnDetectDestructibleExit {
-		get { return _ibSpriteTrigger.onDetectDestructibleExit; }
-		set { _ibSpriteTrigger.onDetectDestructibleExit = value; }
-	}
 
 	public DetectionSettings DetectionSettings {
 		get { return _ibSpriteTrigger.detectionSettings; }
@@ -65,7 +55,6 @@ public class ProjectileController : MonoBehaviour {
 		this.velocity = velocity;
 		_fired = true;
 		_startTime = Time.time;
-		_trailRenderer.Clear();
 		_trailRenderer.emitting = true;
 		_ibSpriteTrigger.Enable();
 	}
@@ -83,13 +72,12 @@ public class ProjectileController : MonoBehaviour {
 	}
 
 	public void Recycle() {
+		_trailRenderer.Clear();
 		_trailRenderer.emitting = false;
 		ownerCollider = null;
 		DetectionSettings = null;
 		OnDetectCharacterEnter = null;
 		OnDetectCharacterExit = null;
-		OnDetectDestructibleEnter = null;
-		OnDetectDestructibleExit = null;
 		_ibSpriteTrigger.Disable();
 		_fired = false;
 	}

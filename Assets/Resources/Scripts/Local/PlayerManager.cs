@@ -42,7 +42,7 @@ public static class PlayerManager {
 		localPlayerDataCache.eyeStyle = "default";
 		localPlayerDataCache.eyeOutlineColor = Color.black;
 		localPlayerDataCache.eyeColor = Color.cyan;
-		localPlayerDataCache.dodgeTrailColor = Color.blue;
+		localPlayerDataCache.dodgeTrailColor = new Color(.6f, .1f, 1f);
 		localPlayerDataCache.accelerationTrailColor = Color.cyan;
 		localPlayerDataCache.items = new List<string>();
 		localPlayerDataCache.unlockedItems = new List<string>();

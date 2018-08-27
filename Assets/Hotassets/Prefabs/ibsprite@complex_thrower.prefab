@@ -182,7 +182,7 @@ MonoBehaviour:
   projectileType: gravity_ball
   fireOffset: {x: 0, y: 0, z: 0}
   fireRotation: {x: 0, y: 0, z: 0}
-  firePower: 30
+  firePower: 40
   fireShake: {x: 0, y: 0, z: 0}
   fireEffect: 
   hitEffect: 
@@ -197,12 +197,12 @@ MonoBehaviour:
   - offset: {x: 0.8, y: 0.3, z: 0}
     rotation: {x: 0, y: 0, z: 0}
     direction: 30
-    gravity: 20
+    gravity: 3
   - offset: {x: 0.8, y: 0.3, z: 0}
     rotation: {x: 0, y: 0, z: 0}
     direction: 40
-    gravity: 20
+    gravity: 3
   - offset: {x: 0.8, y: 0.3, z: 0}
     rotation: {x: 0, y: 0, z: 0}
     direction: 50
-    gravity: 20
+    gravity: 3

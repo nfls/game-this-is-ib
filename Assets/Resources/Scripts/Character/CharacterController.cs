@@ -206,12 +206,10 @@ public class CharacterController : MonoBehaviour {
 			detectionSettings.detectsLocalPlayer = true;
 			detectionSettings.detectsRemotePlayer = true;
 			detectionSettings.detectsEnemy = false;
-			detectionSettings.detectsDevice = false;
 		} else {
 			detectionSettings.detectsLocalPlayer = false;
 			detectionSettings.detectsRemotePlayer = false;
 			detectionSettings.detectsEnemy = true;
-			detectionSettings.detectsDevice = true;
 		}
 		
 		controller.DetectionSettings = detectionSettings;

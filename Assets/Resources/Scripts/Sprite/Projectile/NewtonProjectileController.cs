@@ -1,5 +1,6 @@
 ﻿using UnityEngine;
 
+[RequireComponent(typeof(ConstantForce))]
 public class NewtonProjectileController : GravityProjectileController {
 
 	public bool limitedByBounceTime;
@@ -21,6 +22,7 @@ public class NewtonProjectileController : GravityProjectileController {
 		_rigidbody.useGravity = false;
 		_rigidbody.angularDrag = 0;
 		_rigidbody.collisionDetectionMode = CollisionDetectionMode.ContinuousDynamic;
+		_rigidbody.constraints = RigidbodyConstraints.FreezePositionZ;
 
 		_physicMaterial = new PhysicMaterial {
 			bounceCombine = PhysicMaterialCombine.Maximum,

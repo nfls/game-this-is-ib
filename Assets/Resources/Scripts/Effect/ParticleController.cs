@@ -15,10 +15,6 @@ public class ParticleController : MonoBehaviour {
 	protected virtual void Update() {
 		if (_started && !_system.isPlaying) ParticleManager.Recycle(this);
 	}
-	
-	public virtual void Init() {
-		_started = true;
-	}
 
 	public virtual void Recycle() {
 		

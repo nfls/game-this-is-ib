@@ -26,8 +26,8 @@ public class ShooterSpriteController : IBSpriteController {
 
 	public override DetectionSettings DetectionSettings { get; set; }
 	
-	private Coroutine _attackCoroutine;
-	private Coroutine _recoilCoroutine;
+	protected Coroutine _attackCoroutine;
+	protected Coroutine _recoilCoroutine;
 
 	protected override void ExeAttackTask() {
 		if (!_isAttacking) _attackCoroutine = StartCoroutine(ExeAttackCoroutine());
@@ -118,8 +118,6 @@ public class ShooterSpriteController : IBSpriteController {
 		projectileController.ownerCollider = characterMotor.BodyCollider;
 		projectileController.OnDetectCharacterEnter = OnDetectCharacterEnter;
 		projectileController.OnDetectCharacterExit = OnDetectCharacterExit;
-		projectileController.OnDetectDestructibleEnter = OnDetectDestructibleEnter;
-		projectileController.OnDetectDestructibleExit = OnDetectDestructibleExit;
 		projectileController.DetectionSettings = DetectionSettings;
 	}
 }

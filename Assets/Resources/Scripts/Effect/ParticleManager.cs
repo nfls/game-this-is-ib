@@ -23,11 +23,10 @@ public class ParticleManager : MonoSingleton {
 			particle = particles.Dequeue();
 			particle.gameObject.SetActive(true);
 		} else {
-			particle = Instantiate(ResourcesManager.GetParticle(name)).GetComponent<ParticleController>();
+			particle = ResourcesManager.GetParticle(name).GetComponent<ParticleController>();
 			particle.transform.parent = particleRoot;
 		}
 		
-		particle.Init();
 		return particle;
 	}
 

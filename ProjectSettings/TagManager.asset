@@ -7,7 +7,6 @@ TagManager:
   - Local Player
   - Remote Player
   - Enemy
-  - Destructible
   - Interactive
   layers:
   - Default
@@ -25,8 +24,8 @@ TagManager:
   - Character
   - Sprite
   - Projectile
-  - 
-  - 
+  - Dodge
+  - Pickup
   - 
   - 
   - 

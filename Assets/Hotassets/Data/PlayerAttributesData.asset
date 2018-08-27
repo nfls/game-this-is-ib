@@ -15,10 +15,7 @@ MonoBehaviour:
   health: 300
   dodgeTrailSettings:
     motionVectorMode: 1
-    mainColor: {r: 0, g: 0, b: 1, a: 1}
-    outlineColor: {r: 0, g: 0, b: 1, a: 1}
-    outlineWidth: 1
-    outlineDistance: 0.1
+    color: {r: 0.6, g: 0.1, b: 1, a: 1}
     brightness: 1
     lifespan: 0.3
     minDistance: 0.5
@@ -27,7 +24,7 @@ MonoBehaviour:
       m_Curve:
       - serializedVersion: 3
         time: 0
-        value: 0.7562485
+        value: 0.9995651
         inSlope: 0
         outSlope: 0
         tangentMode: 0
@@ -36,7 +33,7 @@ MonoBehaviour:
         outWeight: 0.33333334
       - serializedVersion: 3
         time: 1
-        value: 0.7562485
+        value: 0.9995651
         inSlope: 0
         outSlope: 0
         tangentMode: 0
@@ -52,10 +49,7 @@ MonoBehaviour:
     material: {fileID: 0}
   accelerationTrailSettings:
     motionVectorMode: 1
-    mainColor: {r: 0, g: 1, b: 1, a: 1}
-    outlineColor: {r: 0, g: 1, b: 1, a: 1}
-    outlineWidth: 1
-    outlineDistance: 0.1
+    color: {r: 0, g: 1, b: 1, a: 1}
     brightness: 1
     lifespan: 0.3
     minDistance: 1

@@ -16,8 +16,8 @@ public class InputMapper {
 	public const string SWITCH_CAMERA = "Swtich Camera";
 	public const string PAUSE = "Pause";
 	
-	private static readonly Dictionary<string, InputDetector> OSXDefaultXboxOneMap;
-	private static readonly Dictionary<string, InputDetector> defaultKeyboardMap;
+	public static readonly Dictionary<string, InputDetector> defaultMacXboxOneMap;
+	public static readonly Dictionary<string, InputDetector> defaultKeyboardMap;
 	
 	public delegate void OnPressHandler();
 	public delegate void OnHoldHandler();
@@ -27,25 +27,26 @@ public class InputMapper {
 
 	public int Count => _inputMap.Count;
 
+	private Dictionary<string, InputDetector> _defaultMap;
 	private Dictionary<string, OnPressHandler> _onPressedBindings;
 	private Dictionary<string, OnHoldHandler> _onHeldBindings;
 	private Dictionary<string, OnReleaseHandler> _onReleasedBindings;
 	private Dictionary<string, InputDetector> _inputMap;
 
 	static InputMapper() {
-		OSXDefaultXboxOneMap = new Dictionary<string, InputDetector>(10);
-		OSXDefaultXboxOneMap[MOVE_LEFT] = AxisDetector.ToAxisDetector("Axis1st Negative");
-		OSXDefaultXboxOneMap[MOVE_RIGHT] = AxisDetector.ToAxisDetector("Axis1st Positive");
-		OSXDefaultXboxOneMap[ACCELERATE] = KeyDetector.ToKeyDetector("Joystick1Button14");
-		OSXDefaultXboxOneMap[JUMP] = KeyDetector.ToKeyDetector("Joystick1Button16");
-		OSXDefaultXboxOneMap[ATTACK] = KeyDetector.ToKeyDetector("Joystick1Button18");
-		OSXDefaultXboxOneMap[DODGE] = KeyDetector.ToKeyDetector("Joystick1Button17");
-		OSXDefaultXboxOneMap[INTERACT] = KeyDetector.ToKeyDetector("Joystick1Button19");
-		OSXDefaultXboxOneMap[RECOVER] = KeyDetector.ToKeyDetector("Joystick1Button13");
-		OSXDefaultXboxOneMap[SWITCH_PREV] = KeyDetector.ToKeyDetector("Joystick1Button7");
-		OSXDefaultXboxOneMap[SWITCH_NEXT] = KeyDetector.ToKeyDetector("Joystick1Button8");
-		OSXDefaultXboxOneMap[SWITCH_CAMERA] = AxisDetector.ToAxisDetector("Axis5th Positive");
-		OSXDefaultXboxOneMap[PAUSE] = KeyDetector.ToKeyDetector("Joystick1Button10");
+		defaultMacXboxOneMap = new Dictionary<string, InputDetector>(10);
+		defaultMacXboxOneMap[MOVE_LEFT] = AxisDetector.ToAxisDetector("Axis1st Negative");
+		defaultMacXboxOneMap[MOVE_RIGHT] = AxisDetector.ToAxisDetector("Axis1st Positive");
+		defaultMacXboxOneMap[ACCELERATE] = KeyDetector.ToKeyDetector("Joystick1Button14");
+		defaultMacXboxOneMap[JUMP] = KeyDetector.ToKeyDetector("Joystick1Button16");
+		defaultMacXboxOneMap[ATTACK] = KeyDetector.ToKeyDetector("Joystick1Button18");
+		defaultMacXboxOneMap[DODGE] = KeyDetector.ToKeyDetector("Joystick1Button17");
+		defaultMacXboxOneMap[INTERACT] = KeyDetector.ToKeyDetector("Joystick1Button19");
+		defaultMacXboxOneMap[RECOVER] = KeyDetector.ToKeyDetector("Joystick1Button13");
+		defaultMacXboxOneMap[SWITCH_PREV] = KeyDetector.ToKeyDetector("Joystick1Button7");
+		defaultMacXboxOneMap[SWITCH_NEXT] = KeyDetector.ToKeyDetector("Joystick1Button8");
+		defaultMacXboxOneMap[SWITCH_CAMERA] = AxisDetector.ToAxisDetector("Axis5th Positive");
+		defaultMacXboxOneMap[PAUSE] = KeyDetector.ToKeyDetector("Joystick1Button10");
 		
 		defaultKeyboardMap = new Dictionary<string, InputDetector>(10);
 		defaultKeyboardMap[MOVE_LEFT] = KeyDetector.ToKeyDetector("A");
@@ -62,11 +63,13 @@ public class InputMapper {
 		defaultKeyboardMap[PAUSE] = KeyDetector.ToKeyDetector("Escape");
 	}
 
-	public InputMapper() {
+	public InputMapper(Dictionary<string, InputDetector> defaultMap) {
 		_inputMap = new Dictionary<string, InputDetector>(10);
 		_onPressedBindings = new Dictionary<string, OnPressHandler>(10);
 		_onHeldBindings = new Dictionary<string, OnHoldHandler>(10);
 		_onReleasedBindings = new Dictionary<string, OnReleaseHandler>(10);
+
+		_defaultMap = defaultMap;
 		Reset();
 	}
 
@@ -90,7 +93,7 @@ public class InputMapper {
 
 	public void Reset() {
 		_inputMap.Clear();
-		foreach (var pair in defaultKeyboardMap) {
+		foreach (var pair in _defaultMap) {
 			Remap(pair.Key, pair.Value);
 		}
 	}

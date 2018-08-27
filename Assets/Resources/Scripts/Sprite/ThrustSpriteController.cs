@@ -3,13 +3,14 @@ using UnityEngine;
 
 [RequireComponent(typeof(Collider))]
 [RequireComponent(typeof(IBSpriteTrigger))]
-public class PendulumSpriteController : IBSpriteController {
+public class ThrustSpriteController : IBSpriteController {
 
 	public Vector3 hitShake;
 	public TimeEffectRequest hitTimeEffect;
-	public float attackRotation;
-	public float rotateSpeed;
-	public RotateBackMode rotateBackMode;
+	public float thrustDuration;
+	public Vector3 thrustOffset;
+	public Vector3 thrustRotation;
+	public ThrustBackMode thrustBackMode;
 	public TrailSettings attackTrailSettings;
 
 	public override DetectionSettings DetectionSettings {
@@ -17,10 +18,17 @@ public class PendulumSpriteController : IBSpriteController {
 		set { _ibSpriteTrigger.detectionSettings = value; }
 	}
 
+	public Vector3 ThrustPosition {
+		get {
+			Vector3 offset = initialOffset + thrustOffset;
+			offset.x *= (float) characterMotor.FaceDirection;
+			return characterMotor.transform.position + offset;
+		}
+	}
+
 	protected IBSpriteTrigger _ibSpriteTrigger;
 	protected Coroutine _attackCoroutine;
-	protected Coroutine _rotateCoroutine;
-
+	
 	protected override void Awake() {
 		base.Awake();
 		
@@ -42,25 +50,9 @@ public class PendulumSpriteController : IBSpriteController {
 				_attackCoroutine = null;
 			}
 			
-			if (_rotateCoroutine != null) {
-				StopCoroutine(_rotateCoroutine);
-				_rotateCoroutine = null;
-			}
-			
 			ExitCharacterSyncState();
 			DisableTrail();
 			ResetPositionAndRotation();
-		}
-	}
-	
-	public IEnumerator ExeRotateCoroutine(RotationDirection direction) {
-		float rotation = attackRotation;
-		while (true) {
-			yield return null;
-			float r = rotateSpeed * Time.deltaTime;
-			transform.RotateAround(characterMotor.transform.position, Vector3.back * (float) characterMotor.FaceDirection, r * (float) direction);
-			rotation -= r;
-			if (rotation < 0) break;
 		}
 	}
 
@@ -73,15 +65,27 @@ public class PendulumSpriteController : IBSpriteController {
 		while (_commandBufferCount > 0) {
 			_ibSpriteTrigger.Enable();
 			if (!string.IsNullOrEmpty(attackSound)) _audioSource.PlayOneShot(ResourcesManager.GetAudio(attackSound));
-			_rotateCoroutine = StartCoroutine(ExeRotateCoroutine(RotationDirection.Clockwise));
-			yield return _rotateCoroutine;
-			_rotateCoroutine = null;
-			if (rotateBackMode == RotateBackMode.Immediate) {
+			float timeStart = Time.time;
+			float timeDiff;
+			float lerp;
+			do {
+				yield return null;
+				timeDiff = Time.time - timeStart;
+				lerp = timeDiff / thrustDuration;
+				transform.position = Vector3.Lerp(InitialPosition, ThrustPosition, lerp);
+			} while (timeDiff < thrustDuration);
+			
+			if (thrustBackMode == ThrustBackMode.Immediate) {
 				yield return null;
 				ResetPositionAndRotation();
 			} else {
-				_rotateCoroutine = StartCoroutine(ExeRotateCoroutine(RotationDirection.Anticlockwise));
-				yield return _rotateCoroutine;
+				timeStart = Time.time;
+				do {
+					yield return null;
+					timeDiff = Time.time - timeStart;
+					lerp = timeDiff / thrustDuration;
+					transform.position = Vector3.Lerp(ThrustPosition, InitialPosition, lerp);
+				} while (timeDiff < thrustDuration);
 				ResetPositionAndRotation();
 			}
 
@@ -103,12 +107,7 @@ public class PendulumSpriteController : IBSpriteController {
 	}
 }
 
-public enum RotationDirection {
-	Anticlockwise = -1,
-	Clockwise = 1
-}
-
-public enum RotateBackMode {
+public enum ThrustBackMode {
 	Immediate,
 	Inverse
 }

@@ -19,7 +19,7 @@ public class CharacterMotor : MonoBehaviour {
 	public float freeBodyDrag = 1f;
 
 	public RigidbodyInterpolation interpolation = RigidbodyInterpolation.Interpolate;
-	public CollisionDetectionMode collisionDetectionMode;
+	public CollisionDetectionMode collisionDetectionMode = CollisionDetectionMode.ContinuousDynamic;
 
 	public event Action onGroundEnter;
 	public event Action onGroundExit;
@@ -175,12 +175,15 @@ public class CharacterMotor : MonoBehaviour {
 			sign = -1;
 			collision = RIGHT_COLLISION;
 		}
-		if (_physix.IsColliding(collision)) return;
-		
+
+		if (_physix.IsColliding(collision))
+			if (_physix.GetCollision(collision).gameObject.layer != LayerManager.CharacterLayer) return;
+
+		gameObject.layer = LayerManager.DodgeLayer;
 		RaycastHit hitInfo;
-		
 		if (_rigidbody.SweepTest(new Vector3(sign, 0, 0), out hitInfo, distance * sign, QueryTriggerInteraction.Ignore))
 			distance = hitInfo.point.x - transform.position.x - transform.localScale.x / 2;
+		gameObject.layer = LayerManager.CharacterLayer;
 		
 		transform.position += new Vector3(distance, 0, 0);
 	}

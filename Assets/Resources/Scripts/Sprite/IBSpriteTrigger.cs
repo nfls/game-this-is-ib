@@ -7,9 +7,7 @@ public class IBSpriteTrigger : MonoBehaviour {
 	public DetectionSettings detectionSettings;
 
 	public Action<IBSpriteTrigger, Collider> onDetectCharacterEnter;
-	public Action<IBSpriteTrigger, Collider> onDetectDestructibleEnter;
 	public Action<IBSpriteTrigger, Collider> onDetectCharacterExit;
-	public Action<IBSpriteTrigger, Collider> onDetectDestructibleExit;
 
 	public Collider Collider => _collider;
 
@@ -50,18 +48,7 @@ public class IBSpriteTrigger : MonoBehaviour {
 				return;
 			}
 
-			if (detectionSettings.detectsEnemy && other.CompareTag(TagManager.ENEMY_TAG)) {
-				onDetectCharacterEnter?.Invoke(this, other);
-				return;
-			}
-		}
-		
-		if (layer == LayerManager.DeviceLayer) {
-			if (detectionSettings.detectsDevice) {
-				if (other.CompareTag(TagManager.DESTRUCTIBLE_TAG)) {
-					onDetectDestructibleEnter?.Invoke(this, other);
-				}
-			}
+			if (detectionSettings.detectsEnemy && other.CompareTag(TagManager.ENEMY_TAG)) onDetectCharacterEnter?.Invoke(this, other);
 		}
 	}
 
@@ -79,18 +66,7 @@ public class IBSpriteTrigger : MonoBehaviour {
 				return;
 			}
 
-			if (detectionSettings.detectsEnemy && other.CompareTag(TagManager.ENEMY_TAG)) {
-				onDetectCharacterExit?.Invoke(this, other);
-				return;
-			}
-		}
-		
-		if (layer == LayerManager.DeviceLayer) {
-			if (detectionSettings.detectsDevice) {
-				if (other.CompareTag(TagManager.DESTRUCTIBLE_TAG)) {
-					onDetectDestructibleExit?.Invoke(this, other);
-				}
-			}
+			if (detectionSettings.detectsEnemy && other.CompareTag(TagManager.ENEMY_TAG)) onDetectCharacterExit?.Invoke(this, other);
 		}
 	}
 }
@@ -101,5 +77,4 @@ public class DetectionSettings {
 	public bool detectsLocalPlayer;
 	public bool detectsRemotePlayer;
 	public bool detectsEnemy;
-	public bool detectsDevice;
 }

@@ -43,9 +43,7 @@ public class WorldSpaceTipController : MonoBehaviour {
 			_showCoroutine = null;
 		}
 
-		if (_hideCoroutine == null) {
-			_hideCoroutine = StartCoroutine(ExeHideCoroutine());
-		}
+		if (_hideCoroutine == null) _hideCoroutine = StartCoroutine(ExeHideCoroutine());
 	}
 
 	private IEnumerator ExeShowCoroutine() {

@@ -14,7 +14,7 @@ public class ComplexShooterSpriteController : ShooterSpriteController {
 			fireRotation = fireStyle.rotation;
 			LoadUpProjectile(projectileController);
 			float rad = fireStyle.direction * Mathf.Deg2Rad;
-			Vector3 velocity = new Vector3(Mathf.Cos(rad) * face * firePower, Mathf.Sin(rad) * firePower, 0);
+			Vector3 velocity = new Vector3(Mathf.Cos(rad) * face, Mathf.Sin(rad), 0).normalized * firePower;
 			projectileController.Fire(velocity);
 		}
 		

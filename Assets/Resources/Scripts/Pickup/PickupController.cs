@@ -9,7 +9,6 @@ public class PickupController : MonoBehaviour {
 	public float speed;
 	public Vector3 rotation;
 	public float angularSpeed;
-	public Dispatch onPickupDisptach;
 
 	private Collider _collider;
 
@@ -31,9 +30,7 @@ public class PickupController : MonoBehaviour {
 			transform.position = Vector3.LerpUnclamped(_originalPosition, upPosition, Mathf.Sin(speed * Time.time));
 		}
 
-		if (doRotating) {
-			transform.Rotate(rotation * angularSpeed * Time.time);
-		}
+		if (doRotating) transform.Rotate(rotation * angularSpeed * Time.time);
 	}
 
 	protected virtual void Disappear() {
@@ -42,10 +39,7 @@ public class PickupController : MonoBehaviour {
 
 	private void OnTriggerEnter(Collider other) {
 		if (other.CompareTag(TagManager.LOCAL_PLAYER_TAG)) {
-			if (onPickupDisptach != null) {
-				DispatchSystem.ExeDispatch(onPickupDisptach);
-				Disappear();
-			}
+			
 		}
 	}
 }

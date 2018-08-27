@@ -1,4 +1,5 @@
 ﻿using System;
+using System.Collections;
 using System.Collections.Generic;
 using UnityEngine;
 
@@ -6,6 +7,7 @@ public class TimeManager : MonoSingleton {
 
 	public static float MinimumTimeScale = 0;
 	public static float MaximumTimeScale = 100f;
+	public static TimeManager Instance;
 
 	public static float TimeScale {
 		get { return timeScale; }
@@ -24,6 +26,7 @@ public class TimeManager : MonoSingleton {
 
 	private void Awake() {
 		timeScale = Time.timeScale;
+		Instance = this;
 	}
 
 	private void Update() {

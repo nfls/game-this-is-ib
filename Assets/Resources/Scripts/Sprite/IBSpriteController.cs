@@ -74,7 +74,7 @@ public abstract class IBSpriteController : MonoBehaviour {
 		_audioSource.volume = 1f;
 	}
 	
-	private void Update() {
+	protected virtual void Update() {
 		if (!_isAttacking) {
 			Vector3 initialPosition = InitialPosition;
 			Vector3 displacement = initialPosition - transform.position;
@@ -177,15 +177,7 @@ public abstract class IBSpriteController : MonoBehaviour {
 		}
 	}
 
-	protected virtual void OnDetectDestructibleEnter(IBSpriteTrigger trigger, Collider detectedCollider) {
-		
-	}
-
 	protected virtual void OnDetectCharacterExit(IBSpriteTrigger trigger, Collider detectedCollider) {
-		
-	}
-
-	protected virtual void OnDetectDestructibleExit(IBSpriteTrigger trigger, Collider detectedCollider) {
 		
 	}
 

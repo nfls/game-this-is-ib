@@ -13,7 +13,6 @@ public class TestSceneController : MonoBehaviour {
 
 		MacXboxControllerRumbleUtil.Init();
 		SingletonManager.AddSingleton<ShaderManager>();
-		SingletonManager.AddSingleton<DispatchSystem>();
 		SingletonManager.AddSingleton<CameraManager>();
 		SingletonManager.AddSingleton<TimeManager>();
 		SingletonManager.AddSingleton<ParticleManager>();
@@ -30,13 +29,14 @@ public class TestSceneController : MonoBehaviour {
 		localPlayer.AddComponent<InputOperator>().InteractionSystem = interactionSystem.AddComponent<InteractionSystem>();
 		virtualCamera.Follow = localPlayer.transform;
 		virtualCamera.LookAt = localPlayer.transform;
-		GameObject hammer = IBSpriteFactory.GenerateIBSprite("complex_shooter");
-		GameObject shooter = IBSpriteFactory.GenerateIBSprite("shooter");
-		GameObject complexShooter = IBSpriteFactory.GenerateIBSprite("hammer");
-		localPlayer.GetComponent<CharacterController>().EquipIBSprite(hammer.GetComponent<IBSpriteController>());
-		localPlayer.GetComponent<CharacterController>().EquipIBSprite(shooter.GetComponent<IBSpriteController>());
-		localPlayer.GetComponent<CharacterController>().EquipIBSprite(complexShooter.GetComponent<IBSpriteController>());
-		localPlayer.transform.position = new Vector3(3, 1f, 0);
+		GameObject sprite0 = IBSpriteFactory.GenerateIBSprite("complex_newton_thrower");
+		GameObject sprite1 = IBSpriteFactory.GenerateIBSprite("hammer");
+		GameObject sprite2 = IBSpriteFactory.GenerateIBSprite("rocket_launcher");
+		localPlayer.GetComponent<CharacterController>().EquipIBSprite(sprite0.GetComponent<IBSpriteController>());
+		localPlayer.GetComponent<CharacterController>().EquipIBSprite(sprite1.GetComponent<IBSpriteController>());
+		localPlayer.GetComponent<CharacterController>().EquipIBSprite(sprite2.GetComponent<IBSpriteController>());
+		// localPlayer.transform.position = new Vector3(3, 1f, 0);
+		localPlayer.transform.position = new Vector3(4, 8, 0);
 		GameObject enemy1 = CharacterFactory.GenerateLocalPlayer();
 		TagManager.SetAllTags(enemy1, TagManager.ENEMY_TAG);
 		enemy1.name = "Enemy 1";
