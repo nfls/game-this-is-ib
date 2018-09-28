@@ -27,7 +27,7 @@ public class CharacterMotor : MonoBehaviour {
 
 	public bool IsGrounded => _isGrounded;
 
-	public BoxCollider BodyCollider => _bodyCollider;
+	public Collider BodyCollider => _bodyCollider;
 
 	public FaceDirection FaceDirection => _faceDirection;
 
@@ -35,7 +35,7 @@ public class CharacterMotor : MonoBehaviour {
 
 	public float VelocityY => _velocityY;
 
-	private BoxCollider _bodyCollider;
+	private Collider _bodyCollider;
 	private Rigidbody _rigidbody;
 	private Physix _physix;
 	private FaceDirection _faceDirection = FaceDirection.Right;
@@ -51,7 +51,7 @@ public class CharacterMotor : MonoBehaviour {
 	private float _velocityY;
 	
 	private void Awake() {
-		_bodyCollider = GetComponent<BoxCollider>();
+		_bodyCollider = GetComponent<Collider>();
 		
 		// Config Rigidbody
 		_rigidbody = gameObject.AddComponent<Rigidbody>();
@@ -99,7 +99,6 @@ public class CharacterMotor : MonoBehaviour {
 			
 		} else {
 			if (usesGravity) _velocityY -= gravity;
-			
 			if (_isGrounded) {
 				_isGrounded = false;
 				onGroundExit?.Invoke();
@@ -107,19 +106,15 @@ public class CharacterMotor : MonoBehaviour {
 		}
 
 		if (!_hasMoved) {
-			if (_moveVelocityX != 0f) {
+			if (_moveVelocityX != 0f)
 				if (_moveVelocityX * (float) _faceDirection > brakePower) _moveVelocityX += -brakePower * (float) _faceDirection;
 				else _moveVelocityX = 0f;
-			}
-		} else {
-			_hasMoved = false;
-		}
+		} else _hasMoved = false;
 
 		if (_freeVelocityX != 0f) {
 			int direction = _freeVelocityX > 0 ? 1 : -1;
-			if (_freeVelocityX * direction > freeBodyDrag) {
-				_freeVelocityX += -freeBodyDrag * direction;
-			} else {
+			if (_freeVelocityX * direction > freeBodyDrag) _freeVelocityX += -freeBodyDrag * direction;
+			else {
 				_freeVelocityX = 0f;
 				onFreeBodyExit?.Invoke();
 			}
@@ -156,6 +151,7 @@ public class CharacterMotor : MonoBehaviour {
 			Flip();
 		}
 		*/
+		
 		_hasMoved = true;
 		_moveVelocityX = velocity;
 	}
@@ -170,10 +166,10 @@ public class CharacterMotor : MonoBehaviour {
 		string collision;
 		if (distance > 0) {
 			sign = 1;
-			collision = LEFT_COLLISION;
+			collision = RIGHT_COLLISION;
 		} else {
 			sign = -1;
-			collision = RIGHT_COLLISION;
+			collision = LEFT_COLLISION;
 		}
 
 		if (_physix.IsColliding(collision))
@@ -181,8 +177,7 @@ public class CharacterMotor : MonoBehaviour {
 
 		gameObject.layer = LayerManager.DodgeLayer;
 		RaycastHit hitInfo;
-		if (_rigidbody.SweepTest(new Vector3(sign, 0, 0), out hitInfo, distance * sign, QueryTriggerInteraction.Ignore))
-			distance = hitInfo.point.x - transform.position.x - transform.localScale.x / 2;
+		if (_rigidbody.SweepTest(new Vector3(sign, 0, 0), out hitInfo, distance * sign, QueryTriggerInteraction.Ignore)) distance = hitInfo.point.x - transform.position.x - transform.localScale.x / 2;
 		gameObject.layer = LayerManager.CharacterLayer;
 		
 		transform.position += new Vector3(distance, 0, 0);

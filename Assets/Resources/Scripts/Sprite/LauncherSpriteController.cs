@@ -9,7 +9,9 @@ public class LauncherSpriteController : ShooterSpriteController {
 
 	public bool isTracer;
 	public int launchPerFire = 1;
+	public int launchPerRegenerate = 1;
 	public float regenerationInterval = 2f;
+	public string regenerationSound;
 	public float correctionPower;
 	public Vector3 lockBoxOffset;
 	public Vector3 lockBoxSize;
@@ -115,7 +117,8 @@ public class LauncherSpriteController : ShooterSpriteController {
 
 		do {
 			yield return interval;
-			for (int i = 0; i < launchPerFire; i++) {
+			if (!string.IsNullOrEmpty(regenerationSound)) _audioSource.PlayOneShot(ResourcesManager.GetAudio(regenerationSound));
+			for (int i = 0; i < launchPerRegenerate; i++) {
 				int index = _emptySlots.Dequeue();
 				RocketProjectileController rocketController = ProjectileManager.Get<RocketProjectileController>(projectileType);
 				LoadUpProjectile(rocketController);

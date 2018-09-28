@@ -128,7 +128,7 @@ MonoBehaviour:
   initialOffset: {x: 0, y: -0.1, z: -1}
   initialRotation: {x: 0, y: 0, z: 0}
   commandBufferLength: 3
-  attackSound: shot
+  attackSound: shot_0
   hitSound: bullet_hit_0
   attackEffectSettings:
     doesHit: 0

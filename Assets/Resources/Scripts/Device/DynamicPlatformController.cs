@@ -34,14 +34,17 @@ public class DynamicPlatformController : DeviceController {
 	private void FixedUpdate() {
 		if (_isEnabled) _rigidbody.MovePosition(Vector3.MoveTowards(transform.position, _currentDestination, speed * Time.deltaTime));
 	}
-
+	
 	private void Update() {
-		if (_isEnabled) {
-			Vector3 pos = transform.position;
-			_deltaMovement = pos - _lastPosition;
-			_lastPosition = pos;
-			foreach (var character in _characters) character.transform.position += _deltaMovement;	
-		}
+		if (_isEnabled) UpdateStandOns();
+	}
+
+	private void UpdateStandOns() {
+		Vector3 pos = transform.position;
+		_deltaMovement = pos - _lastPosition;
+		// _deltaMovement.y = 0f;
+		_lastPosition = pos;
+		foreach (var character in _characters) character.transform.position += _deltaMovement;
 	}
 
 	public override void Replay() {
@@ -70,19 +73,14 @@ public class DynamicPlatformController : DeviceController {
 			yield return new WaitForEndOfFrame();
 			if (transform.position == _currentDestination) {
 				if (_isInverse) {
-					if (_currentDestinationIndex != 0) {
-						_currentDestinationIndex -= 1;
-					} else {
+					if (_currentDestinationIndex != 0) _currentDestinationIndex -= 1; else {
 						_currentDestinationIndex = 1;
 						_isInverse = false;
-						if (loopType == LoopType.DontLoop) {
-							Pause();
-						}
+						if (loopType == LoopType.DontLoop) Pause();
 					}
 				} else {
-					if (_currentDestinationIndex < destinations.Count - 1) {
-						_currentDestinationIndex += 1;
-					} else {
+					if (_currentDestinationIndex < destinations.Count - 1) _currentDestinationIndex += 1;
+					else {
 						switch (loopType) {
 							case LoopType.DontLoop: Pause();
 								break;
@@ -112,32 +110,22 @@ public class DynamicPlatformController : DeviceController {
 	private void OnCollisionEnter(Collision other) {
 		if (other.gameObject.layer == LayerManager.CharacterLayer) {
 			CharacterController controller = other.transform.GetComponent<CharacterController>();
-			if (controller) {
-				AddCharacter(controller);
-			}
+			if (controller) AddCharacter(controller);
 		}
 	}
 
 	private void OnCollisionExit(Collision other) {
 		if (other.gameObject.layer == LayerManager.CharacterLayer) {
 			CharacterController controller = other.transform.GetComponent<CharacterController>();
-			if (controller) {
-				RemoveCharacter(controller);
-			}
+			if (controller) RemoveCharacter(controller);
 		}
 	}
 
 	[Conditional("UNITY_EDITOR")]
 	private void OnDrawGizmos() {
 		Gizmos.color = Color.green;
-		for (int i = 0; i < destinations.Count - 1; i++) {
-			Gizmos.DrawLine(destinations[i], destinations[i + 1]);
-		}
-
-		if (loopType == LoopType.Close) {
-			Gizmos.DrawLine(destinations[destinations.Count - 1], destinations[0]);
-		}
-		
+		for (int i = 0; i < destinations.Count - 1; i++) Gizmos.DrawLine(destinations[i], destinations[i + 1]);
+		if (loopType == LoopType.Close) Gizmos.DrawLine(destinations[destinations.Count - 1], destinations[0]);
 		Vector3 size = new Vector3(.3f, .3f, .3f);
 		Color color = new Color(0, .7f, .3f, .4f);
 		for (int i = 0; i < destinations.Count; i ++) {
@@ -151,15 +139,9 @@ public class DynamicPlatformController : DeviceController {
 	[Conditional("UNITY_EDITOR")]
 	private void OnDrawGizmosSelected() {
 		Gizmos.color = Color.red;
-		for (int i = 0; i < destinations.Count - 1; i++) {
-			Gizmos.DrawLine(destinations[i], destinations[i + 1]);
-		}
-		
+		for (int i = 0; i < destinations.Count - 1; i++) Gizmos.DrawLine(destinations[i], destinations[i + 1]);
 		Vector3 size = new Vector3(.3f, .3f, .3f);
-
-		for (int i = 0; i < destinations.Count; i ++) {
-			Gizmos.DrawWireCube(destinations[i], size);
-		}
+		for (int i = 0; i < destinations.Count; i ++) Gizmos.DrawWireCube(destinations[i], size);
 	}
 
 	public enum LoopType {

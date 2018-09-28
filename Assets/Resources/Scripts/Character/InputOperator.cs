@@ -9,10 +9,12 @@ public sealed class InputOperator : CharacterOperator {
 		set {
 			_interactionSystem = value;
 			if (_interactionSystem) {
-				_inputMapper.BindPressEvent(InputMapper.INTERACT, _interactionSystem.Interact);
+				_interactionSystem.isLocalPlayer = CompareTag(TagManager.LOCAL_PLAYER_TAG);
+				_inputMapper.BindPressEvent(InputMapper.INTERACT, _interactionSystem.Preinteract);
+				_inputMapper.BindReleaseEvent(InputMapper.INTERACT, _interactionSystem.Interact);
 				Physics.IgnoreCollision(GetComponent<Collider>(), _interactionSystem.Trigger, true);
 			} else {
-				_inputMapper.UnbindPressEvent(InputMapper.INTERACT);
+				_inputMapper.UnbindReleaseEvent(InputMapper.INTERACT);
 				Physics.IgnoreCollision(GetComponent<Collider>(), _interactionSystem.Trigger, false);
 			}
 		}

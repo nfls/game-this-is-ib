@@ -43,6 +43,9 @@ public static class CharacterFactory {
 		CharacterController controller = go.AddComponent<CharacterController>();
 		controller.name = data.name;
 		controller.health = data.health;
+		controller.maxStamina = ResourcesManager.PlayerAttributesData.maxStamina[data.maxStaminaIndex].value;
+		controller.stamina = controller.maxStamina;
+		controller.staminaRecoveryRate = ResourcesManager.PlayerAttributesData.staminaRecoveryRate[data.staminaRecoveryRateIndex].value;
 		controller.speed = ResourcesManager.PlayerAttributesData.speed[data.speedIndex].value;
 		controller.acceleration = ResourcesManager.PlayerAttributesData.acceleration[data.accelerationIndex].value;
 		controller.jumpPower = ResourcesManager.PlayerAttributesData.jumpPower[data.jumpPowerIndex].value;

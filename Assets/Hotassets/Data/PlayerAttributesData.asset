@@ -81,6 +81,38 @@ MonoBehaviour:
     endCapVertices: 0
     alignment: 1
     material: {fileID: 0}
+  maxStamina:
+    name: Max Stamina
+    description: The capability for player to move and attack
+    attributes:
+    - name: 
+      value: 100
+      cost: 0
+    - name: 
+      value: 150
+      cost: 5
+    - name: 
+      value: 200
+      cost: 10
+    - name: 
+      value: 300
+      cost: 20
+  staminaRecoveryRate:
+    name: Stamina Recovery Rate
+    description: The percentage recovery of stamina each second
+    attributes:
+    - name: 
+      value: 0.35
+      cost: 0
+    - name: 
+      value: 0.5
+      cost: 5
+    - name: 
+      value: 0.6
+      cost: 10
+    - name: 
+      value: 0.8
+      cost: 20
   speed:
     name: Speed
     description: The horizontal speed when player moves normally

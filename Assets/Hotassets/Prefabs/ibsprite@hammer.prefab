@@ -142,6 +142,7 @@ MonoBehaviour:
   initialOffset: {x: -2, y: 0.8, z: 0}
   initialRotation: {x: 0, y: 0, z: 0}
   commandBufferLength: 2
+  staminaCost: 0
   attackSound: swipe_0
   hitSound: melee_hit_0
   attackEffectSettings:
@@ -252,4 +253,3 @@ MonoBehaviour:
     detectsLocalPlayer: 0
     detectsRemotePlayer: 0
     detectsEnemy: 0
-    detectsDevice: 0

@@ -1,4 +1,5 @@
 ﻿using System.Collections;
+using System.Text;
 using UnityEngine;
 using UnityEngine.UI;
 
@@ -14,11 +15,16 @@ public class WorldSpaceTipController : MonoBehaviour {
 	private Text _textController;
 
 	private string _text;
+	private readonly StringBuilder _builder = new StringBuilder(12);
+	private Color _originalColor;
+	private Image _background;
 	private Coroutine _showCoroutine;
 	private Coroutine _hideCoroutine;
 
-	private void Start() {
+	private void Awake() {
 		gameObject.SetActive(false);
+		_background = _textHolder.GetComponent<Image>();
+		_originalColor = _background.color;
 	}
 
 	public void Show(string text, Vector3 position, Vector3 pivot) {
@@ -46,20 +52,33 @@ public class WorldSpaceTipController : MonoBehaviour {
 		if (_hideCoroutine == null) _hideCoroutine = StartCoroutine(ExeHideCoroutine());
 	}
 
+	public void Highlight(Color highlightColor) {
+		_background.color = highlightColor;
+	}
+
+	public void Normal() {
+		_background.color = _originalColor;
+	}
+
 	private IEnumerator ExeShowCoroutine() {
+		_builder.Clear();
 		WaitForSeconds waitForSeconds = new WaitForSeconds(interval);
-		while (_textController.text.Length < _text.Length) {
-			_textController.text = _text.Substring(0, _textController.text.Length + 1);
+		int index = -1;
+		while (++index < _text.Length) {
+			_builder.Append(_text[index]);
+			_textController.text = _builder.ToString();
 			yield return waitForSeconds;
 		}
-
+		
 		_showCoroutine = null;
 	}
 
 	private IEnumerator ExeHideCoroutine() {
+		Normal();
 		WaitForSeconds waitForSeconds = new WaitForSeconds(interval);
+		int index = _builder.Length;
 		while (_textController.text.Length > 0) {
-			_textController.text = _textController.text.Substring(0, _textController.text.Length - 1);
+			_textController.text = _builder.ToString(0, --index);
 			yield return waitForSeconds;
 		}
 		

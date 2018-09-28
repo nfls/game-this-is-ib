@@ -3,7 +3,7 @@ using System.Collections.Generic;
 using System.Runtime.InteropServices;
 using UnityEngine;
 
-public static class MacXboxControllerRumbleUtil {
+public static class JoystickUtil {
 
 	#region SDL2 Bridge
 
@@ -13,7 +13,7 @@ public static class MacXboxControllerRumbleUtil {
 	 * https://github.com/flibitijibibo/SDL2-CS
 	 */
 
-	public const string nativeLibName = "SDL2";
+	public const string NATIVE_LIB_NAME = "SDL2";
 	public const uint SDL_INIT_HAPTIC = 0x00001000;
 
 	// todo customized rumble effects
@@ -178,101 +178,101 @@ public static class MacXboxControllerRumbleUtil {
 		[FieldOffset(0)] public SDL_HapticCustom custom;
 	}
 
-	[DllImport(nativeLibName, CallingConvention = CallingConvention.Cdecl)]
+	[DllImport(NATIVE_LIB_NAME, CallingConvention = CallingConvention.Cdecl)]
 	private static extern int SDL_Init(uint flags);
 
-	[DllImport(nativeLibName, CallingConvention = CallingConvention.Cdecl)]
+	[DllImport(NATIVE_LIB_NAME, CallingConvention = CallingConvention.Cdecl)]
 	private static extern void SDL_Quit();
 
-	[DllImport(nativeLibName, CallingConvention = CallingConvention.Cdecl)]
+	[DllImport(NATIVE_LIB_NAME, CallingConvention = CallingConvention.Cdecl)]
 	private static extern uint SDL_WasInit(uint flags);
 
-	[DllImport(nativeLibName, CallingConvention = CallingConvention.Cdecl)]
+	[DllImport(NATIVE_LIB_NAME, CallingConvention = CallingConvention.Cdecl)]
 	private static extern void SDL_HapticClose(IntPtr haptic);
 
-	[DllImport(nativeLibName, CallingConvention = CallingConvention.Cdecl)]
+	[DllImport(NATIVE_LIB_NAME, CallingConvention = CallingConvention.Cdecl)]
 	private static extern void SDL_HapticDestroyEffect(IntPtr haptic, int effect);
 
-	[DllImport(nativeLibName, CallingConvention = CallingConvention.Cdecl)]
+	[DllImport(NATIVE_LIB_NAME, CallingConvention = CallingConvention.Cdecl)]
 	private static extern int SDL_HapticEffectSupported(IntPtr haptic, ref SDL_HapticEffect effect);
 
-	[DllImport(nativeLibName, CallingConvention = CallingConvention.Cdecl)]
+	[DllImport(NATIVE_LIB_NAME, CallingConvention = CallingConvention.Cdecl)]
 	private static extern int SDL_HapticGetEffectStatus(IntPtr haptic, int effect);
 
-	[DllImport(nativeLibName, CallingConvention = CallingConvention.Cdecl)]
+	[DllImport(NATIVE_LIB_NAME, CallingConvention = CallingConvention.Cdecl)]
 	private static extern int SDL_HapticIndex(IntPtr haptic);
 
-	[DllImport(nativeLibName, EntryPoint = "SDL_HapticName", CallingConvention = CallingConvention.Cdecl)]
+	[DllImport(NATIVE_LIB_NAME, EntryPoint = "SDL_HapticName", CallingConvention = CallingConvention.Cdecl)]
 	private static extern IntPtr INTERNAL_SDL_HapticName(int device_index);
 
 	private static string SDL_HapticName(int device_index) {
 		return UTF8_ToManaged(INTERNAL_SDL_HapticName(device_index));
 	}
 
-	[DllImport(nativeLibName, CallingConvention = CallingConvention.Cdecl)]
+	[DllImport(NATIVE_LIB_NAME, CallingConvention = CallingConvention.Cdecl)]
 	private static extern int SDL_HapticNewEffect(IntPtr haptic, ref SDL_HapticEffect effect);
 
-	[DllImport(nativeLibName, CallingConvention = CallingConvention.Cdecl)]
+	[DllImport(NATIVE_LIB_NAME, CallingConvention = CallingConvention.Cdecl)]
 	private static extern int SDL_HapticNumAxes(IntPtr haptic);
 
-	[DllImport(nativeLibName, CallingConvention = CallingConvention.Cdecl)]
+	[DllImport(NATIVE_LIB_NAME, CallingConvention = CallingConvention.Cdecl)]
 	private static extern int SDL_HapticNumEffects(IntPtr haptic);
 
-	[DllImport(nativeLibName, CallingConvention = CallingConvention.Cdecl)]
+	[DllImport(NATIVE_LIB_NAME, CallingConvention = CallingConvention.Cdecl)]
 	private static extern int SDL_HapticNumEffectsPlaying(IntPtr haptic);
 
-	[DllImport(nativeLibName, CallingConvention = CallingConvention.Cdecl)]
+	[DllImport(NATIVE_LIB_NAME, CallingConvention = CallingConvention.Cdecl)]
 	private static extern IntPtr SDL_HapticOpen(int device_index);
 
-	[DllImport(nativeLibName, CallingConvention = CallingConvention.Cdecl)]
+	[DllImport(NATIVE_LIB_NAME, CallingConvention = CallingConvention.Cdecl)]
 	private static extern int SDL_HapticOpened(int device_index);
 
-	[DllImport(nativeLibName, CallingConvention = CallingConvention.Cdecl)]
+	[DllImport(NATIVE_LIB_NAME, CallingConvention = CallingConvention.Cdecl)]
 	private static extern int SDL_HapticPause(IntPtr haptic);
 
-	[DllImport(nativeLibName, CallingConvention = CallingConvention.Cdecl)]
+	[DllImport(NATIVE_LIB_NAME, CallingConvention = CallingConvention.Cdecl)]
 	private static extern uint SDL_HapticQuery(IntPtr haptic);
 
-	[DllImport(nativeLibName, CallingConvention = CallingConvention.Cdecl)]
+	[DllImport(NATIVE_LIB_NAME, CallingConvention = CallingConvention.Cdecl)]
 	private static extern int SDL_HapticRumbleInit(IntPtr haptic);
 
-	[DllImport(nativeLibName, CallingConvention = CallingConvention.Cdecl)]
+	[DllImport(NATIVE_LIB_NAME, CallingConvention = CallingConvention.Cdecl)]
 	private static extern int SDL_HapticRumblePlay(IntPtr haptic, float strength, uint length);
 
-	[DllImport(nativeLibName, CallingConvention = CallingConvention.Cdecl)]
+	[DllImport(NATIVE_LIB_NAME, CallingConvention = CallingConvention.Cdecl)]
 	private static extern int SDL_HapticRumbleStop(IntPtr haptic);
 
-	[DllImport(nativeLibName, CallingConvention = CallingConvention.Cdecl)]
+	[DllImport(NATIVE_LIB_NAME, CallingConvention = CallingConvention.Cdecl)]
 	private static extern int SDL_HapticRumbleSupported(IntPtr haptic);
 
-	[DllImport(nativeLibName, CallingConvention = CallingConvention.Cdecl)]
+	[DllImport(NATIVE_LIB_NAME, CallingConvention = CallingConvention.Cdecl)]
 	private static extern int SDL_HapticRunEffect(IntPtr haptic, int effect, uint iterations);
 
-	[DllImport(nativeLibName, CallingConvention = CallingConvention.Cdecl)]
+	[DllImport(NATIVE_LIB_NAME, CallingConvention = CallingConvention.Cdecl)]
 	private static extern int SDL_HapticSetAutocenter(IntPtr haptic, int autocenter);
 
-	[DllImport(nativeLibName, CallingConvention = CallingConvention.Cdecl)]
+	[DllImport(NATIVE_LIB_NAME, CallingConvention = CallingConvention.Cdecl)]
 	private static extern int SDL_HapticSetGain(IntPtr haptic, int gain);
 
-	[DllImport(nativeLibName, CallingConvention = CallingConvention.Cdecl)]
+	[DllImport(NATIVE_LIB_NAME, CallingConvention = CallingConvention.Cdecl)]
 	private static extern int SDL_HapticStopAll(IntPtr haptic);
 
-	[DllImport(nativeLibName, CallingConvention = CallingConvention.Cdecl)]
+	[DllImport(NATIVE_LIB_NAME, CallingConvention = CallingConvention.Cdecl)]
 	private static extern int SDL_HapticStopEffect(IntPtr haptic, int effect);
 
-	[DllImport(nativeLibName, CallingConvention = CallingConvention.Cdecl)]
+	[DllImport(NATIVE_LIB_NAME, CallingConvention = CallingConvention.Cdecl)]
 	private static extern int SDL_HapticUnpause(IntPtr haptic);
 
-	[DllImport(nativeLibName, CallingConvention = CallingConvention.Cdecl)]
+	[DllImport(NATIVE_LIB_NAME, CallingConvention = CallingConvention.Cdecl)]
 	private static extern int SDL_HapticUpdateEffect(IntPtr haptic, int effect, ref SDL_HapticEffect data);
 
-	[DllImport(nativeLibName, CallingConvention = CallingConvention.Cdecl)]
+	[DllImport(NATIVE_LIB_NAME, CallingConvention = CallingConvention.Cdecl)]
 	private static extern int SDL_NumHaptics();
 
-	[DllImport(nativeLibName, CallingConvention = CallingConvention.Cdecl)]
+	[DllImport(NATIVE_LIB_NAME, CallingConvention = CallingConvention.Cdecl)]
 	private static extern IntPtr SDL_malloc(IntPtr size);
 
-	[DllImport(nativeLibName, CallingConvention = CallingConvention.Cdecl)]
+	[DllImport(NATIVE_LIB_NAME, CallingConvention = CallingConvention.Cdecl)]
 	private static extern void SDL_free(IntPtr memblock);
 
 	private static unsafe string UTF8_ToManaged(IntPtr s, bool freePtr = false) {

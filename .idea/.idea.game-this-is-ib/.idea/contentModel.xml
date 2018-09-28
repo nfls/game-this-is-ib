@@ -88,6 +88,7 @@
               <e p="DeviceController.cs" t="Include" />
               <e p="DoorController.cs" t="Include" />
               <e p="DynamicPlatformController.cs" t="Include" />
+              <e p="InteractionController.cs" t="Include" />
               <e p="InterlocutionController.cs" t="Include" />
               <e p="SignalReceiver.cs" t="Include" />
               <e p="SignalSender.cs" t="Include" />
@@ -152,7 +153,6 @@
             </e>
             <e p="System" t="Include">
               <e p="AudioManager.cs" t="Include" />
-              <e p="InteractionController.cs" t="Include" />
               <e p="InteractionSystem.cs" t="Include" />
               <e p="LayerManager.cs" t="Include" />
               <e p="ShaderManager.cs" t="Include" />
@@ -167,13 +167,14 @@
               <e p="TrailSettings.cs" t="Include" />
             </e>
             <e p="UI" t="Include">
+              <e p="DialogPortraitController.cs" t="Include" />
               <e p="UIManager.cs" t="Include" />
               <e p="WorldSpaceTipController.cs" t="Include" />
             </e>
             <e p="Utility" t="Include">
               <e p="CommonUtils.cs" t="Include" />
               <e p="Extensions.cs" t="Include" />
-              <e p="MacXboxControllerRumbleUtil.cs" t="Include" />
+              <e p="JoystickUtil.cs" t="Include" />
               <e p="MonoSingleton.cs" t="Include" />
               <e p="PhysicsVisualizer.cs" t="Include" />
               <e p="PrimitiveHelper.cs" t="Include" />

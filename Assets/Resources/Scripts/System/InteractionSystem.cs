@@ -3,6 +3,8 @@ using UnityEngine;
 
 public class InteractionSystem : MonoBehaviour {
 
+	public bool isLocalPlayer;
+
 	public Collider Trigger => _trigger;
 
 	private InteractionController _interactionController;
@@ -18,8 +20,13 @@ public class InteractionSystem : MonoBehaviour {
 		_rigidbody.isKinematic = true;
 	}
 
+	public void Preinteract() {
+		if (_interactionController) UIManager.HighlightInteractionTip(_interactionController.highlightColor, isLocalPlayer);
+	}
+
 	public void Interact() {
 		if (_interactionController) {
+			UIManager.NormalInteractionTip(isLocalPlayer);
 			_interactionController.Interact();
 			if (!_interactionController.Interactive) {
 				_potentialInteractionControllers.Remove(_interactionController);
@@ -31,23 +38,20 @@ public class InteractionSystem : MonoBehaviour {
 	private void Refresh() {
 		if (CalculateInteractionController()) {
 			if (_interactionController) {
-				float direction = transform.position.x - _interactionController.transform.position.x > 0 ? 1 : -1;
 				Vector3 originalPos = _interactionController.transform.position;
 				Vector3 position = new Vector3 {
-					x = direction * _interactionController.horizontalOffset + originalPos.x,
+					x = _interactionController.horizontalOffset + originalPos.x,
 					y = _interactionController.verticalOffset + originalPos.y,
-					z = -2.1f
+					z = -1.1f
 				};
 
 				Vector2 pivot = new Vector2 {
-					x = direction == 1 ? 0 : 1,
+					x = _interactionController.horizontalOffset > 0 ? 0 : 1,
 					y = (float) _interactionController.showDirection
 				};
 
-				UIManager.ShowInteractionTip(_interactionController.text, position, pivot);
-			} else {
-				UIManager.HideInteractionTip();
-			}
+				UIManager.ShowInteractionTip(_interactionController.text, position, pivot, isLocalPlayer);
+			} else UIManager.HideInteractionTip(isLocalPlayer);
 		}
 	}
 

@@ -84,6 +84,7 @@ public class TimeManager : MonoSingleton {
 			case TimeEffectLayer.Action: actionRequests.Add(request);
 				break;
 		}
+		
 		CalculateTimeScale();
 	}
 

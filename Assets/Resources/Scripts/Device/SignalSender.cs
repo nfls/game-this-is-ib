@@ -2,7 +2,7 @@
 using System.Diagnostics;
 using UnityEngine;
 
-public abstract class SignalSender : DeviceController {
+public class SignalSender : DeviceController {
 
 	public bool isInitialActivated;
 	public List<SignalReceiver> activationSignalReceivers;
@@ -13,11 +13,8 @@ public abstract class SignalSender : DeviceController {
 		set {
 			_isActivated = value;
 			if (!_isEnabled) return;
-			if (value) {
-				SendActivationSignal();
-			} else {
-				SendDeactivationSignal();
-			}
+			if (value) SendActivationSignal();
+			else SendDeactivationSignal();
 		}
 	}
 
@@ -25,50 +22,44 @@ public abstract class SignalSender : DeviceController {
 
 	public override void Replay() {
 		base.Replay();
-		if (isInitialActivated) {
-			IsActivated = true;
-		}
+		if (isInitialActivated) IsActivated = true;
 	}
 
 	protected void SendActivationSignal() {
-		foreach (var signalReceiver in activationSignalReceivers) {
-			signalReceiver.ReceiveActivationSignal();
-		}
+		foreach (var signalReceiver in activationSignalReceivers) signalReceiver.ReceiveActivationSignal();
 	}
 
 	protected void SendDeactivationSignal() {
-		foreach (var signalReceiver in activationSignalReceivers) {
-			signalReceiver.ReceiveDeactivationSignal();
-		}
+		foreach (var signalReceiver in activationSignalReceivers) signalReceiver.ReceiveDeactivationSignal();
 	}
 	
 	[Conditional("UNITY_EDITOR")]
 	protected virtual void OnDrawGizmos() {
 		var pos = transform.position;
 		Gizmos.color = Color.black;
-		foreach (var receiver in deactivationSignalReceivers) {
-			Gizmos.DrawLine(pos, receiver.transform.position);
-		}
+		if (deactivationSignalReceivers != null)
+			foreach (var receiver in deactivationSignalReceivers)
+				if (receiver) Gizmos.DrawLine(pos, receiver.transform.position);
 
 		pos.y += .1f;
 		Gizmos.color = Color.cyan;
-		foreach (var receiver in activationSignalReceivers) {
-			Gizmos.DrawLine(pos, receiver.transform.position + new Vector3(0, .1f, 0));
-		}
+		if (activationSignalReceivers != null)
+			foreach (var receiver in activationSignalReceivers)
+				if (receiver) Gizmos.DrawLine(pos, receiver.transform.position + new Vector3(0, .1f, 0));
 	}
 
 	[Conditional("UNITY_EDITOR")]
 	protected virtual void OnDrawGizmosSelected() {
 		var pos = transform.position;
 		Gizmos.color = Color.black;
-		foreach (var receiver in deactivationSignalReceivers) {
-			Gizmos.DrawLine(pos, receiver.transform.position);
-		}
+		if (deactivationSignalReceivers != null)
+			foreach (var receiver in deactivationSignalReceivers)
+				if (receiver) Gizmos.DrawLine(pos, receiver.transform.position);
 
 		pos.y += .1f;
 		Gizmos.color = Color.red;
-		foreach (var receiver in activationSignalReceivers) {
-			Gizmos.DrawLine(pos, receiver.transform.position + new Vector3(0, .1f, 0));
-		}
+		if (activationSignalReceivers != null)
+			foreach (var receiver in activationSignalReceivers)
+				if (receiver) Gizmos.DrawLine(pos, receiver.transform.position + new Vector3(0, .1f, 0));
 	}
 }

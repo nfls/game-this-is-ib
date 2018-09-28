@@ -8,6 +8,8 @@ public class PlayerAttributesData : ScriptableObject {
 	public float health;
 	public TrailSettings dodgeTrailSettings;
 	public TrailSettings accelerationTrailSettings;
+	public PlayerFloatAttribute maxStamina;
+	public PlayerFloatAttribute staminaRecoveryRate;
 	public PlayerFloatAttribute speed;
 	public PlayerFloatAttribute acceleration;
 	public PlayerFloatAttribute jumpPower;

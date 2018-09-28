@@ -10,10 +10,7 @@ public class InterlocutionData {
 	static InterlocutionData() {
 		Keys = new string[Subject.Count + 1];
 		string[] names = Subject.Names;
-		for (int i = 0, l = Subject.Count; i < l; i++) {
-			Keys[i] = names[i];
-		}
-
+		for (int i = 0, l = Subject.Count; i < l; i++) Keys[i] = names[i];
 		Keys[Keys.Length - 1] = DIPLOMA;
 	}
 

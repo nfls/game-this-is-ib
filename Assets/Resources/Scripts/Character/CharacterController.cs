@@ -1,5 +1,6 @@
 ﻿using System;
 using System.Collections;
+using System.Runtime.InteropServices;
 using UnityEngine;
 using UnityEngine.Rendering;
 
@@ -12,6 +13,9 @@ public class CharacterController : MonoBehaviour {
 	
 	public string characterName;
 	public float health;
+	public float maxStamina;
+	public float stamina;
+	public float staminaRecoveryRate;
 	public float speed;
 	public float acceleration;
 	public float jumpPower;
@@ -35,18 +39,13 @@ public class CharacterController : MonoBehaviour {
 
 	public int CarriedIBSpriteCount {
 		get {
-			for (int i = 0; i < carriedIBSpriteControllers.Length; i++) {
-				if (!carriedIBSpriteControllers[i]) {
-					return i;
-				}
-			}
-
+			for (int i = 0; i < carriedIBSpriteControllers.Length; i++)
+				if (!carriedIBSpriteControllers[i]) return i;
 			return carriedIBSpriteControllers.Length;
 		}
 	}
 
 	public bool IsDodgeCooldowning => _dodgeCooldownCoroutine != null;
-	public float DodgeCooldownDuration => _dodgeCooldownDuration;
 
 	protected bool _isAccelerating;
 	protected bool _isDodging;
@@ -54,13 +53,14 @@ public class CharacterController : MonoBehaviour {
 	protected int _jumpTimes;
 	protected int _dodgeTimes;
 	protected int _currentIBSpriteControllerIndex = -1;
-	protected float _dodgeCooldownDuration;
 	protected IBSpriteController _currentIBSpriteController;
 	protected CharacterMotor _characterMotor;
 	protected TrailRenderer _trailRenderer;
 
 	protected Coroutine _stunCoroutine;
+	protected Coroutine _dodgeCoroutine;
 	protected Coroutine _dodgeCooldownCoroutine;
+	protected Coroutine _staminaRecoveryCoroutine;
 
 	public virtual void Awake() {
 		_characterMotor = GetComponent<CharacterMotor>();
@@ -86,42 +86,36 @@ public class CharacterController : MonoBehaviour {
 		if (_isStunned) return;
 
 		float velocity = speed * (float) direction;
-		if (_isAccelerating) {
-			velocity *= acceleration;
-		}
-		if (direction != _characterMotor.FaceDirection) {
-			_characterMotor.Flip();
-		}
+		if (_isAccelerating) velocity *= acceleration;
+		if (direction != _characterMotor.FaceDirection)_characterMotor.Flip();
 		_characterMotor.Move(velocity);
 	}
 
 	public void EnterAcceleratingState() {
 		if (_isStunned || _isDodging) return;
 		_isAccelerating = true;
-		if (hasAccelerationTrail) {
-			EnableTrail(accelerationTrailSettings);
-		}
+		if (hasAccelerationTrail) EnableTrail(accelerationTrailSettings);
 	}
 
 	public void ExitAcceleratingState() {
 		if (!_isAccelerating) return;
 		_isAccelerating = false;
-		if (hasAccelerationTrail) {
-			DisableTrail();
-		}
+		if (hasAccelerationTrail) DisableTrail();
 	}
 
 	public void Dodge() {
 		if (_isStunned || _isDodging || _dodgeTimes == dodgeCapacity) return;
 		_dodgeTimes += 1;
 		_characterMotor.Dodge(dodgeDistance * (float) _characterMotor.FaceDirection);
-		StartCoroutine(ExeDodgeTask(dodgeInvincibilityTime));
-		if (_dodgeCooldownCoroutine == null) _dodgeCooldownCoroutine = StartCoroutine(ExeDodgeCooldownTask());
+		_dodgeCoroutine = StartCoroutine(ExeDodgeCoroutine(dodgeInvincibilityTime));
+		if (_dodgeCooldownCoroutine == null) _dodgeCooldownCoroutine = StartCoroutine(ExeDodgeCooldownCoroutine());
 	}
 
 	public void OnReceiveAttackCommand() {
 		if (_isStunned) return;
 		if (!_currentIBSpriteController) return;
+		if (stamina < _currentIBSpriteController.staminaCost) return; 
+		CostStamina(_currentIBSpriteController.staminaCost);
 		_currentIBSpriteController.OnReceiveAttackCommand();
 	}
 
@@ -134,10 +128,7 @@ public class CharacterController : MonoBehaviour {
 		if (_isStunned) return;
 		float power = jumpPower;
 		if (_jumpTimes < jumpTimes) {
-			for (int i = 0, l = _jumpTimes; i < l; i ++) {
-				power *= jumpPowerDecay;
-			}
-
+			for (int i = 0, l = _jumpTimes; i < l; i ++) power *= jumpPowerDecay;
 			_jumpTimes++;
 			_characterMotor.Jump(power);
 			onJump?.Invoke(this);
@@ -161,40 +152,28 @@ public class CharacterController : MonoBehaviour {
 
 	public void SwitchPreviousIBSprite() {
 		if (_currentIBSpriteControllerIndex == -1) return;
-
 		int oldIndex = _currentIBSpriteControllerIndex;
 		_currentIBSpriteControllerIndex--;
-		if (_currentIBSpriteControllerIndex < 0) {
-			_currentIBSpriteControllerIndex = CarriedIBSpriteCount - 1;
-		}
-		
+		if (_currentIBSpriteControllerIndex < 0) _currentIBSpriteControllerIndex = CarriedIBSpriteCount - 1;
 		IBSpriteController controller = carriedIBSpriteControllers[_currentIBSpriteControllerIndex];
 		if (controller) {
 			_currentIBSpriteController = controller;
 			carriedIBSpriteControllers[oldIndex].OnSwitchOff();
 			_currentIBSpriteController.OnSwitchOn();
-		} else {
-			_currentIBSpriteControllerIndex = oldIndex;
-		}
+		} else _currentIBSpriteControllerIndex = oldIndex;
 	}
 
 	public void SwitchNextIBSprite() {
 		if (_currentIBSpriteControllerIndex == -1) return;
-		
 		int oldIndex = _currentIBSpriteControllerIndex;
 		_currentIBSpriteControllerIndex++;
-		if (_currentIBSpriteControllerIndex == CarriedIBSpriteCount) {
-			_currentIBSpriteControllerIndex = 0;
-		}
-
+		if (_currentIBSpriteControllerIndex == CarriedIBSpriteCount) _currentIBSpriteControllerIndex = 0;
 		IBSpriteController controller = carriedIBSpriteControllers[_currentIBSpriteControllerIndex];
 		if (controller) {
 			_currentIBSpriteController = controller;
 			carriedIBSpriteControllers[oldIndex].OnSwitchOff();
 			_currentIBSpriteController.OnSwitchOn();
-		} else {
-			_currentIBSpriteControllerIndex = oldIndex;
-		}
+		} else _currentIBSpriteControllerIndex = oldIndex;
 	}
 
 	public void EquipIBSprite(IBSpriteController controller, bool autoSwitch = true) {
@@ -215,13 +194,9 @@ public class CharacterController : MonoBehaviour {
 		controller.DetectionSettings = detectionSettings;
 		
 		if (autoSwitch) {
-			if (IsIBSpriteOn) {
-				_currentIBSpriteController.OnSwitchOff();
-			}
-
+			if (IsIBSpriteOn) _currentIBSpriteController.OnSwitchOff();
 			_currentIBSpriteControllerIndex = CarriedIBSpriteCount - 1;
 			_currentIBSpriteController = controller;
-			
 			controller.OnSwitchOn();
 		}
 	}
@@ -230,10 +205,7 @@ public class CharacterController : MonoBehaviour {
 		if (_isDodging) return;
 		SprayBlood();
 		health -= damage;
-		if (onDamaged != null) {
-			onDamaged(damage);
-		}
-		
+		onDamaged?.Invoke(damage);
 		if (health <= 0f) {
 			health = 0f;
 			Die();
@@ -247,12 +219,8 @@ public class CharacterController : MonoBehaviour {
 
 	public void GetStunned(float stunnedAngle, float stunnedTime) {
 		if (_isDodging) return;
-		if (_stunCoroutine == null) {
-			_currentIBSpriteController?.CancelAttack();
-		} else {
-			ExitStunState();
-		}
-		
+		if (_stunCoroutine == null) _currentIBSpriteController?.CancelAttack();
+		else ExitStunState();
 		EnterStunState(stunnedAngle, stunnedTime);
 	}
 
@@ -288,7 +256,7 @@ public class CharacterController : MonoBehaviour {
 
 	protected void EnterStunState(float stunnedAngle, float stunnedTime) {
 		_isStunned = true;
-		_stunCoroutine = StartCoroutine(ExeStunTask(stunnedAngle, stunnedTime));
+		_stunCoroutine = StartCoroutine(ExeStunCoroutine(stunnedAngle, stunnedTime));
 	}
 
 	protected void ExitStunState() {
@@ -297,44 +265,53 @@ public class CharacterController : MonoBehaviour {
 		_isStunned = false;
 	}
 
-	protected IEnumerator ExeStunTask(float stunnedAngle, float stunnedTime) {
+	protected IEnumerator ExeStunCoroutine(float stunnedAngle, float stunnedTime) {
 		transform.rotation = new Vector3(0, 0, stunnedAngle * (float) _characterMotor.FaceDirection).ToQuaternion();
 		yield return new WaitForSeconds(stunnedTime);
 		transform.rotation = Quaternion.identity;
 	}
 
-	protected IEnumerator ExeDodgeTask(float dodgeInvincibilityTime) {
+	protected IEnumerator ExeDodgeCoroutine(float dodgeInvincibilityTime) {
 		_isDodging = true;
-		if (hasDodgeTrail) {
-			EnableTrail(dodgeTrailSettings);
-		}
+		if (hasDodgeTrail) EnableTrail(dodgeTrailSettings);
 		
 		yield return new WaitForSeconds(dodgeInvincibilityTime);
 		if (hasDodgeTrail) {
 			DisableTrail();
-			if (_isAccelerating) {
-				if (hasAccelerationTrail) {
-					EnableTrail(accelerationTrailSettings);
-				}
-			}
+			if (_isAccelerating)
+				if (hasAccelerationTrail) EnableTrail(accelerationTrailSettings);
 		}
-		
+
+		_dodgeCoroutine = null;
 		_isDodging = false;
 	}
 
-	protected IEnumerator ExeDodgeCooldownTask() {
+	protected IEnumerator ExeDodgeCooldownCoroutine() {
 		while (true) {
-			_dodgeCooldownDuration = dodgeCooldown;
-			while (_dodgeCooldownDuration > 0) {
+			float endTime = Time.time + dodgeCooldown;
+			do {
 				yield return null;
-				_dodgeCooldownDuration -= Time.deltaTime;
-			}
+			} while (Time.time < endTime);
 			_dodgeTimes -= 1;
-			if (_dodgeTimes == 0) {
-				break;
-			}
+			if (_dodgeTimes == 0) break;
 		}
 
 		_dodgeCooldownCoroutine = null;
+	}
+	
+	protected void CostStamina(float value) {
+		stamina -= value;
+		if (stamina < 0f) stamina = 0f;
+		if (_staminaRecoveryCoroutine == null) _staminaRecoveryCoroutine = StartCoroutine(ExeStaminaRecoveryCoroutine());
+	}
+
+	protected IEnumerator ExeStaminaRecoveryCoroutine() {
+		while (stamina < maxStamina) {
+			yield return null;
+			stamina += maxStamina * staminaRecoveryRate * Time.deltaTime;
+		}
+		
+		stamina = maxStamina;
+		_staminaRecoveryCoroutine = null;
 	}
 }

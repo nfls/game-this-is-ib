@@ -5,6 +5,8 @@ public abstract class PlayerData {
 
 	public string name;
 	public float health;
+	public int maxStaminaIndex;
+	public int staminaRecoveryRateIndex;
 	public int speedIndex;
 	public int accelerationIndex;
 	public int jumpPowerIndex;
@@ -31,6 +33,8 @@ public abstract class PlayerData {
 	public PlayerData(PlayerDataProxy data) {
 		name = data.name;
 		health = data.health;
+		maxStaminaIndex = data.maxStaminaIndex;
+		staminaRecoveryRateIndex = data.staminaRecoveryRateIndex;
 		speedIndex = data.speedIndex;
 		accelerationIndex = data.accelerationIndex;
 		jumpPowerIndex = data.jumpPowerIndex;
@@ -56,6 +60,8 @@ public abstract class PlayerData {
 	public virtual void Cache(PlayerData data) {
 		name = data.name;
 		health = data.health;
+		maxStaminaIndex = data.maxStaminaIndex;
+		staminaRecoveryRateIndex = data.staminaRecoveryRateIndex;
 		speedIndex = data.speedIndex;
 		accelerationIndex = data.accelerationIndex;
 		jumpPowerIndex = data.jumpPowerIndex;
@@ -126,9 +132,7 @@ public class RemotePlayerData : PlayerData {
 	public override void Cache(PlayerData data) {
 		base.Cache(data);
 		var d = data as RemotePlayerData;
-		if (d != null) {
-			reward = d.reward;
-		}
+		if (d != null) reward = d.reward;
 	}
 }
 
@@ -136,6 +140,8 @@ public class PlayerDataProxy {
 
 	public string name;
 	public float health;
+	public int maxStaminaIndex;
+	public int staminaRecoveryRateIndex;
 	public int speedIndex;
 	public int accelerationIndex;
 	public int jumpPowerIndex;

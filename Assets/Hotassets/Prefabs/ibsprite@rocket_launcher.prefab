@@ -66,7 +66,7 @@ Transform:
   m_GameObject: {fileID: 1964379449846730}
   m_LocalRotation: {x: -0, y: -0, z: -0, w: 1}
   m_LocalPosition: {x: 0, y: 0, z: 0}
-  m_LocalScale: {x: 0.8, y: 0.5, z: 0.35}
+  m_LocalScale: {x: 0.5, y: 0.8, z: 0.35}
   m_Children: []
   m_Father: {fileID: 4618614894720932}
   m_RootOrder: 0
@@ -128,13 +128,13 @@ MonoBehaviour:
   initialOffset: {x: -2, y: 0.8, z: 0}
   initialRotation: {x: 0, y: 0, z: 0}
   commandBufferLength: 2
-  attackSound: shot
+  attackSound: shot_0
   hitSound: bullet_hit_0
   attackEffectSettings:
     doesHit: 1
     doesStun: 1
     doesDamage: 1
-    hitVelocityX: 5
+    hitVelocityX: 2
     hitVelocityY: 0
     stunTime: 0.1
     stunAngle: 15
@@ -156,7 +156,7 @@ MonoBehaviour:
       m_Curve:
       - serializedVersion: 3
         time: 0
-        value: 0.41249847
+        value: 0.74937916
         inSlope: 0
         outSlope: 0
         tangentMode: 0
@@ -165,7 +165,7 @@ MonoBehaviour:
         outWeight: 0.33333334
       - serializedVersion: 3
         time: 1
-        value: 0.41249847
+        value: 0.74937916
         inSlope: 0
         outSlope: 0
         tangentMode: 0
@@ -187,21 +187,31 @@ MonoBehaviour:
   fireEffect: gun_smoke
   hitEffect: 
   lifespan: 4
-  recoilTime: 0.15
-  recoilDistance: 0.6
-  recoilRotation: 25
+  recoilTime: 0.2
+  recoilDistance: 0
+  recoilRotation: 0
   isTracer: 0
-  launchPerFire: 1
-  regenerationInterval: 1.5
-  correctionPower: 2
+  launchPerFire: 4
+  launchPerRegenerate: 2
+  regenerationInterval: 2
+  regenerationSound: reload_0
+  correctionPower: 5
   lockBoxOffset: {x: 0, y: 1, z: 0}
   lockBoxSize: {x: 15, y: -3, z: 3}
   fireStyles:
-  - offset: {x: -0.3, y: 0.25, z: 0.8}
-    rotation: {x: 0, y: 0, z: 30}
-  - offset: {x: -0.3, y: 0.25, z: -0.8}
-    rotation: {x: 0, y: 0, z: 30}
-  - offset: {x: -0.3, y: -0.25, z: 0.8}
-    rotation: {x: 0, y: 0, z: 30}
-  - offset: {x: -0.3, y: -0.25, z: -0.8}
-    rotation: {x: 0, y: 0, z: 30}
+  - offset: {x: -0.3, y: 0.3, z: 0.8}
+    rotation: {x: 0, y: 0, z: 60}
+  - offset: {x: -0.3, y: 0.3, z: -0.8}
+    rotation: {x: 0, y: 0, z: 60}
+  - offset: {x: -0.3, y: -0.3, z: 0.8}
+    rotation: {x: 0, y: 0, z: 60}
+  - offset: {x: -0.3, y: -0.3, z: -0.8}
+    rotation: {x: 0, y: 0, z: 60}
+  - offset: {x: 0.3, y: 0.3, z: 0.8}
+    rotation: {x: 0, y: 0, z: 60}
+  - offset: {x: 0.3, y: 0.3, z: -0.8}
+    rotation: {x: 0, y: 0, z: 60}
+  - offset: {x: 0.3, y: -0.3, z: 0.8}
+    rotation: {x: 0, y: 0, z: 60}
+  - offset: {x: 0.3, y: -0.3, z: -0.8}
+    rotation: {x: 0, y: 0, z: 60}

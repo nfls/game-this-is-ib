@@ -1,17 +1,19 @@
 ﻿using Cinemachine;
 using UnityEngine;
+using UnityEngine.Rendering;
 
 public class TestSceneController : MonoBehaviour {
 
 	public CinemachineVirtualCamera virtualCamera;
+	public LevelController level;
 	public AudioClip bgm;
 
 	private void Start() {
 		LocalDataManager.Init();
 		ResourcesManager.Init();
 		PlayerManager.Init();
+		JoystickUtil.Init();
 
-		MacXboxControllerRumbleUtil.Init();
 		SingletonManager.AddSingleton<ShaderManager>();
 		SingletonManager.AddSingleton<CameraManager>();
 		SingletonManager.AddSingleton<TimeManager>();
@@ -21,6 +23,8 @@ public class TestSceneController : MonoBehaviour {
 		SingletonManager.AddSingleton<AudioManager>();
 		SingletonManager.AddSingleton<InputManager>();
 		SingletonManager.AddSingleton<UIManager>();
+		
+		level.Activate();
 
 		GameObject localPlayer = CharacterFactory.GenerateLocalPlayer();
 		GameObject interactionSystem = new GameObject("Interaction System");
@@ -29,13 +33,13 @@ public class TestSceneController : MonoBehaviour {
 		localPlayer.AddComponent<InputOperator>().InteractionSystem = interactionSystem.AddComponent<InteractionSystem>();
 		virtualCamera.Follow = localPlayer.transform;
 		virtualCamera.LookAt = localPlayer.transform;
-		GameObject sprite0 = IBSpriteFactory.GenerateIBSprite("up_punch");
+		GameObject sprite0 = IBSpriteFactory.GenerateIBSprite("complex_shooter");
 		GameObject sprite1 = IBSpriteFactory.GenerateIBSprite("hammer");
 		GameObject sprite2 = IBSpriteFactory.GenerateIBSprite("rocket_launcher");
 		localPlayer.GetComponent<CharacterController>().EquipIBSprite(sprite0.GetComponent<IBSpriteController>());
 		localPlayer.GetComponent<CharacterController>().EquipIBSprite(sprite1.GetComponent<IBSpriteController>());
 		localPlayer.GetComponent<CharacterController>().EquipIBSprite(sprite2.GetComponent<IBSpriteController>());
-		localPlayer.transform.position = new Vector3(3, 1f, 0);
+		localPlayer.transform.position = new Vector3(3, 1, 0);
 		// localPlayer.transform.position = new Vector3(4, 8, 0);
 		GameObject enemy1 = CharacterFactory.GenerateLocalPlayer();
 		TagManager.SetAllTags(enemy1, TagManager.ENEMY_TAG);

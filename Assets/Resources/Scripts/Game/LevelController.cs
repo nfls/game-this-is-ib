@@ -1,5 +1,6 @@
 ﻿using System;
 using System.Collections;
+using System.Diagnostics;
 using UnityEngine;
 
 public class LevelController : MonoBehaviour {
@@ -35,14 +36,13 @@ public class LevelController : MonoBehaviour {
 
 		devices = deviceRoot.GetComponentsInChildren<DeviceController>();
 		
-		#if UNITY_EDITOR
-		Activate();
-		#endif
+		StaticBatchingUtility.Combine(terrainRoot.gameObject);
 	}
 
 	public void Shift(Vector3 destination, float time, Action finishAction) {
 		if (_shiftCoroutine != null) {
 			StopCoroutine(_shiftCoroutine);
+			_shiftCoroutine = null;
 		}
 
 		_shiftCoroutine = StartCoroutine(ExeShiftCoroutine(destination, time, finishAction));
@@ -50,9 +50,7 @@ public class LevelController : MonoBehaviour {
 
 	public void Activate() {
 		Camera.main.backgroundColor = backgroundColor;
-		foreach (var device in devices) {
-			device.Replay();
-		}
+		foreach (var device in devices) device.Replay();
 	}
 
 	public void Deactivate() {
@@ -63,15 +61,11 @@ public class LevelController : MonoBehaviour {
 	}
 
 	public void Resume() {
-		foreach (var device in devices) {
-			device.Play();
-		}
+		foreach (var device in devices) device.Play();
 	}
 
 	public void Pause() {
-		foreach (var device in devices) {
-			device.Pause();
-		}
+		foreach (var device in devices) device.Pause();
 	}
 
 	protected IEnumerator ExeShiftCoroutine(Vector3 destination, float time, Action finishAction) {
@@ -93,10 +87,9 @@ public class LevelController : MonoBehaviour {
 		finishAction();
 	}
 	
-#if UNITY_EDITOR
+	[Conditional("UNITY_EDITOR")]
 	private void OnDrawGizmos() {
 		Gizmos.color = Color.red;
 		Gizmos.DrawWireCube(transform.position, new Vector3(1.01f, 1.01f, 2.02f));
 	}
-#endif
 }

@@ -19,10 +19,10 @@ public class CameraManager : MonoSingleton {
 	public static void Shake(Vector3 position, Vector3 velocity, float duration = .2f) {
 		mainImpulseSource.m_ImpulseDefinition.m_TimeEnvelope.m_SustainTime = duration;
 		mainImpulseSource.GenerateImpulseAt(position, velocity);
-		MacXboxControllerRumbleUtil.Rumble(1, 200);
+		JoystickUtil.Rumble(1, 200);
 	}
 
 	private void OnApplicationQuit() {
-		MacXboxControllerRumbleUtil.Quit();
+		JoystickUtil.Quit();
 	}
 }

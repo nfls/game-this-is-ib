@@ -2,21 +2,45 @@
 
 public class UIManager : MonoSingleton {
 
-	private static WorldSpaceTipController interactionTipController;
+	private static WorldSpaceTipController localInteractionTipController;
+	private static WorldSpaceTipController remoteInteractionTipController;
 	
 	private void Start () {
-		interactionTipController = ResourcesManager.GetUI("world_space_tip").GetComponent<WorldSpaceTipController>();
+		localInteractionTipController = ResourcesManager.GetUI("world_space_tip").GetComponent<WorldSpaceTipController>();
+		remoteInteractionTipController = ResourcesManager.GetUI("world_space_tip").GetComponent<WorldSpaceTipController>();
 	}
 
-	public static void ShowInteractionTip(string text, Vector3 position, Vector2 pivot) {
-		if (interactionTipController.IsShowing) {
-			interactionTipController.Hide();
-		}
+	public static void ShowInteractionTip(string text, Vector3 position, Vector2 pivot, bool isLocal) {
+		ShowInteractionTip(text, position, pivot, isLocal ? localInteractionTipController : remoteInteractionTipController);
+	}
+
+	private static void ShowInteractionTip(string text, Vector3 position, Vector2 pivot, WorldSpaceTipController controller) {
+		if (controller.IsShowing) controller.Hide();
 		
-		interactionTipController.Show(text, position, pivot);
+		controller.Show(text, position, pivot);
 	}
 
-	public static void HideInteractionTip() {
-		interactionTipController.Hide();
+	public static void HideInteractionTip(bool isLocal) {
+		HideInteractionTip(isLocal ? localInteractionTipController : remoteInteractionTipController);
+	}
+
+	private static void HideInteractionTip(WorldSpaceTipController controller) {
+		controller.Hide();
+	}
+
+	public static void HighlightInteractionTip(Color color, bool isLocal) {
+		HighlightInteractionTip(color, isLocal ? localInteractionTipController : remoteInteractionTipController);
+	}
+
+	private static void HighlightInteractionTip(Color color, WorldSpaceTipController controller) {
+		controller.Highlight(color);
+	}
+
+	public static void NormalInteractionTip(bool isLocal) {
+		NormalInteractionTip(isLocal ? localInteractionTipController : remoteInteractionTipController);
+	}
+
+	private static void NormalInteractionTip(WorldSpaceTipController controller) {
+		controller.Normal();
 	}
 }

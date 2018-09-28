@@ -1,4 +1,5 @@
 ﻿using System;
+using UnityEditor;
 using UnityEngine;
 using UnityEngine.Rendering;
 
@@ -8,6 +9,7 @@ public abstract class IBSpriteController : MonoBehaviour {
 	public Vector3 initialOffset;
 	public Vector3 initialRotation;
 	public int commandBufferLength;
+	public float staminaCost;
 	public string attackSound;
 	public string hitSound;
 
@@ -89,14 +91,11 @@ public abstract class IBSpriteController : MonoBehaviour {
 					DisableTrail();
 				}
 			} else if (!_isFollowing) {
-				if (distance > idleMovementSettings.maxFollowDistance) {
-					ResetPositionAndRotation();
-				} else if (distance > idleMovementSettings.minFollowDistance) {
+				if (distance > idleMovementSettings.maxFollowDistance) ResetPositionAndRotation();
+				else if (distance > idleMovementSettings.minFollowDistance) {
 					_isFollowing = true;
 					EnableTrail(idleTrailSettings);
-				} else {
-					transform.Translate(0, Mathf.Sign(Mathf.Sin(Time.time)) * idleMovementSettings.floatingVelocity * Time.deltaTime, 0);
-				}
+				} else transform.Translate(0, Mathf.Sign(Mathf.Sin(Time.time)) * idleMovementSettings.floatingVelocity * Time.deltaTime, 0);
 			}
 		}
 	}

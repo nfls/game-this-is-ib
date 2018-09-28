@@ -128,7 +128,7 @@ MonoBehaviour:
   initialOffset: {x: 0, y: -0.1, z: -1}
   initialRotation: {x: 0, y: 0, z: 0}
   commandBufferLength: 3
-  attackSound: shot
+  attackSound: shot_0
   hitSound: bullet_hit_0
   attackEffectSettings:
     doesHit: 1
@@ -181,9 +181,11 @@ MonoBehaviour:
     material: {fileID: 0}
   projectileType: cube_bullet
   fireOffset: {x: 1, y: 0, z: 0}
+  fireRotation: {x: 0, y: 0, z: 0}
   firePower: 12.5
   fireShake: {x: 2, y: 2, z: 2}
   fireEffect: gun_smoke
+  hitEffect: 
   lifespan: 3
   recoilTime: 0.15
   recoilDistance: 0.6

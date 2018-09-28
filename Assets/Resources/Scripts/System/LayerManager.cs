@@ -14,8 +14,6 @@ public static class LayerManager {
 	public static void SetAllLayers(GameObject go, int layer) {
 		go.layer = layer;
 		int childCount = go.transform.childCount;
-		for (int i = 0; i < childCount; i++) {
-			SetAllLayers(go.transform.GetChild(i).gameObject, layer);
-		}
+		for (int i = 0; i < childCount; i++) SetAllLayers(go.transform.GetChild(i).gameObject, layer);
 	}
 }
