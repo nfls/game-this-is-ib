@@ -12,9 +12,16 @@ public sealed class InputOperator : CharacterOperator {
 				_interactionSystem.isLocalPlayer = CompareTag(TagManager.LOCAL_PLAYER_TAG);
 				_inputMapper.BindPressEvent(InputMapper.INTERACT, _interactionSystem.Preinteract);
 				_inputMapper.BindReleaseEvent(InputMapper.INTERACT, _interactionSystem.Interact);
+				_temperInputMapper.BindPressEvent(InputMapper.INTERACT, _interactionSystem.Preinteract);
+				_temperInputMapper.BindReleaseEvent(InputMapper.INTERACT, _interactionSystem.Interact);
+				
 				Physics.IgnoreCollision(GetComponent<Collider>(), _interactionSystem.Trigger, true);
 			} else {
+				_inputMapper.UnbindPressEvent(InputMapper.INTERACT);
 				_inputMapper.UnbindReleaseEvent(InputMapper.INTERACT);
+				_temperInputMapper.UnbindPressEvent(InputMapper.INTERACT);
+				_temperInputMapper.UnbindReleaseEvent(InputMapper.INTERACT);
+				
 				Physics.IgnoreCollision(GetComponent<Collider>(), _interactionSystem.Trigger, false);
 			}
 		}

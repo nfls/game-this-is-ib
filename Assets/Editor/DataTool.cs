@@ -7,8 +7,6 @@ public static class DataTool {
 	public static void ClearLocalPlayerData() {
 		EditorApplication.Beep();
 		if (!EditorUtility.DisplayDialog("危险操作警告⚠️", "即将删除本地玩家存档（该操作不可逆）", "确认", "取消")) return;
-		if (File.Exists(PlayerManager.PlayerDataPath)) {
-			File.Delete(PlayerManager.PlayerDataPath);
-		}
+		if (File.Exists(PlayerManager.PlayerDataPath)) File.Delete(PlayerManager.PlayerDataPath);
 	}
 }

@@ -50,6 +50,56 @@ public static class MaterialTool {
 		GeneratePerlinNoiseMap(9);
 	}
 	
+	[MenuItem("这就是IB/材质工具/生成噪点图/Perlin 10X")]
+	public static void GeneratePerlinNoiseMap10X() {
+		GeneratePerlinNoiseMap(10);
+	}
+	
+	[MenuItem("这就是IB/材质工具/生成噪点图/Perlin 11X")]
+	public static void GeneratePerlinNoiseMa11X() {
+		GeneratePerlinNoiseMap(11);
+	}
+	
+	[MenuItem("这就是IB/材质工具/生成噪点图/Perlin 12X")]
+	public static void GeneratePerlinNoiseMap12X() {
+		GeneratePerlinNoiseMap(12);
+	}
+	
+	[MenuItem("这就是IB/材质工具/生成噪点图/Perlin 13X")]
+	public static void GeneratePerlinNoiseMap13X() {
+		GeneratePerlinNoiseMap(13);
+	}
+	
+	[MenuItem("这就是IB/材质工具/生成噪点图/Perlin 14X")]
+	public static void GeneratePerlinNoiseMap14X() {
+		GeneratePerlinNoiseMap(14);
+	}
+	
+	[MenuItem("这就是IB/材质工具/生成噪点图/Perlin 15X")]
+	public static void GeneratePerlinNoiseMap15X() {
+		GeneratePerlinNoiseMap(15);
+	}
+	
+	[MenuItem("这就是IB/材质工具/生成噪点图/Perlin 20X")]
+	public static void GeneratePerlinNoiseMap20X() {
+		GeneratePerlinNoiseMap(20);
+	}
+	
+	[MenuItem("这就是IB/材质工具/生成噪点图/Perlin 30X")]
+	public static void GeneratePerlinNoiseMap30X() {
+		GeneratePerlinNoiseMap(30);
+	}
+	
+	[MenuItem("这就是IB/材质工具/生成噪点图/Perlin 50X")]
+	public static void GeneratePerlinNoiseMap50X() {
+		GeneratePerlinNoiseMap(50);
+	}
+	
+	[MenuItem("这就是IB/材质工具/生成噪点图/Perlin 100X")]
+	public static void GeneratePerlinNoiseMap100X() {
+		GeneratePerlinNoiseMap(100);
+	}
+	
 	public static void GeneratePerlinNoiseMap(float scale) {
 		string path = EditorUtility.SaveFilePanelInProject("生成柏林噪点图", "perlin_noise_texture_" + scale + "x", "png", "保存", Application.dataPath + "/Resources/Textures");
 		if (!string.IsNullOrEmpty(path)) {

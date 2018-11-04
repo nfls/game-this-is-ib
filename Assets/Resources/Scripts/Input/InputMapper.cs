@@ -75,27 +75,18 @@ public class InputMapper {
 
 	public void Refresh() {
 		if (isInControl) {
-			foreach (string name in _onPressedBindings.Keys) {
-				if (_inputMap[name].IsPressed) {
-					_onPressedBindings[name]();
-				}
-			}
-			foreach (string name in _onHeldBindings.Keys) {
-				if (_inputMap[name].IsHeld) {
-					_onHeldBindings[name]();
-				}
-			}
-			foreach (string name in _onReleasedBindings.Keys) {
+			foreach (string name in _onPressedBindings.Keys)
+				if (_inputMap[name].IsPressed) _onPressedBindings[name]();
+			foreach (string name in _onHeldBindings.Keys)
+				if (_inputMap[name].IsHeld) _onHeldBindings[name]();
+			foreach (string name in _onReleasedBindings.Keys)
 				if (_inputMap[name].IsReleased) _onReleasedBindings[name]();
-			}
 		}
 	}
 
 	public void Reset() {
 		_inputMap.Clear();
-		foreach (var pair in _defaultMap) {
-			Remap(pair.Key, pair.Value);
-		}
+		foreach (var pair in _defaultMap) Remap(pair.Key, pair.Value);
 	}
 
 	public void Remap(string name, InputDetector detector) {
@@ -127,47 +118,35 @@ public class InputMapper {
 	}
 
 	public bool UnbindPressEvent(string name) {
-		if (!_onPressedBindings.ContainsKey(name)) {
-			return false;
-		}
+		if (!_onPressedBindings.ContainsKey(name)) return false;
 		_onPressedBindings.Remove(name);
 		return true;
 	}
 
 	public bool UnbindHoldEvent(string name) {
-		if (!_onHeldBindings.ContainsKey(name)) {
-			return false;
-		}
+		if (!_onHeldBindings.ContainsKey(name)) return false;
 		_onHeldBindings.Remove(name);
 		return true;
 	}
 
 	public bool UnbindReleaseEvent(string name) {
-		if (!_onReleasedBindings.ContainsKey(name)) {
-			return false;
-		}
+		if (!_onReleasedBindings.ContainsKey(name)) return false;
 		_onReleasedBindings.Remove(name);
 		return true;
 	}
 
 	public OnPressHandler GetPressEvent(string name) {
-		if (_onPressedBindings.ContainsKey(name)) {
-			return _onPressedBindings[name];
-		}
+		if (_onPressedBindings.ContainsKey(name)) return _onPressedBindings[name];
 		return null;
 	}
 
 	public OnHoldHandler GetHoldEvent(string name) {
-		if (_onHeldBindings.ContainsKey(name)) {
-			return _onHeldBindings[name];
-		}
+		if (_onHeldBindings.ContainsKey(name)) return _onHeldBindings[name];
 		return null;
 	}
 
 	public OnReleaseHandler GetReleaseEvent(string name) {
-		if (_onReleasedBindings.ContainsKey(name)) {
-			return _onReleasedBindings[name];
-		}
+		if (_onReleasedBindings.ContainsKey(name)) return _onReleasedBindings[name];
 		return null;
 	}
 
@@ -177,6 +156,7 @@ public class InputMapper {
 				new UnityException("Cannot Find Input Named [" + name + "] !");
 				return null;
 			}
+			
 			return _inputMap[name];
 		}
 		set { Remap(name, value); }

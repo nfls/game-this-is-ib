@@ -36,7 +36,7 @@ public abstract class SignalReceiver : DeviceController {
 				OnDeactivate();
 			}
 		} else {
-			_isActivated = _count % 2 == 0;
+			_isActivated = _count % 2 == 1;
 			if (!_isEnabled) return;
 			if (_isActivated) OnActivate();
 			else OnDeactivate();

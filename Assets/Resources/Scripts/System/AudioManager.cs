@@ -17,14 +17,21 @@ public class AudioManager : MonoSingleton {
 		audioRoot = go.transform;
 	}
 
-	public static void PlayAtPoint(string name, Vector3 position, float volume = 1f) {
-		AudioClip clip = ResourcesManager.GetAudio(name);
+	public static void PlayAtPoint(AudioClip clip, Vector3 position, float volume = 1f) {
 		AudioSource source = GetAudioSource();
 		source.transform.position = position;
 		source.clip = clip;
 		source.volume = volume;
 		source.Play();
 		instance.StartCoroutine(ExeRecycleCoroutine(source));
+	}
+
+	public static void PlayAtPoint(AudioAsset audio, Vector3 position, float volume = 1f) {
+		PlayAtPoint(audio.Source, position, volume);
+	}
+
+	public static void PlayAtPoint(string identifier, Vector3 position, float volume = 1f) {
+		PlayAtPoint(ResourcesManager.GetAudio(identifier), position, volume);
 	}
 
 	private static AudioSource GetAudioSource() {

@@ -12,6 +12,15 @@ public class InteractionSystem : MonoBehaviour {
 	private Rigidbody _rigidbody;
 	private List<InteractionController> _potentialInteractionControllers = new List<InteractionController>(2);
 
+	private InteractionController interactionController {
+		get { return _interactionController; }
+		set {
+			if (_interactionController) _interactionController.onTextChange -= RefreshInteractionTip;
+			_interactionController = value;
+			if (_interactionController) _interactionController.onTextChange += RefreshInteractionTip;
+		}
+	}
+
 	private void Awake() {
 		_trigger = gameObject.AddComponent<BoxCollider>();
 		_trigger.isTrigger = true;
@@ -21,57 +30,59 @@ public class InteractionSystem : MonoBehaviour {
 	}
 
 	public void Preinteract() {
-		if (_interactionController) UIManager.HighlightInteractionTip(_interactionController.highlightColor, isLocalPlayer);
+		if (interactionController) UIManager.HighlightInteractionTip(interactionController.highlightColor, isLocalPlayer);
 	}
 
 	public void Interact() {
-		if (_interactionController) {
+		if (interactionController) {
 			UIManager.NormalInteractionTip(isLocalPlayer);
-			_interactionController.Interact();
-			if (!_interactionController.Interactive) {
-				_potentialInteractionControllers.Remove(_interactionController);
+			interactionController.Interact();
+			if (!interactionController.Interactive) {
+				_potentialInteractionControllers.Remove(interactionController);
 				Refresh();
 			}
 		}
 	}
 
 	private void Refresh() {
-		if (CalculateInteractionController()) {
-			if (_interactionController) {
-				Vector3 originalPos = _interactionController.transform.position;
-				Vector3 position = new Vector3 {
-					x = _interactionController.horizontalOffset + originalPos.x,
-					y = _interactionController.verticalOffset + originalPos.y,
-					z = -1.1f
-				};
+		if (CalculateInteractionController()) RefreshInteractionTip();
+	}
 
-				Vector2 pivot = new Vector2 {
-					x = _interactionController.horizontalOffset > 0 ? 0 : 1,
-					y = (float) _interactionController.showDirection
-				};
+	private void RefreshInteractionTip() {
+		if (interactionController) {
+			Vector3 originalPos = interactionController.transform.position;
+			Vector3 position = new Vector3 {
+				x = interactionController.horizontalOffset + originalPos.x,
+				y = interactionController.verticalOffset + originalPos.y,
+				z = -1.1f
+			};
 
-				UIManager.ShowInteractionTip(_interactionController.text, position, pivot, isLocalPlayer);
-			} else UIManager.HideInteractionTip(isLocalPlayer);
-		}
+			Vector2 pivot = new Vector2 {
+				x = interactionController.horizontalOffset > 0 ? 0 : 1,
+				y = (float) interactionController.showDirection
+			};
+
+			UIManager.ShowInteractionTip(interactionController.Text, position, pivot, isLocalPlayer);
+		} else UIManager.HideInteractionTip(isLocalPlayer);
 	}
 
 	private bool CalculateInteractionController() {
 		if (_potentialInteractionControllers.Count == 0) {
-			_interactionController = null;
+			interactionController = null;
 			return true;
 		}
 
-		InteractionController oldInteractionController = _interactionController;
+		InteractionController oldInteractionController = interactionController;
 		float minSqrDistance = 9999f;
-		foreach (var interactionController in _potentialInteractionControllers) {
-			float sqrDistance = (interactionController.transform.position - transform.position).sqrMagnitude;
+		foreach (var controller in _potentialInteractionControllers) {
+			float sqrDistance = (controller.transform.position - transform.position).sqrMagnitude;
 			if (sqrDistance < minSqrDistance) {
 				minSqrDistance = sqrDistance;
-				_interactionController = interactionController;
+				interactionController = controller;
 			}
 		}
 
-		if (_interactionController != oldInteractionController) return true;
+		if (interactionController != oldInteractionController) return true;
 		return false;
 	}
 

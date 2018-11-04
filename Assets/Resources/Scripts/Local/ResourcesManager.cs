@@ -6,19 +6,19 @@ using UnityEngine;
 
 public static class ResourcesManager {
 
-	private const string SPLIT_MARK = "@";
-
-	private const string ITEM_PREFIX = "item";
-	private const string IB_SPRITE_PREFIX = "ibsprite";
-	private const string PROJECTILE_PREFIX = "projectile";
-	private const string PARTICLE_PREFIX = "particle";
-	private const string BODY_PREFIX = "body";
-	private const string EYE_PREFIX = "eye";
-	private const string ENEMY_PREFIX = "enemy";
-	private const string BOSS_PREFIX = "boss";
-	private const string UI_PREFIX = "ui";
-	private const string SPRITE_PREFIX = "sprite";
-	private const string AUDIO_PREFIX = "audio";
+	public const string SPLIT_MARK = "@";
+	
+	public const string ITEM_PREFIX = "item";
+	public const string IB_SPRITE_PREFIX = "ibsprite";
+	public const string PROJECTILE_PREFIX = "projectile";
+	public const string PARTICLE_PREFIX = "particle";
+	public const string BODY_PREFIX = "body";
+	public const string EYE_PREFIX = "eye";
+	public const string ENEMY_PREFIX = "enemy";
+	public const string BOSS_PREFIX = "boss";
+	public const string UI_PREFIX = "ui";
+	public const string SPRITE_PREFIX = "sprite";
+	public const string AUDIO_PREFIX = "audio";
 
 	private const string VERSION_DATA_NAME = "versiondata";
 	private const string PLAYER_ATTRIBUTES_DATA_NAME = "playerattributesdata";

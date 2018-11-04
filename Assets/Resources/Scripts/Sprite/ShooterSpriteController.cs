@@ -4,13 +4,13 @@ using Debug = UnityEngine.Debug;
 
 public class ShooterSpriteController : IBSpriteController {
 
-	public string projectileType;
+	public ProjectileAsset projectileType;
 	public Vector3 fireOffset;
 	public Vector3 fireRotation;
 	public float firePower;
 	public Vector3 fireShake;
-	public string fireEffect;
-	public string hitEffect;
+	public ParticleAsset fireEffect;
+	public ParticleAsset explosionEffect;
 	public float lifespan;
 	public float recoilTime;
 	public float recoilDistance;
@@ -92,16 +92,18 @@ public class ShooterSpriteController : IBSpriteController {
 		ExitCharacterSyncState();
 		_attackCoroutine = null;
 		_isAttacking = false;
+		
+		characterController.StartStaminaRecovery();
 	}
 
 	protected virtual void Fire() {
-		ProjectileController projectileController = ProjectileManager.Get(projectileType);
+		ProjectileController projectileController = projectileType.Get<ProjectileController>();
 		LoadUpProjectile(projectileController);
 		projectileController.Fire(new Vector3(firePower * (float) characterMotor.FaceDirection, 0, 0));
-		if (!string.IsNullOrEmpty(attackSound)) _audioSource.PlayOneShot(ResourcesManager.GetAudio(attackSound));
+		if (attackSound) _audioSource.PlayOneShot(attackSound.Source);
 		if (fireShake != Vector3.zero) CameraManager.Shake(transform.position, fireShake);
-		if (!string.IsNullOrEmpty(fireEffect)) {
-			BurstParticleController explosion = ParticleManager.Get<BurstParticleController>(fireEffect);
+		if (fireEffect) {
+			BurstParticleController explosion = fireEffect.Get<BurstParticleController>();
 			explosion.transform.position = transform.position + new Vector3(transform.lossyScale.x / 2f, 0, 0);
 			explosion.Burst();
 		}
@@ -113,7 +115,7 @@ public class ShooterSpriteController : IBSpriteController {
 		rotation.z *= (float) characterMotor.FaceDirection;
 		projectileController.transform.rotation = rotation.ToQuaternion();
 		projectileController.hitSound = hitSound;
-		projectileController.hitEffect = hitEffect;
+		projectileController.explosionEffect = explosionEffect;
 		projectileController.lifespan = lifespan;
 		projectileController.ownerCollider = characterMotor.BodyCollider;
 		projectileController.OnDetectCharacterEnter = OnDetectCharacterEnter;

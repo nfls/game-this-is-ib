@@ -45,6 +45,7 @@ public static class CharacterFactory {
 		controller.health = data.health;
 		controller.maxStamina = ResourcesManager.PlayerAttributesData.maxStamina[data.maxStaminaIndex].value;
 		controller.stamina = controller.maxStamina;
+		controller.staminaRecoveryDelay = ResourcesManager.PlayerAttributesData.staminaRecoveryDelay[data.staminaRecoveryDelayIndex].value;
 		controller.staminaRecoveryRate = ResourcesManager.PlayerAttributesData.staminaRecoveryRate[data.staminaRecoveryRateIndex].value;
 		controller.speed = ResourcesManager.PlayerAttributesData.speed[data.speedIndex].value;
 		controller.acceleration = ResourcesManager.PlayerAttributesData.acceleration[data.accelerationIndex].value;
@@ -62,6 +63,7 @@ public static class CharacterFactory {
 		controller.hasDodgeTrail = true;
 		controller.dodgeTrailSettings = ResourcesManager.PlayerAttributesData.dodgeTrailSettings;
 		controller.dodgeTrailSettings.color = data.dodgeTrailColor;
+		controller.bloodColor = data.bloodColor;
 		
 		LayerManager.SetAllLayers(go, LayerManager.CharacterLayer);
 		

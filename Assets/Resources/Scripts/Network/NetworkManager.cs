@@ -7,4 +7,6 @@ public static class NetworkManager {
 	public static bool UsesWifi => Application.internetReachability == NetworkReachability.ReachableViaLocalAreaNetwork;
 	public static bool UsesData => Application.internetReachability == NetworkReachability.ReachableViaCarrierDataNetwork;
 	public static bool offlineMode;
+	
+	
 }

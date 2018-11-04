@@ -4,6 +4,8 @@ using UnityEngine.UI;
 [RequireComponent(typeof(RenderTexture))]
 public class DialogPortraitController : MonoBehaviour {
 
+	public Camera camera;
+
 	public Color activeColor = Color.clear;
 	public Color inactiveColor = Color.gray;
 	
@@ -12,10 +14,18 @@ public class DialogPortraitController : MonoBehaviour {
 	private void Awake() {
 		_portrait = GetComponent<RawImage>();
 		
-		RenderTexture texture = RenderTexture.GetTemporary(200, 200, 24, RenderTextureFormat.ARGB32, RenderTextureReadWrite.Linear);
+		RenderTexture texture = RenderTexture.GetTemporary(512, 512, 24, RenderTextureFormat.ARGB32, RenderTextureReadWrite.Linear);
 		_portrait.texture = texture;
+
+		camera.targetTexture = texture;
+		camera.Render();
+		camera.gameObject.SetActive(false);
 		
-		Deactivate();
+		// Deactivate();
+	}
+	
+	public void Refresh(GameObject go) {
+		
 	}
 
 	public void Activate() {

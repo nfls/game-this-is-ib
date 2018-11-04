@@ -64,7 +64,7 @@ public class ThrustSpriteController : IBSpriteController {
 		EnterCharacterSyncState();
 		while (_commandBufferCount > 0) {
 			_ibSpriteTrigger.Enable();
-			if (!string.IsNullOrEmpty(attackSound)) _audioSource.PlayOneShot(ResourcesManager.GetAudio(attackSound));
+			if (attackSound) _audioSource.PlayOneShot(attackSound.Source);
 			float timeStart = Time.time;
 			float timeDiff;
 			float lerp;
@@ -97,11 +97,14 @@ public class ThrustSpriteController : IBSpriteController {
 		DisableTrail();
 		_attackCoroutine = null;
 		_isAttacking = false;
+		
+		characterController.StartStaminaRecovery();
 	}
 
 	protected override void OnDetectCharacterEnter(IBSpriteTrigger trigger, Collider detectedCollider) {
 		base.OnDetectCharacterEnter(trigger, detectedCollider);
-		if (!string.IsNullOrEmpty(hitSound)) _audioSource.PlayOneShot(ResourcesManager.GetAudio(hitSound));
+		
+		if (hitSound) _audioSource.PlayOneShot(hitSound.Source);
 		CameraManager.Shake(trigger.transform.position, hitShake);
 		TimeManager.HandleRequest(hitTimeEffect);
 	}

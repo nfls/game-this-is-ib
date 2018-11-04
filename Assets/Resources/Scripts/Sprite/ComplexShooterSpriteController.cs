@@ -9,7 +9,7 @@ public class ComplexShooterSpriteController : ShooterSpriteController {
 	protected override void Fire() {
 		float face = (float) characterMotor.FaceDirection;
 		foreach (var fireStyle in fireStyles) {
-			ProjectileController projectileController = ProjectileManager.Get(projectileType);
+			ProjectileController projectileController = projectileType.Get<ProjectileController>();
 			fireOffset = fireStyle.offset;
 			fireRotation = fireStyle.rotation;
 			LoadUpProjectile(projectileController);
@@ -18,10 +18,10 @@ public class ComplexShooterSpriteController : ShooterSpriteController {
 			projectileController.Fire(velocity);
 		}
 		
-		if (!string.IsNullOrEmpty(attackSound)) _audioSource.PlayOneShot(ResourcesManager.GetAudio(attackSound));
+		if (attackSound) _audioSource.PlayOneShot(attackSound.Source);
 		if (fireShake != Vector3.zero) CameraManager.Shake(transform.position, fireShake);
-		if (!string.IsNullOrEmpty(fireEffect)) {
-			BurstParticleController explosion = ParticleManager.Get<BurstParticleController>(fireEffect);
+		if (fireEffect) {
+			BurstParticleController explosion = fireEffect.Get<BurstParticleController>();
 			explosion.transform.position = transform.position + new Vector3(transform.lossyScale.x / 2f, 0, 0);
 			explosion.Burst();
 		}

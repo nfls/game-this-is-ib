@@ -7,8 +7,8 @@ using UnityEngine;
 public class ProjectileController : MonoBehaviour {
 
 	public string identifierName;
-	public string hitSound;
-	public string hitEffect;
+	public AudioAsset hitSound;
+	public ParticleAsset explosionEffect;
 	public float lifespan;
 	public float destroyDelay;
 	public Vector3 velocity;
@@ -64,9 +64,9 @@ public class ProjectileController : MonoBehaviour {
 	}
 
 	protected virtual void OnHit() {
-		if (!string.IsNullOrEmpty(hitSound)) AudioManager.PlayAtPoint(hitSound, transform.position);
-		if (!string.IsNullOrEmpty(hitEffect)) {
-			BurstParticleController particleController = ParticleManager.Get<BurstParticleController>(hitEffect);
+		if (hitSound) AudioManager.PlayAtPoint(hitSound.Source, transform.position);
+		if (explosionEffect) {
+			BurstParticleController particleController = explosionEffect.Get<BurstParticleController>();
 			particleController.transform.position = transform.position;
 		}
 	}

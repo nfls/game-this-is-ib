@@ -13,6 +13,35 @@ MonoBehaviour:
   m_EditorClassIdentifier: 
   name: IB Sucker
   health: 300
+  bloodColor:
+    serializedVersion: 2
+    key0: {r: 1, g: 0.4, b: 0.4, a: 1}
+    key1: {r: 0.46666667, g: 0.050980393, b: 0.043137256, a: 1}
+    key2: {r: 0, g: 0, b: 0, a: 0}
+    key3: {r: 0, g: 0, b: 0, a: 0}
+    key4: {r: 0, g: 0, b: 0, a: 0}
+    key5: {r: 0, g: 0, b: 0, a: 0}
+    key6: {r: 0, g: 0, b: 0, a: 0}
+    key7: {r: 0, g: 0, b: 0, a: 0}
+    ctime0: 0
+    ctime1: 65535
+    ctime2: 0
+    ctime3: 0
+    ctime4: 0
+    ctime5: 0
+    ctime6: 0
+    ctime7: 0
+    atime0: 0
+    atime1: 65535
+    atime2: 0
+    atime3: 0
+    atime4: 0
+    atime5: 0
+    atime6: 0
+    atime7: 0
+    m_Mode: 0
+    m_NumColorKeys: 2
+    m_NumAlphaKeys: 2
   dodgeTrailSettings:
     motionVectorMode: 1
     color: {r: 0.6, g: 0.1, b: 1, a: 1}
@@ -85,33 +114,49 @@ MonoBehaviour:
     name: Max Stamina
     description: The capability for player to move and attack
     attributes:
-    - name: 
+    - name: Sleep At 22:30
       value: 100
       cost: 0
-    - name: 
+    - name: Sleep At 12:00
       value: 150
       cost: 5
-    - name: 
+    - name: Sleep At 2:00
       value: 200
       cost: 10
-    - name: 
+    - name: No Sleep
       value: 300
+      cost: 20
+  staminaRecoveryDelay:
+    name: Stamina Recovery Delay
+    description: The delay of stamina to recover after attack
+    attributes:
+    - name: Procrastinator
+      value: 1
+      cost: 5
+    - name: Phone Addict
+      value: 0.7
+      cost: 10
+    - name: Too Much Coffee
+      value: 0.4
+      cost: 15
+    - name: Tumble To Bed
+      value: 0
       cost: 20
   staminaRecoveryRate:
     name: Stamina Recovery Rate
     description: The percentage recovery of stamina each second
     attributes:
-    - name: 
-      value: 0.35
+    - name: Take A Snap
+      value: 1
       cost: 0
-    - name: 
-      value: 0.5
-      cost: 5
-    - name: 
+    - name: Light Sleeper
       value: 0.6
-      cost: 10
-    - name: 
+      cost: 5
+    - name: Heavy Sleeper
       value: 0.8
+      cost: 10
+    - name: Never Wake Up
+      value: 1
       cost: 20
   speed:
     name: Speed

@@ -60,7 +60,7 @@ MeshRenderer:
   m_ReflectionProbeUsage: 0
   m_RenderingLayerMask: 4294967295
   m_Materials:
-  - {fileID: 2100000, guid: 12aded461699542c3bfc05812e8e9f6e, type: 2}
+  - {fileID: 2100000, guid: 50ac0917448914a81bc972f9fa67a419, type: 2}
   m_StaticBatchInfo:
     firstSubMesh: 0
     subMeshCount: 0
@@ -194,7 +194,6 @@ MonoBehaviour:
     detectsLocalPlayer: 0
     detectsRemotePlayer: 0
     detectsEnemy: 0
-    detectsDevice: 0
 --- !u!114 &114837916694000990
 MonoBehaviour:
   m_ObjectHideFlags: 1

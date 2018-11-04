@@ -1,6 +1,6 @@
 ﻿using System;
 using System.Collections;
-using System.Runtime.InteropServices;
+using System.Diagnostics;
 using UnityEngine;
 using UnityEngine.Rendering;
 
@@ -15,6 +15,7 @@ public class CharacterController : MonoBehaviour {
 	public float health;
 	public float maxStamina;
 	public float stamina;
+	public float staminaRecoveryDelay;
 	public float staminaRecoveryRate;
 	public float speed;
 	public float acceleration;
@@ -25,8 +26,9 @@ public class CharacterController : MonoBehaviour {
 	public float dodgeInvincibilityTime;
 	public int dodgeCapacity;
 	public float dodgeCooldown;
-	public string bloodType = "cube_blood";
-	public string bloodSpraySound = "blood_spray_0";
+	public ParticleAsset bloodSprayEffect = "cube_blood";
+	public Gradient bloodColor;
+	public AudioAsset bloodSpraySound = "blood_spray_0";
 	public IBSpriteController[] carriedIBSpriteControllers;
 
 	public bool hasAccelerationTrail;
@@ -46,6 +48,7 @@ public class CharacterController : MonoBehaviour {
 	}
 
 	public bool IsDodgeCooldowning => _dodgeCooldownCoroutine != null;
+	public FaceDirection FaceDirection => _characterMotor.FaceDirection;
 
 	protected bool _isAccelerating;
 	protected bool _isDodging;
@@ -61,6 +64,11 @@ public class CharacterController : MonoBehaviour {
 	protected Coroutine _dodgeCoroutine;
 	protected Coroutine _dodgeCooldownCoroutine;
 	protected Coroutine _staminaRecoveryCoroutine;
+
+	[Conditional("UNITY_EDITOR")]
+	private void OnGUI() {
+		GUI.Button(new Rect(0f, 0f, 100f, 50f), (int) stamina + "/" + (int) maxStamina);
+	}
 
 	public virtual void Awake() {
 		_characterMotor = GetComponent<CharacterMotor>();
@@ -87,8 +95,12 @@ public class CharacterController : MonoBehaviour {
 
 		float velocity = speed * (float) direction;
 		if (_isAccelerating) velocity *= acceleration;
-		if (direction != _characterMotor.FaceDirection)_characterMotor.Flip();
+		if (direction != _characterMotor.FaceDirection) _characterMotor.Flip();
 		_characterMotor.Move(velocity);
+	}
+
+	public void Flip() {
+		_characterMotor.Flip();
 	}
 
 	public void EnterAcceleratingState() {
@@ -114,8 +126,7 @@ public class CharacterController : MonoBehaviour {
 	public void OnReceiveAttackCommand() {
 		if (_isStunned) return;
 		if (!_currentIBSpriteController) return;
-		if (stamina < _currentIBSpriteController.staminaCost) return; 
-		CostStamina(_currentIBSpriteController.staminaCost);
+		if (stamina <= 0f) return;
 		_currentIBSpriteController.OnReceiveAttackCommand();
 	}
 
@@ -180,6 +191,7 @@ public class CharacterController : MonoBehaviour {
 		if (IsIBSpriteFull) return;
 		carriedIBSpriteControllers[CarriedIBSpriteCount] = controller;
 		controller.characterMotor = _characterMotor;
+		controller.characterController = this;
 		DetectionSettings detectionSettings = new DetectionSettings();
 		if (CompareTag(TagManager.ENEMY_TAG)) {
 			detectionSettings.detectsLocalPlayer = true;
@@ -200,12 +212,29 @@ public class CharacterController : MonoBehaviour {
 			controller.OnSwitchOn();
 		}
 	}
+	
+	public void CostStamina(float value) {
+		stamina -= value;
+		if (stamina < 0f) stamina = 0f;
+	}
+
+	public void StartStaminaRecovery() {
+		if (_staminaRecoveryCoroutine == null) _staminaRecoveryCoroutine = StartCoroutine(ExeStaminaRecoveryCoroutine());
+	}
+
+	public void InterruptStaminaRecovery() {
+		if (_staminaRecoveryCoroutine != null) {
+			StopCoroutine(_staminaRecoveryCoroutine);
+			_staminaRecoveryCoroutine = null;
+		}
+	}
 
 	public void GetDamaged(float damage) {
 		if (_isDodging) return;
 		SprayBlood();
 		health -= damage;
 		onDamaged?.Invoke(damage);
+		
 		if (health <= 0f) {
 			health = 0f;
 			Die();
@@ -225,7 +254,9 @@ public class CharacterController : MonoBehaviour {
 	}
 
 	protected void SprayBlood() {
-		BurstParticleController blood = ParticleManager.Get<BurstParticleController>(bloodType);
+		BurstParticleController blood = bloodSprayEffect.Get<BurstParticleController>();
+		ParticleSystem.MainModule main = blood.ParticleSystem.main;
+		main.startColor = bloodColor;
 		blood.transform.position = transform.position;
 		blood.Burst();
 		AudioManager.PlayAtPoint(bloodSpraySound, transform.position);
@@ -233,10 +264,6 @@ public class CharacterController : MonoBehaviour {
 	
 	protected void Die() {
 		onDeath?.Invoke();
-
-		BurstParticleController death = ParticleManager.Get<BurstParticleController>("gun_smoke");
-		death.transform.position = transform.position;
-		death.Burst();
 		Destroy(gameObject);
 	}
 
@@ -269,6 +296,7 @@ public class CharacterController : MonoBehaviour {
 		transform.rotation = new Vector3(0, 0, stunnedAngle * (float) _characterMotor.FaceDirection).ToQuaternion();
 		yield return new WaitForSeconds(stunnedTime);
 		transform.rotation = Quaternion.identity;
+		ExitStunState();
 	}
 
 	protected IEnumerator ExeDodgeCoroutine(float dodgeInvincibilityTime) {
@@ -298,14 +326,10 @@ public class CharacterController : MonoBehaviour {
 
 		_dodgeCooldownCoroutine = null;
 	}
-	
-	protected void CostStamina(float value) {
-		stamina -= value;
-		if (stamina < 0f) stamina = 0f;
-		if (_staminaRecoveryCoroutine == null) _staminaRecoveryCoroutine = StartCoroutine(ExeStaminaRecoveryCoroutine());
-	}
 
 	protected IEnumerator ExeStaminaRecoveryCoroutine() {
+		yield return new WaitForSeconds(staminaRecoveryDelay);
+		
 		while (stamina < maxStamina) {
 			yield return null;
 			stamina += maxStamina * staminaRecoveryRate * Time.deltaTime;

@@ -99,7 +99,11 @@ public class TimeManager : MonoSingleton {
 		float globalScale = 1f;
 		int priority = -1;
 		foreach (var request in globalRequests)
-			if (request.priority >= priority) globalScale = request.value;
+			if (request.priority >= priority) {
+				globalScale = request.value;
+				priority = request.priority;
+			}
+		
 		return globalScale;
 	}
 
@@ -107,7 +111,11 @@ public class TimeManager : MonoSingleton {
 		float storyScale = 1f;
 		int priority = -1;
 		foreach (var request in storyRequests)
-			if (request.priority >= priority) storyScale = request.value;
+			if (request.priority >= priority) {
+				storyScale = request.value;
+				priority = request.priority;
+			}
+		
 		return storyScale;
 	}
 

@@ -295,15 +295,9 @@ public static class JoystickUtil {
 	public static string[] DeviceNames {
 		get {
 			int deviceNum = DeviceNum;
-			if (deviceNum < 0) {
-				return null;
-			}
-
+			if (deviceNum < 0) return null;
 			string[] deviceNames = new string[deviceNum];
-			for (int i = 0; i < deviceNum; i++) {
-				deviceNames[i] = SDL_HapticName(i);
-			}
-
+			for (int i = 0; i < deviceNum; i++) deviceNames[i] = SDL_HapticName(i);
 			return deviceNames;
 		}
 	}

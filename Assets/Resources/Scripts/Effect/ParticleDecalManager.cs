@@ -4,7 +4,8 @@ using Random = UnityEngine.Random;
 
 public class ParticleDecalManager : MonoSingleton {
 
-	public const int CAPACITY = 2000;
+	public const int CAPACITY = 200;
+	public const float THINCKNESS = .01f;
 	
 	private static Transform decalRoot;
 
@@ -25,6 +26,7 @@ public class ParticleDecalManager : MonoSingleton {
 		ParticleSystemRenderer renderer = decalRoot.GetComponent<ParticleSystemRenderer>();
 		renderer.renderMode = ParticleSystemRenderMode.Mesh;
 		renderer.alignment = ParticleSystemRenderSpace.World;
+		// renderer.sortMode = ParticleSystemSortMode.YoungestInFront;
 		renderer.enableGPUInstancing = true;
 		renderer.castShadows = false;
 		renderer.receiveShadows = false;
@@ -43,6 +45,7 @@ public class ParticleDecalManager : MonoSingleton {
 		ParticleDecalData data = ParticleDecalManager.data[index];
 		Vector3 euler = Quaternion.LookRotation(@event.normal).eulerAngles;
 		euler.z = Random.Range(0, 360);
+		// data.position = @event.intersection + THINCKNESS * @event.normal;
 		data.position = @event.intersection;
 		data.rotation = euler;
 		data.size = size;

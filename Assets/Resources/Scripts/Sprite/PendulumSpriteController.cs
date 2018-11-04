@@ -30,9 +30,7 @@ public class PendulumSpriteController : IBSpriteController {
 	}
 
 	protected override void ExeAttackTask() {
-		if (!_isAttacking) {
-			_attackCoroutine = StartCoroutine(ExeAttackCoroutine());
-		}
+		if (!_isAttacking) _attackCoroutine = StartCoroutine(ExeAttackCoroutine());
 	}
 
 	protected override void CancelAttackTask() {
@@ -47,8 +45,12 @@ public class PendulumSpriteController : IBSpriteController {
 				_rotateCoroutine = null;
 			}
 			
+			_isCommandBufferFull = false;
 			ExitCharacterSyncState();
 			DisableTrail();
+			_attackCoroutine = null;
+			_isAttacking = false;
+			characterController.StartStaminaRecovery();
 			ResetPositionAndRotation();
 		}
 	}
@@ -70,34 +72,36 @@ public class PendulumSpriteController : IBSpriteController {
 		ResetPositionAndRotation();
 		EnableTrail(attackTrailSettings);
 		EnterCharacterSyncState();
+		transform.right = characterController.transform.position - transform.position * (float) characterMotor.FaceDirection;
 		while (_commandBufferCount > 0) {
 			_ibSpriteTrigger.Enable();
-			if (!string.IsNullOrEmpty(attackSound)) _audioSource.PlayOneShot(ResourcesManager.GetAudio(attackSound));
+			if (attackSound) _audioSource.PlayOneShot(attackSound.Source);
 			_rotateCoroutine = StartCoroutine(ExeRotateCoroutine(RotationDirection.Clockwise));
 			yield return _rotateCoroutine;
 			_rotateCoroutine = null;
-			if (rotateBackMode == RotateBackMode.Immediate) {
-				yield return null;
-				ResetPositionAndRotation();
-			} else {
+			if (rotateBackMode == RotateBackMode.Immediate) yield return null;
+			else {
 				_rotateCoroutine = StartCoroutine(ExeRotateCoroutine(RotationDirection.Anticlockwise));
 				yield return _rotateCoroutine;
-				ResetPositionAndRotation();
 			}
 
+			ResetPositionAndRotation();
 			_ibSpriteTrigger.Disable();
 			_commandBufferCount--;
 		}
+		
 		_isCommandBufferFull = false;
 		ExitCharacterSyncState();
 		DisableTrail();
 		_attackCoroutine = null;
 		_isAttacking = false;
+		characterController.StartStaminaRecovery();
 	}
 
 	protected override void OnDetectCharacterEnter(IBSpriteTrigger trigger, Collider detectedCollider) {
 		base.OnDetectCharacterEnter(trigger, detectedCollider);
-		if (!string.IsNullOrEmpty(hitSound)) _audioSource.PlayOneShot(ResourcesManager.GetAudio(hitSound));
+		
+		if (hitSound) _audioSource.PlayOneShot(hitSound.Source);
 		CameraManager.Shake(trigger.transform.position, hitShake);
 		TimeManager.HandleRequest(hitTimeEffect);
 	}

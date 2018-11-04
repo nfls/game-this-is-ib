@@ -8,7 +8,7 @@ public class DoorController : SignalReceiver {
 	public float openLag;
 	public float closeLag;
 	public DoorOpenDirection openDirection;
-	public string operationSound = "door_operate";
+	public AudioAsset operationSound = "door_operate";
 
 	protected Vector3 _originalPanelScale;
 	protected Vector3 _originalTopPanelPosition;
@@ -105,8 +105,7 @@ public class DoorController : SignalReceiver {
 		yield return new WaitForSeconds(openLag);
 
 		if (_audioSource.isPlaying) _audioSource.Pause();
-		_audioSource.clip = ResourcesManager.GetAudio(operationSound);
-		_audioSource.Play();
+		if (operationSound) _audioSource.PlayOneShot(operationSound.Source);
 		
 		float time = openTime * (1 - (_topPanel.transform.localPosition.y - _originalTopPanelPosition.y) / (targetTopPos.y - _originalTopPanelPosition.y));
 		
@@ -165,8 +164,7 @@ public class DoorController : SignalReceiver {
 		yield return new WaitForSeconds(closeLag);
 
 		if (_audioSource.isPlaying) _audioSource.Pause();
-		_audioSource.clip = ResourcesManager.GetAudio(operationSound);
-		_audioSource.Play();
+		if (operationSound) _audioSource.PlayOneShot(operationSound.Source);
 		
 		float time = openTime * (1 - (_topPanel.transform.localPosition.y - targetTopPos.y) / (_originalTopPanelPosition.y - targetTopPos.y));
 

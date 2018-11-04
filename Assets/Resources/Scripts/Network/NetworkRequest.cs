@@ -32,22 +32,10 @@ public class NetworkRequest : IDisposable {
 	}
 
 	public virtual IEnumerator ExeRequest() {
-		WWW www;
-		if (_dataType != null) {
-			www = new WWW(_url, Encoding.UTF8.GetBytes(_postData), new Dictionary<string, string>{{CONTENT_TYPE, _dataType}});
-		} else {
-			www = new WWW(_url);
-		}
+		WWW www = _dataType != null ? new WWW(_url, Encoding.UTF8.GetBytes(_postData), new Dictionary<string, string>{{CONTENT_TYPE, _dataType}}) : new WWW(_url);
 		yield return www;
-		if (www.error == null) {
-			if (_successAction != null) {
-				_successAction(www.text);
-			}
-		} else {
-			if (_failAction != null) {
-				_failAction(www.error, www.error == OFFLINE_SIGN);
-			}
-		}
+		if (www.error == null) _successAction?.Invoke(www.text);
+		else _failAction?.Invoke(www.error, www.error == OFFLINE_SIGN);
 	}
 
 	public void Dispose() {

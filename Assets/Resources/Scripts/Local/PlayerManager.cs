@@ -22,9 +22,7 @@ public static class PlayerManager {
 	}
 
 	public static void Init() {
-		if (!File.Exists(PlayerDataPath)) {
-			GeneratePlayerData();
-		}
+		if (!File.Exists(PlayerDataPath)) GeneratePlayerData();
 		
 		LoadLocalPlayerData();
 	}
@@ -44,8 +42,16 @@ public static class PlayerManager {
 		localPlayerDataCache.eyeColor = Color.cyan;
 		localPlayerDataCache.dodgeTrailColor = new Color(.6f, .1f, 1f);
 		localPlayerDataCache.accelerationTrailColor = Color.cyan;
+		localPlayerDataCache.bloodColor = ResourcesManager.PlayerAttributesData.bloodColor;
 		localPlayerDataCache.items = new List<string>();
 		localPlayerDataCache.unlockedItems = new List<string>();
+		
+		#if UNITY_EDITOR
+		localPlayerDataCache.jumpPowerDecayIndex = 3;
+		localPlayerDataCache.jumpTimesIndex = 2;
+		localPlayerDataCache.ibSpriteCapacityIndex = 3;
+		#endif
+		
 		SaveLocalPlayerData();
 	}
 

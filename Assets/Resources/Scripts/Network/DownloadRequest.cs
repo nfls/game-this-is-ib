@@ -19,13 +19,7 @@ public class DownloadRequest : NetworkRequest {
 		if (www.error == null) {
 			File.WriteAllBytes(_temperPath, www.bytes);
 			File.Move(_temperPath, _path);
-			if (_successAction != null) {
-				_successAction(null);
-			}
-		} else {
-			if (_failAction != null) {
-				_failAction(www.error, www.error == OFFLINE_SIGN);
-			}
-		}
+			_successAction?.Invoke(null);
+		} else _failAction?.Invoke(www.error, www.error == OFFLINE_SIGN);
 	}
 }

@@ -6,12 +6,15 @@ using UnityEngine.Rendering;
 public abstract class IBSpriteController : MonoBehaviour {
 
 	public CharacterMotor characterMotor;
+	public CharacterController characterController;
 	public Vector3 initialOffset;
 	public Vector3 initialRotation;
 	public int commandBufferLength;
 	public float staminaCost;
-	public string attackSound;
-	public string hitSound;
+	public AudioAsset attackSound;
+	public ParticleAsset hitEffect;
+	public ParticleSystem.MinMaxGradient hitEffectColor;
+	public AudioAsset hitSound;
 
 	public AttackEffectSettings attackEffectSettings;
 	public IdleMovementSettings idleMovementSettings;
@@ -82,7 +85,6 @@ public abstract class IBSpriteController : MonoBehaviour {
 			Vector3 displacement = initialPosition - transform.position;
 			float distance = displacement.magnitude;
 			if (transform.lossyScale.x * (float) characterMotor.FaceDirection < 0) Flip();
-		
 			if (_isFollowing) {
 				float offsetDistance = initialOffset.magnitude;
 				transform.position = Vector3.MoveTowards(transform.position, initialPosition, Mathf.LerpUnclamped(idleMovementSettings.minFollowVelocity * Time.deltaTime, idleMovementSettings.maxFollowVelocity * Time.deltaTime, distance / (idleMovementSettings.maxFollowDistance - offsetDistance)));
@@ -101,9 +103,11 @@ public abstract class IBSpriteController : MonoBehaviour {
 	}
 
 	public virtual void OnReceiveAttackCommand() {
-		if (!_isCommandBufferFull && _commandBufferCount < commandBufferLength) {
+		if (!_isCommandBufferFull && _commandBufferCount < commandBufferLength && characterController.stamina > 0) {
 			_commandBufferCount++;
 			if (_commandBufferCount == commandBufferLength) _isCommandBufferFull = true;
+			characterController.InterruptStaminaRecovery();
+			characterController.CostStamina(staminaCost);
 			ExeAttackTask();
 		}
 	}
@@ -116,6 +120,7 @@ public abstract class IBSpriteController : MonoBehaviour {
 		_commandBufferCount = 0;
 		_isCommandBufferFull = false;
 		_isAttacking = false;
+		characterController.StartStaminaRecovery();
 		CancelAttackTask();
 	}
 
@@ -162,18 +167,19 @@ public abstract class IBSpriteController : MonoBehaviour {
 	protected virtual void OnDetectCharacterEnter(IBSpriteTrigger trigger, Collider detectedCollider) {
 		CharacterController character = detectedCollider.GetComponentInParent<CharacterController>();
 		float hitDirection = GetHitDirection(detectedCollider.transform, characterMotor.transform);
+		if (attackEffectSettings.doesHit) character.GetHit(attackEffectSettings.hitVelocityX * hitDirection, attackEffectSettings.hitVelocityY);
+		if (attackEffectSettings.doesStun) character.GetStunned(hitDirection * attackEffectSettings.stunAngle, attackEffectSettings.stunTime);
+		if (attackEffectSettings.doesDamage) character.GetDamaged(attackEffectSettings.damage);
+		if (hitEffect) {
+			BurstParticleController particle = hitEffect.Get<BurstParticleController>();
+			ParticleSystem.MainModule main = particle.ParticleSystem.main;
+			main.startColor = hitEffectColor;
+			particle.transform.position = trigger.transform.position;
+			particle.Burst();
+		}
 		
-		if (attackEffectSettings.doesHit) {
-			character.GetHit(attackEffectSettings.hitVelocityX * hitDirection, attackEffectSettings.hitVelocityY);
-		}
-
-		if (attackEffectSettings.doesStun) {
-			character.GetStunned(hitDirection * attackEffectSettings.stunAngle, attackEffectSettings.stunTime);
-		}
-
-		if (attackEffectSettings.doesDamage) {
-			character.GetDamaged(attackEffectSettings.damage);
-		}
+		CameraManager.RadialBlur(CameraManager.MainCamera.WorldToViewportPoint(trigger.transform.position));
+		FindObjectOfType<TestSceneController>().CombatClearShot(characterController.transform, detectedCollider.transform);
 	}
 
 	protected virtual void OnDetectCharacterExit(IBSpriteTrigger trigger, Collider detectedCollider) {

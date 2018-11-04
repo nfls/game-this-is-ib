@@ -7,7 +7,6 @@ public class ParticleDecalController : MonoBehaviour {
 	public float decalRate = 1f;
 	public float minSize;
 	public float maxSize;
-	public Gradient colorGradient;
 	
 	private ParticleSystem _particleSystem;
 	private readonly List<ParticleCollisionEvent> _collisionEvents = new List<ParticleCollisionEvent>(4);
@@ -21,7 +20,7 @@ public class ParticleDecalController : MonoBehaviour {
 
 		for (int i = 0; i < count; i++) {
 			float r = Random.Range(0f, 1f);
-			if (r <= decalRate) ParticleDecalManager.OnParticleHit(_collisionEvents[i], Random.Range(minSize, maxSize), colorGradient.Evaluate(r));
+			if (r <= decalRate) ParticleDecalManager.OnParticleHit(_collisionEvents[i], Random.Range(minSize, maxSize), _particleSystem.main.startColor.Evaluate(r));
 		}
 		
 		ParticleDecalManager.DisplayParticles();

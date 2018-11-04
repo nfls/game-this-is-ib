@@ -6,6 +6,7 @@ public abstract class PlayerData {
 	public string name;
 	public float health;
 	public int maxStaminaIndex;
+	public int staminaRecoveryDelayIndex;
 	public int staminaRecoveryRateIndex;
 	public int speedIndex;
 	public int accelerationIndex;
@@ -27,6 +28,7 @@ public abstract class PlayerData {
 	public Color eyeColor;
 	public Color dodgeTrailColor;
 	public Color accelerationTrailColor;
+	public Gradient bloodColor;
 
 	public PlayerData() { }
 
@@ -34,33 +36,7 @@ public abstract class PlayerData {
 		name = data.name;
 		health = data.health;
 		maxStaminaIndex = data.maxStaminaIndex;
-		staminaRecoveryRateIndex = data.staminaRecoveryRateIndex;
-		speedIndex = data.speedIndex;
-		accelerationIndex = data.accelerationIndex;
-		jumpPowerIndex = data.jumpPowerIndex;
-		jumpTimesIndex = data.jumpTimesIndex;
-		jumpPowerDecayIndex = data.jumpPowerDecayIndex;
-		dodgeDistanceIndex = data.dodgeDistanceIndex;
-		dodgeInvincibilityTimeIndex = data.dodgeInvincibilityTimeIndex;
-		dodgeCapacityIndex = data.dodgeCapacityIndex;
-		dodgeCooldownIndex = data.dodgeCooldownIndex;
-		ibSpriteCapacityIndex = data.ibSpriteCapacityIndex;
-		carriedIBSprites = new List<string>(data.carriedIBSprites);
-		ibSprites = new Dictionary<string, int>(data.ibSprites);
-		bodyStyle = data.bodyStyle;
-		bodyOutlineColor = new Color(data.bodyOutlineColor[0], data.bodyOutlineColor[1], data.bodyOutlineColor[2], data.bodyOutlineColor[3]);
-		bodyColor = new Color(data.bodyColor[0], data.bodyColor[1], data.bodyColor[2], data.bodyColor[3]);
-		eyeStyle = data.eyeStyle;
-		eyeOutlineColor = new Color(data.eyeOutlineColor[0], data.eyeOutlineColor[1], data.eyeOutlineColor[2], data.eyeOutlineColor[3]);
-		eyeColor = new Color(data.eyeColor[0], data.eyeColor[1], data.eyeColor[2], data.eyeColor[3]);
-		dodgeTrailColor = new Color(data.dodgeTrailColor[0], data.dodgeTrailColor[1], data.dodgeTrailColor[2], data.dodgeTrailColor[3]);
-		accelerationTrailColor = new Color(data.accelerationTrailColor[0], data.accelerationTrailColor[1], data.accelerationTrailColor[2], data.accelerationTrailColor[3]);
-	}
-
-	public virtual void Cache(PlayerData data) {
-		name = data.name;
-		health = data.health;
-		maxStaminaIndex = data.maxStaminaIndex;
+		staminaRecoveryDelayIndex = data.staminaRecoveryDelayIndex;
 		staminaRecoveryRateIndex = data.staminaRecoveryRateIndex;
 		speedIndex = data.speedIndex;
 		accelerationIndex = data.accelerationIndex;
@@ -82,6 +58,36 @@ public abstract class PlayerData {
 		eyeColor = data.eyeColor;
 		dodgeTrailColor = data.dodgeTrailColor;
 		accelerationTrailColor = data.accelerationTrailColor;
+		bloodColor = data.bloodColor;
+	}
+
+	public virtual void Cache(PlayerData data) {
+		name = data.name;
+		health = data.health;
+		maxStaminaIndex = data.maxStaminaIndex;
+		staminaRecoveryDelayIndex = data.staminaRecoveryDelayIndex;
+		staminaRecoveryRateIndex = data.staminaRecoveryRateIndex;
+		speedIndex = data.speedIndex;
+		accelerationIndex = data.accelerationIndex;
+		jumpPowerIndex = data.jumpPowerIndex;
+		jumpTimesIndex = data.jumpTimesIndex;
+		jumpPowerDecayIndex = data.jumpPowerDecayIndex;
+		dodgeDistanceIndex = data.dodgeDistanceIndex;
+		dodgeInvincibilityTimeIndex = data.dodgeInvincibilityTimeIndex;
+		dodgeCapacityIndex = data.dodgeCapacityIndex;
+		dodgeCooldownIndex = data.dodgeCooldownIndex;
+		ibSpriteCapacityIndex = data.ibSpriteCapacityIndex;
+		carriedIBSprites = new List<string>(data.carriedIBSprites);
+		ibSprites = new Dictionary<string, int>(data.ibSprites);
+		bodyStyle = data.bodyStyle;
+		bodyOutlineColor = data.bodyOutlineColor;
+		bodyColor = data.bodyColor;
+		eyeStyle = data.eyeStyle;
+		eyeOutlineColor = data.eyeOutlineColor;
+		eyeColor = data.eyeColor;
+		dodgeTrailColor = data.dodgeTrailColor;
+		accelerationTrailColor = data.accelerationTrailColor;
+		bloodColor = data.bloodColor;
 	}
 }
 
@@ -141,6 +147,7 @@ public class PlayerDataProxy {
 	public string name;
 	public float health;
 	public int maxStaminaIndex;
+	public int staminaRecoveryDelayIndex;
 	public int staminaRecoveryRateIndex;
 	public int speedIndex;
 	public int accelerationIndex;
@@ -155,21 +162,25 @@ public class PlayerDataProxy {
 	public List<string> carriedIBSprites;
 	public Dictionary<string, int> ibSprites;
 	public string bodyStyle;
-	public float[] bodyOutlineColor;
-	public float[] bodyColor;
+	public Color bodyOutlineColor;
+	public Color bodyColor;
 	public string eyeStyle;
-	public float[] eyeOutlineColor;
-	public float[] eyeColor;
-	public float[] dodgeTrailColor;
-	public float[] dodgeTrailOutlineColor;
-	public float[] accelerationTrailColor;
-	public float[] accelerationTrailOutlineColor;
+	public Color eyeOutlineColor;
+	public Color eyeColor;
+	public Color dodgeTrailColor;
+	public Color dodgeTrailOutlineColor;
+	public Color accelerationTrailColor;
+	public Color accelerationTrailOutlineColor;
+	public Gradient bloodColor;
 
 	public PlayerDataProxy() { }
 
 	public PlayerDataProxy(PlayerData data) {
 		name = data.name;
 		health = data.health;
+		maxStaminaIndex = data.maxStaminaIndex;
+		staminaRecoveryDelayIndex = data.staminaRecoveryDelayIndex;
+		staminaRecoveryRateIndex = data.staminaRecoveryRateIndex;
 		speedIndex = data.speedIndex;
 		accelerationIndex = data.accelerationIndex;
 		jumpPowerIndex = data.jumpPowerIndex;
@@ -183,13 +194,14 @@ public class PlayerDataProxy {
 		carriedIBSprites = new List<string>(data.carriedIBSprites);
 		ibSprites = new Dictionary<string, int>(data.ibSprites);
 		bodyStyle = data.bodyStyle;
-		bodyOutlineColor = new [] { data.bodyOutlineColor.r, data.bodyOutlineColor.g, data.bodyOutlineColor.b, data.bodyOutlineColor.a };
-		bodyColor = new [] { data.bodyColor.r, data.bodyColor.g, data.bodyColor.b, data.bodyColor.a };
+		bodyOutlineColor = data.bodyOutlineColor;
+		bodyColor = data.bodyColor;
 		eyeStyle = data.eyeStyle;
-		eyeOutlineColor = new [] { data.eyeOutlineColor.r, data.eyeOutlineColor.g, data.eyeOutlineColor.b, data.eyeOutlineColor.a };
-		eyeColor = new [] { data.eyeColor.r, data.eyeColor.g, data.eyeColor.b, data.eyeColor.a };
-		dodgeTrailColor = new[] { data.dodgeTrailColor.r, data.dodgeTrailColor.g, data.dodgeTrailColor.b, data.dodgeTrailColor.a };
-		accelerationTrailColor = new[] { data.accelerationTrailColor.r, data.accelerationTrailColor.g, data.accelerationTrailColor.b, data.accelerationTrailColor.a };
+		eyeOutlineColor = data.eyeOutlineColor;
+		eyeColor = data.eyeColor;
+		dodgeTrailColor = data.dodgeTrailColor;
+		accelerationTrailColor = data.accelerationTrailColor;
+		bloodColor = data.bloodColor;
 	}
 }
 

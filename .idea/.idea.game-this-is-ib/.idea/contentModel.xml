@@ -5,10 +5,22 @@
       <e p="Assembly-CSharp-Editor.csproj" t="IncludeRecursive" />
       <e p="Assembly-CSharp.csproj" t="IncludeRecursive" />
       <e p="Assets" t="Include">
+        <e p="Almgp_particle_vol_1" t="Include">
+          <e p="script" t="Include">
+            <e p="sprite_sheet.cs" t="Include" />
+          </e>
+          <e p="Shaders" t="Include">
+            <e p="emmision_particle.shader" t="Include" />
+            <e p="face_power_particle.shader" t="Include" />
+            <e p="mesh_dissolve_particel.shader" t="Include" />
+            <e p="multypower_particle.shader" t="Include" />
+          </e>
+        </e>
         <e p="Editor" t="Include">
           <e p="AssetBundleTool.cs" t="Include" />
           <e p="CameraBackgroundColorAttributeDrawer.cs" t="Include" />
           <e p="DataTool.cs" t="Include" />
+          <e p="HotAssetDrawer.cs" t="Include" />
           <e p="InputManagerTool.cs" t="Include" />
           <e p="InterlocutionDataEditorWindow.cs" t="Include" />
           <e p="InterlocutionSubjectAttributeDrawer.cs" t="Include" />
@@ -44,6 +56,14 @@
         <e p="local" t="Include">
           <e p="InterlocutionData.txt" t="Include" />
         </e>
+        <e p="ParticleSystemPreview" t="Include">
+          <e p="Editor" t="Include">
+            <e p="OverrideEditor.cs" t="Include" />
+            <e p="ParticleSystemEditorUtilsReflect.cs" t="Include" />
+            <e p="ParticleSystemGameObjectEditor.cs" t="Include" />
+            <e p="ParticleSystemPreview.cs" t="Include" />
+          </e>
+        </e>
         <e p="Physix" t="Include">
           <e p="Physix.cs" t="Include" />
           <e p="PreviewScenes" t="Include">
@@ -66,6 +86,7 @@
             <e p="Camera" t="Include">
               <e p="CameraBackgroundColorAttribute.cs" t="Include" />
               <e p="CameraManager.cs" t="Include" />
+              <e p="RadialBlurController.cs" t="Include" />
             </e>
             <e p="Character" t="Include">
               <e p="CharacterController.cs" t="Include" />
@@ -73,7 +94,7 @@
               <e p="CharacterMotor.cs" t="Include" />
               <e p="CharacterOperator.cs" t="Include" />
               <e p="InputOperator.cs" t="Include" />
-              <e p="SillyAIOperator.cs" t="Include" />
+              <e p="NaiveAIOperator.cs" t="Include" />
             </e>
             <e p="Data" t="Include">
               <e p="IBSpriteAttributesData.cs" t="Include" />
@@ -153,6 +174,7 @@
             </e>
             <e p="System" t="Include">
               <e p="AudioManager.cs" t="Include" />
+              <e p="HotAsset.cs" t="Include" />
               <e p="InteractionSystem.cs" t="Include" />
               <e p="LayerManager.cs" t="Include" />
               <e p="ShaderManager.cs" t="Include" />
@@ -185,6 +207,8 @@
             <e p="DissolutionToonShader.shader" t="Include" />
             <e p="OutlinedTextureToonShader.shader" t="Include" />
             <e p="OutlinedToonShader.shader" t="Include" />
+            <e p="ParticleOutlinedToonShader.shader" t="Include" />
+            <e p="RadialBlurShader.shader" t="Include" />
             <e p="SingleColorShader.shader" t="Include" />
             <e p="ToonShader.shader" t="Include" />
           </e>
@@ -194,9 +218,7 @@
       <e p="Library" t="ExcludeRecursive" />
       <e p="obj" t="ExcludeRecursive" />
       <e p="packages" t="ExcludeRecursive" />
-      <e p="Temp" t="ExcludeRecursive">
-        <e p="bin" t="ExcludeRecursive" />
-      </e>
+      <e p="Temp/bin" t="ExcludeRecursive" />
     </e>
     <e p="$USER_HOME$/Library/Caches/Rider2018.1/resharper-host/local/Transient/ReSharperHost/v12/SolutionCaches/_game-this-is-ib.-1397334290.00" t="ExcludeRecursive" />
   </component>

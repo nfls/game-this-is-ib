@@ -24,6 +24,7 @@ public static class LocalDataManager {
 		rij.Padding = PaddingMode.PKCS7;
 		encryptor = rij.CreateEncryptor();
 		decryptor = rij.CreateDecryptor();
+		JsonConvert.DefaultSettings().Converters.Add(new Newtonsoft.Json.Converters.ColorConverter());
 	}
 
 	public static void Init() {

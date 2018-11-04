@@ -1,7 +1,6 @@
 ﻿using UnityEngine;
 using Debug = UnityEngine.Debug;
 
-[RequireComponent(typeof(Rigidbody))]
 public class TestMonoBehaviour : MonoBehaviour {
 
 	public float speed = 10f;
@@ -10,10 +9,12 @@ public class TestMonoBehaviour : MonoBehaviour {
 	private Rigidbody _rigidbody;
 	
 	private void Awake() {
-		_rigidbody = GetComponent<Rigidbody>();
+		// _rigidbody = GetComponent<Rigidbody>();
+		GetComponent<ParticleController>().Debug();
 	}
 
 	private void Update() {
+		/*
 		Vector3 velocity;
 		if (Input.GetKey(KeyCode.A)) velocity = Vector3.left * speed;
 		else if (Input.GetKey(KeyCode.D)) velocity = Vector3.right * speed;
@@ -22,5 +23,6 @@ public class TestMonoBehaviour : MonoBehaviour {
 		else velocity = Vector3.zero;
 		velocity.y -= gravity;
 		_rigidbody.velocity = velocity;
+		*/
 	}
 }

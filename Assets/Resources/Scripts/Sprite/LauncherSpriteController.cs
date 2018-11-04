@@ -11,7 +11,7 @@ public class LauncherSpriteController : ShooterSpriteController {
 	public int launchPerFire = 1;
 	public int launchPerRegenerate = 1;
 	public float regenerationInterval = 2f;
-	public string regenerationSound;
+	public AudioAsset regenerationSound;
 	public float correctionPower;
 	public Vector3 lockBoxOffset;
 	public Vector3 lockBoxSize;
@@ -99,10 +99,10 @@ public class LauncherSpriteController : ShooterSpriteController {
 			rocket.Fire(new Vector3(Mathf.Cos(rad) * face, Mathf.Sin(rad), 0).normalized * firePower);
 			_rocketControllers[i] = null;
 			_emptySlots.Enqueue(i);
-			if (!string.IsNullOrEmpty(attackSound)) _audioSource.PlayOneShot(ResourcesManager.GetAudio(attackSound));
+			if (attackSound) _audioSource.PlayOneShot(attackSound.Source);
 			if (fireShake != Vector3.zero) CameraManager.Shake(rocket.transform.position, fireShake);
-			if (!string.IsNullOrEmpty(fireEffect)) {
-				BurstParticleController explosion = ParticleManager.Get<BurstParticleController>(fireEffect);
+			if (fireEffect) {
+				BurstParticleController explosion = fireEffect.Get<BurstParticleController>();
 				explosion.transform.position = rocket.transform.position;
 				explosion.Burst();
 			}
@@ -117,16 +117,15 @@ public class LauncherSpriteController : ShooterSpriteController {
 
 		do {
 			yield return interval;
-			if (!string.IsNullOrEmpty(regenerationSound)) _audioSource.PlayOneShot(ResourcesManager.GetAudio(regenerationSound));
+			if (regenerationSound && gameObject.activeSelf) _audioSource.PlayOneShot(regenerationSound.Source);
 			for (int i = 0; i < launchPerRegenerate; i++) {
 				int index = _emptySlots.Dequeue();
-				RocketProjectileController rocketController = ProjectileManager.Get<RocketProjectileController>(projectileType);
+				RocketProjectileController rocketController = projectileType.Get<RocketProjectileController>();
 				LoadUpProjectile(rocketController);
 				_rocketControllers[index] = rocketController;
 				if (!gameObject.active) rocketController.gameObject.SetActive(false);
 				if (_emptySlots.Count == 0) break;
 			}
-			
 		} while (_emptySlots.Count > 0);
 
 		_regenerateCoroutine = null;

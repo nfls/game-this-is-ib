@@ -73,16 +73,19 @@ public class CharacterMotor : MonoBehaviour {
 			Active = true,
 			Ranges = new[] { new Physix.PHYSIXBOUNDS { y = true, less = true, equals = true, value = -45f } }
 		};
+		
 		_physix.Collisions[1] = new Physix.PHYSIXCOLLISION {
 			Name = LEFT_COLLISION,
 			Active = true,
 			Ranges = new[] { new Physix.PHYSIXBOUNDS { x = true, greater = true, equals = true, value = 45f } }
 		};
+		
 		_physix.Collisions[2] = new Physix.PHYSIXCOLLISION {
 			Name = RIGHT_COLLISION,
 			Active = true,
 			Ranges = new[] { new Physix.PHYSIXBOUNDS { x = true, less = true, equals = true, value = -45f } }
 		};
+		
 		_physix.Movements = new[] { new Physix.PHYSIXMOVE { Name = GLOBAL_MOVEMENT } };
 		_physix.Movements[0].x.equals = true;
 		_physix.Movements[0].y.equals = true;
@@ -147,9 +150,7 @@ public class CharacterMotor : MonoBehaviour {
 
 	public void Move(float velocity) {
 		/*
-		if ((float) _faceDirection * velocity <= 0f) {
-			Flip();
-		}
+		if ((float) _faceDirection * velocity <= 0f) Flip();
 		*/
 		
 		_hasMoved = true;
