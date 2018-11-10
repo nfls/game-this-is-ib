@@ -10,7 +10,7 @@ public class CharacterController : MonoBehaviour {
 	public event Action<float> onDamaged;
 	public event Action onDeath;
 	public event Action<CharacterController> onJump;
-	
+
 	public string characterName;
 	public float health;
 	public float maxStamina;

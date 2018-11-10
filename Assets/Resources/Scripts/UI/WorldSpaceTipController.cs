@@ -32,7 +32,6 @@ public class WorldSpaceTipController : MonoBehaviour {
 			StopCoroutine(_hideCoroutine);
 			_hideCoroutine = null;
 			_textController.text = string.Empty;
-			gameObject.SetActive(false);
 		}
 		
 		(_textHolder.transform as RectTransform).pivot = pivot;
@@ -64,6 +63,7 @@ public class WorldSpaceTipController : MonoBehaviour {
 		_builder.Clear();
 		WaitForSeconds waitForSeconds = new WaitForSeconds(interval);
 		int index = -1;
+		gameObject.SetActive(true);
 		while (++index < _text.Length) {
 			_builder.Append(_text[index]);
 			_textController.text = _builder.ToString();

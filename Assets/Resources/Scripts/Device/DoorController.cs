@@ -1,7 +1,7 @@
 ﻿using System.Collections;
 using UnityEngine;
 
-public class DoorController : SignalReceiver {
+public class DoorController : DeviceController {
 
 	public float openTime;
 	public float frameDoorRatio;
@@ -20,10 +20,8 @@ public class DoorController : SignalReceiver {
 	protected Coroutine _openCoroutine;
 	protected Coroutine _closeCoroutine;
 
-	protected override void Awake() {
-		base.Awake();
-		
-		_audioSource = gameObject.AddComponent<AudioSource>();
+	protected void Awake() {
+		_audioSource = GetComponent<AudioSource>();
 		_audioSource.playOnAwake = false;
 		_audioSource.loop = false;
 		_audioSource.spatialize = true;
@@ -37,35 +35,23 @@ public class DoorController : SignalReceiver {
 		_originalTopPanelPosition = _topPanel.transform.localPosition;
 		_originalBottomPanelPosition = _bottomPanel.transform.localPosition;
 	}
-	
-	public override void OnActivate() {
-		Open();
-	}
 
-	public override void OnDeactivate() {
-		Close();
-	}
-
-	protected void Open() {
+	public void Open() {
 		if (_closeCoroutine != null) {
 			StopCoroutine(_closeCoroutine);
 			_closeCoroutine = null;
 		}
 
-		if (_openCoroutine == null) {
-			_openCoroutine = StartCoroutine(ExeOpenTask());
-		}
+		if (_openCoroutine == null) _openCoroutine = StartCoroutine(ExeOpenTask());
 	}
 
-	protected void Close() {
+	public void Close() {
 		if (_openCoroutine != null) {
 			StopCoroutine(_openCoroutine);
 			_openCoroutine = null;
 		}
 
-		if (_closeCoroutine == null) {
-			_closeCoroutine = StartCoroutine(ExeCloseTask());
-		}
+		if (_closeCoroutine == null) _closeCoroutine = StartCoroutine(ExeCloseTask());
 	}
 
 	protected IEnumerator ExeOpenTask() {

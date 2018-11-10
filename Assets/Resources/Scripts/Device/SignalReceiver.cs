@@ -1,10 +1,13 @@
 ﻿using System.Diagnostics;
 using UnityEngine;
+using UnityEngine.Events;
 
-public abstract class SignalReceiver : DeviceController {
+public class SignalReceiver : DeviceController {
 
 	public SignalReceiverType type;
 	public int activiationCount;
+	public UnityEvent activationEvent;
+	public UnityEvent deactivationEvent;
 	
 	public bool IsActivated => _isActivated;
 
@@ -17,13 +20,13 @@ public abstract class SignalReceiver : DeviceController {
 			if (_count == activiationCount) {
 				_isActivated = true;
 				if (!_isEnabled) return;
-				OnActivate();
+				activationEvent?.Invoke();
 			}
 		} else {
 			_isActivated = _count % 2 == 1;
 			if (!_isEnabled) return;
-			if (_isActivated) OnActivate();
-			else OnDeactivate();
+			if (_isActivated) activationEvent?.Invoke();
+			else deactivationEvent?.Invoke();
 		}
 	}
 
@@ -33,19 +36,15 @@ public abstract class SignalReceiver : DeviceController {
 			if (_count == activiationCount - 1) {
 				_isActivated = false;
 				if (!_isEnabled) return;
-				OnDeactivate();
+				deactivationEvent?.Invoke();
 			}
 		} else {
 			_isActivated = _count % 2 == 1;
 			if (!_isEnabled) return;
-			if (_isActivated) OnActivate();
-			else OnDeactivate();
+			if (_isActivated) activationEvent?.Invoke();
+			else deactivationEvent?.Invoke();
 		}
 	}
-
-	public abstract void OnActivate();
-
-	public abstract void OnDeactivate();
 	
 	[Conditional("UNITY_EDITOR")]
 	protected virtual void OnDrawGizmos() {

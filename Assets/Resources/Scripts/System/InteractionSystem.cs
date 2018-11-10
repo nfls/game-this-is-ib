@@ -4,6 +4,7 @@ using UnityEngine;
 public class InteractionSystem : MonoBehaviour {
 
 	public bool isLocalPlayer;
+	public CharacterController characterController;
 
 	public Collider Trigger => _trigger;
 
@@ -15,9 +16,16 @@ public class InteractionSystem : MonoBehaviour {
 	private InteractionController interactionController {
 		get { return _interactionController; }
 		set {
-			if (_interactionController) _interactionController.onTextChange -= RefreshInteractionTip;
+			if (_interactionController) {
+				_interactionController.onTextChange -= RefreshInteractionTip;
+				_interactionController.onDisable -= Refresh;
+			}
+			
 			_interactionController = value;
-			if (_interactionController) _interactionController.onTextChange += RefreshInteractionTip;
+			if (_interactionController) {
+				_interactionController.onTextChange += RefreshInteractionTip;
+				_interactionController.onDisable += Refresh;
+			}
 		}
 	}
 
@@ -36,16 +44,12 @@ public class InteractionSystem : MonoBehaviour {
 	public void Interact() {
 		if (interactionController) {
 			UIManager.NormalInteractionTip(isLocalPlayer);
-			interactionController.Interact();
-			if (!interactionController.Interactive) {
-				_potentialInteractionControllers.Remove(interactionController);
-				Refresh();
-			}
+			interactionController.Interact(characterController);
 		}
 	}
 
 	private void Refresh() {
-		if (CalculateInteractionController()) RefreshInteractionTip();
+		if (CalculateInteractionController() || !interactionController.Interactive) RefreshInteractionTip();
 	}
 
 	private void RefreshInteractionTip() {
@@ -67,8 +71,17 @@ public class InteractionSystem : MonoBehaviour {
 	}
 
 	private bool CalculateInteractionController() {
-		if (_potentialInteractionControllers.Count == 0) {
+		if (interactionController && !interactionController.Interactive) {
+			_potentialInteractionControllers.Remove(interactionController);
+			interactionController.loseInteractionEvent?.Invoke();
 			interactionController = null;
+		}
+		
+		if (_potentialInteractionControllers.Count == 0) {
+			if (!interactionController) return true;
+			interactionController.loseInteractionEvent?.Invoke();
+			interactionController = null;
+
 			return true;
 		}
 
@@ -76,14 +89,15 @@ public class InteractionSystem : MonoBehaviour {
 		float minSqrDistance = 9999f;
 		foreach (var controller in _potentialInteractionControllers) {
 			float sqrDistance = (controller.transform.position - transform.position).sqrMagnitude;
-			if (sqrDistance < minSqrDistance) {
-				minSqrDistance = sqrDistance;
-				interactionController = controller;
-			}
+			if (!(sqrDistance < minSqrDistance)) continue;
+			minSqrDistance = sqrDistance;
+			interactionController = controller;
 		}
 
-		if (interactionController != oldInteractionController) return true;
-		return false;
+		if (interactionController == oldInteractionController) return false;
+		if (oldInteractionController) oldInteractionController.loseInteractionEvent?.Invoke();
+		return true;
+
 	}
 
 	private void OnTriggerEnter(Collider other) {

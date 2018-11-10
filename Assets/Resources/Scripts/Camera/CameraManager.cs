@@ -37,7 +37,7 @@ public class CameraManager : MonoSingleton {
 	public static void RadialBlur(Vector3 center) {
 		radialBlurController.enabled = true;
 		radialBlurController.center = center;
-		radialBlurEndTime = Time.time + .5f;
+		radialBlurEndTime = Time.time + radialBlurController.duration;
 	}
 
 	private void OnApplicationQuit() {

@@ -1,4 +1,5 @@
 ﻿using System;
+using JetBrains.Annotations;
 using UnityEngine;
 
 [Serializable]
@@ -20,6 +21,22 @@ public class InterlocutionData {
 	public string optionC;
 	public string optionD;
 	public Option answer;
+
+	public string this[int index] {
+		get {
+			switch (index) {
+				case 0: return question;
+				case 1: return optionA;
+				case 2: return optionB;
+				case 3: return optionC;
+				case 4: return optionD;
+				default: {
+					new Exception("Index Out Of Range : " + index);
+					return string.Empty;
+				}
+			}
+		}
+	}
 }
 
 public enum Option {

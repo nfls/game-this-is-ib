@@ -1,6 +1,8 @@
-﻿using System.Collections.Generic;
+﻿using System;
+using System.Collections.Generic;
 using UnityEngine;
 
+[Serializable]
 public class InputMapper {
 
 	public const string MOVE_LEFT = "Move Left";
@@ -13,6 +15,8 @@ public class InputMapper {
 	public const string RECOVER = "Recover";
 	public const string SWITCH_PREV = "Switch Prev";
 	public const string SWITCH_NEXT = "Switch Next";
+	public const string SWITCH_UP = "Switch Up";
+	public const string SWITCH_DOWN = "Switch Down";
 	public const string SWITCH_CAMERA = "Swtich Camera";
 	public const string PAUSE = "Pause";
 	
@@ -34,7 +38,7 @@ public class InputMapper {
 	private Dictionary<string, InputDetector> _inputMap;
 
 	static InputMapper() {
-		defaultMacXboxOneMap = new Dictionary<string, InputDetector>(10);
+		defaultMacXboxOneMap = new Dictionary<string, InputDetector>(11);
 		defaultMacXboxOneMap[MOVE_LEFT] = AxisDetector.ToAxisDetector("Axis1st Negative");
 		defaultMacXboxOneMap[MOVE_RIGHT] = AxisDetector.ToAxisDetector("Axis1st Positive");
 		defaultMacXboxOneMap[ACCELERATE] = KeyDetector.ToKeyDetector("Joystick1Button14");
@@ -45,10 +49,12 @@ public class InputMapper {
 		defaultMacXboxOneMap[RECOVER] = KeyDetector.ToKeyDetector("Joystick1Button13");
 		defaultMacXboxOneMap[SWITCH_PREV] = KeyDetector.ToKeyDetector("Joystick1Button7");
 		defaultMacXboxOneMap[SWITCH_NEXT] = KeyDetector.ToKeyDetector("Joystick1Button8");
-		defaultMacXboxOneMap[SWITCH_CAMERA] = AxisDetector.ToAxisDetector("Axis5th Positive");
+		defaultMacXboxOneMap[SWITCH_UP] = KeyDetector.ToKeyDetector("Joystick1Button5");
+		defaultMacXboxOneMap[SWITCH_DOWN] = KeyDetector.ToKeyDetector("Joystick1Button6");
+		defaultMacXboxOneMap[SWITCH_CAMERA] = KeyDetector.ToKeyDetector("Joystick1Button12");
 		defaultMacXboxOneMap[PAUSE] = KeyDetector.ToKeyDetector("Joystick1Button10");
 		
-		defaultKeyboardMap = new Dictionary<string, InputDetector>(10);
+		defaultKeyboardMap = new Dictionary<string, InputDetector>(11);
 		defaultKeyboardMap[MOVE_LEFT] = KeyDetector.ToKeyDetector("A");
 		defaultKeyboardMap[MOVE_RIGHT] = KeyDetector.ToKeyDetector("D");
 		defaultKeyboardMap[ACCELERATE] = KeyDetector.ToKeyDetector("N");
@@ -59,6 +65,8 @@ public class InputMapper {
 		defaultKeyboardMap[RECOVER] = KeyDetector.ToKeyDetector("F");
 		defaultKeyboardMap[SWITCH_PREV] = KeyDetector.ToKeyDetector("Q");
 		defaultKeyboardMap[SWITCH_NEXT] = KeyDetector.ToKeyDetector("E");
+		defaultKeyboardMap[SWITCH_UP] = KeyDetector.ToKeyDetector("Y");
+		defaultKeyboardMap[SWITCH_DOWN] = KeyDetector.ToKeyDetector("H");
 		defaultKeyboardMap[SWITCH_CAMERA] = KeyDetector.ToKeyDetector("Tab");
 		defaultKeyboardMap[PAUSE] = KeyDetector.ToKeyDetector("Escape");
 	}

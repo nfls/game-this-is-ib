@@ -14,12 +14,15 @@ public class InteractionController : MonoBehaviour {
 	public string interactionText;
 	[Multiline]
 	public string counterInteractionText;
-	public UnityEvent interactionEvent;
-	public UnityEvent counterInteractionEvent;
+	public UnityEventWithCharacterController interactionEvent;
+	public UnityEventWithCharacterController counterInteractionEvent;
+	public UnityEvent loseInteractionEvent;
 
 	public delegate void OnTextChangeHandler();
+	public delegate void OnDisableHandler();
 	
 	public event OnTextChangeHandler onTextChange;
+	public event OnDisableHandler onDisable;
 
 	public bool Interactive => _interactive;
 	public string Text => hasCounterInteraction ? (_interacted ? counterInteractionText : interactionText) : interactionText;
@@ -28,14 +31,14 @@ public class InteractionController : MonoBehaviour {
 	private bool _interactive = true;
 	private Collider _trigger;
 
-	public void Interact() {
+	public void Interact(CharacterController characterController) {
 		if (hasCounterInteraction) {
-			if (_interacted) counterInteractionEvent?.Invoke();
-			else interactionEvent?.Invoke();
+			if (_interacted) counterInteractionEvent?.Invoke(characterController);
+			else interactionEvent?.Invoke(characterController);
 			_interacted = !_interacted;
 			onTextChange?.Invoke();
 		} else {
-			interactionEvent?.Invoke();
+			interactionEvent?.Invoke(characterController);
 			_interacted = true;
 		}
 		
@@ -50,6 +53,7 @@ public class InteractionController : MonoBehaviour {
 	public void Disable() {
 		_interactive = false;
 		gameObject.SetActive(!disappearWhenDisabled);
+		onDisable?.Invoke();
 	}
 	
 	public enum PanelShowDirection {

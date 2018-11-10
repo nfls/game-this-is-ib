@@ -10,6 +10,7 @@ public sealed class InputOperator : CharacterOperator {
 			_interactionSystem = value;
 			if (_interactionSystem) {
 				_interactionSystem.isLocalPlayer = CompareTag(TagManager.LOCAL_PLAYER_TAG);
+				_interactionSystem.characterController = _characterController;
 				_inputMapper.BindPressEvent(InputMapper.INTERACT, _interactionSystem.Preinteract);
 				_inputMapper.BindReleaseEvent(InputMapper.INTERACT, _interactionSystem.Interact);
 				_temperInputMapper.BindPressEvent(InputMapper.INTERACT, _interactionSystem.Preinteract);
@@ -27,7 +28,6 @@ public sealed class InputOperator : CharacterOperator {
 		}
 	}
 
-	private bool _hasStarted;
 	private InputMapper _inputMapper;
 	private InputMapper _temperInputMapper;
 	private InteractionSystem _interactionSystem;

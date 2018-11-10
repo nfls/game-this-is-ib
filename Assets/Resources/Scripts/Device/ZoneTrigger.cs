@@ -2,11 +2,15 @@
 using System.Diagnostics;
 using Cinemachine;
 using UnityEngine;
+using UnityEngine.Events;
 
-public class ZoneTrigger : SignalSender {
+public class ZoneTrigger : DeviceController {
 
 	[TagField]
 	public List<string> detectedTags;
+
+	public UnityEvent enterEvent;
+	public UnityEvent exitEvent;
 
 	private int _count;
 
@@ -14,9 +18,7 @@ public class ZoneTrigger : SignalSender {
 		foreach (var tag in detectedTags) {
 			if (other.CompareTag(tag)) {
 				_count += 1;
-				if (_count == 1) {
-					IsActivated = true;
-				}
+				if (_count == 1) enterEvent?.Invoke();
 				break;
 			}
 		}
@@ -26,16 +28,13 @@ public class ZoneTrigger : SignalSender {
 		foreach (var tag in detectedTags) {
 			if (other.CompareTag(tag)) {
 				_count -= 1;
-				if (_count == 0) {
-					IsActivated = false;
-				}
+				if (_count == 0) exitEvent?.Invoke();
 				break;
 			}
 		}
 	}
 
-	protected override void OnDrawGizmos() {
-		base.OnDrawGizmos();
+	protected void OnDrawGizmos() {
 		var pos = transform.position;
 		var scale = transform.lossyScale;
 		Color color = new Color(0, .8f, .1f, .5f);
@@ -45,8 +44,7 @@ public class ZoneTrigger : SignalSender {
 		Gizmos.DrawWireCube(pos, scale);
 	}
 
-	protected override void OnDrawGizmosSelected() {
-		base.OnDrawGizmosSelected();
+	protected void OnDrawGizmosSelected() {
 		var pos = transform.position;
 		var scale = transform.lossyScale;
 		Gizmos.color = Color.red;

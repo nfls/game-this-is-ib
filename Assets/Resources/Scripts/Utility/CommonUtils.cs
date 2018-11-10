@@ -1,5 +1,6 @@
 ﻿using System;
 using UnityEngine;
+using UnityEngine.Events;
 
 public static class CommonUtils {
 
@@ -11,3 +12,6 @@ public static class CommonUtils {
 		vector3.z = 0f;
 	}
 }
+
+[Serializable]
+public class UnityEventWithCharacterController : UnityEvent<CharacterController> { }

@@ -260,6 +260,9 @@ MonoBehaviour:
   fireEffect:
     required: 1
     identifier: gun_smoke
+  explosionEffect:
+    required: 0
+    identifier: 
   lifespan: 3
   recoilTime: 0.15
   recoilDistance: 0.6

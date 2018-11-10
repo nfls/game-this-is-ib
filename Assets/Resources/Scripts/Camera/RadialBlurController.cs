@@ -4,6 +4,7 @@ public class RadialBlurController : MonoBehaviour {
 
 	[Range(0f, .05f)]
 	public float factor = .01f;
+	public float duration = .1f;
 	public Vector2 center = new Vector2(.5f, .5f);
 	public Material material;
 
