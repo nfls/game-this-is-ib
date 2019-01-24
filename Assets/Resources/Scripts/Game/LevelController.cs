@@ -7,6 +7,10 @@ public class LevelController : MonoBehaviour {
 	
 	[CameraBackgroundColor]
 	public Color backgroundColor;
+
+	public bool changeMaterial;
+	public Material terrainMaterial;
+	public Material deviceMaterial;
 	
 	public int Width => _width;
 	public int Height => _height;
@@ -37,6 +41,10 @@ public class LevelController : MonoBehaviour {
 		devices = deviceRoot.GetComponentsInChildren<DeviceController>();
 		
 		StaticBatchingUtility.Combine(terrainRoot.gameObject);
+		if (changeMaterial) {
+			foreach (MeshRenderer renderer in terrainRoot.GetComponentsInChildren<MeshRenderer>()) renderer.material = terrainMaterial;
+			foreach (MeshRenderer renderer in deviceRoot.GetComponentsInChildren<MeshRenderer>()) renderer.material = deviceMaterial;
+		}
 	}
 
 	public void Shift(Vector3 destination, float time, Action finishAction) {

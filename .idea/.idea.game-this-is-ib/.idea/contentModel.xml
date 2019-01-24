@@ -2,19 +2,34 @@
 <project version="4">
   <component name="ContentModelStore">
     <e p="$PROJECT_DIR$" t="IncludeRecursive">
+      <e p="Assembly-CSharp-Editor-firstpass.csproj" t="IncludeRecursive" />
       <e p="Assembly-CSharp-Editor.csproj" t="IncludeRecursive" />
+      <e p="Assembly-CSharp-firstpass.csproj" t="IncludeRecursive" />
       <e p="Assembly-CSharp.csproj" t="IncludeRecursive" />
       <e p="Assets" t="Include">
         <e p="Editor" t="Include">
           <e p="AssetBundleTool.cs" t="Include" />
           <e p="CameraBackgroundColorAttributeDrawer.cs" t="Include" />
           <e p="DataTool.cs" t="Include" />
+          <e p="DVariableDrawer.cs" t="Include" />
+          <e p="EditorExtensions.cs" t="Include" />
+          <e p="EditorHelper.cs" t="Include" />
           <e p="HotAssetDrawer.cs" t="Include" />
           <e p="InputManagerTool.cs" t="Include" />
           <e p="InterlocutionDataEditorWindow.cs" t="Include" />
           <e p="InterlocutionSubjectAttributeDrawer.cs" t="Include" />
           <e p="MaterialTool.cs" t="Include" />
           <e p="SubjectAttributeDrawer.cs" t="Include" />
+        </e>
+        <e p="HolyShift" t="Include">
+          <e p="README.txt" t="Include" />
+          <e p="Scripts" t="Include">
+            <e p="CheckForStandardAssets.cs" t="Include" />
+          </e>
+          <e p="Shaders" t="Include">
+            <e p="FXWaterLowpoly.shader" t="Include" />
+            <e p="WaterInclude.cginc" t="Include" />
+          </e>
         </e>
         <e p="Hotassets" t="Include">
           <e p="Data" t="Include">
@@ -73,25 +88,31 @@
         <e p="Resources" t="Include">
           <e p="Scripts" t="Include">
             <e p="Camera" t="Include">
-              <e p="CameraBackgroundColorAttribute.cs" t="Include" />
               <e p="CameraManager.cs" t="Include" />
               <e p="RadialBlurController.cs" t="Include" />
             </e>
             <e p="Character" t="Include">
+              <e p="Buff.cs" t="Include" />
+              <e p="BuffAsset.cs" t="Include" />
+              <e p="BuffController.cs" t="Include" />
               <e p="CharacterController.cs" t="Include" />
               <e p="CharacterFactory.cs" t="Include" />
               <e p="CharacterMotor.cs" t="Include" />
               <e p="CharacterOperator.cs" t="Include" />
+              <e p="HealthController.cs" t="Include" />
               <e p="InputOperator.cs" t="Include" />
               <e p="NaiveAIOperator.cs" t="Include" />
             </e>
             <e p="Data" t="Include">
+              <e p="DataSystem.cs" t="Include" />
+              <e p="DVariable.cs" t="Include" />
               <e p="IBSpriteAttributesData.cs" t="Include" />
               <e p="InterlocutionData.cs" t="Include" />
               <e p="ItemAttributesData.cs" t="Include" />
               <e p="PlayerAttributesData.cs" t="Include" />
               <e p="PlayerData.cs" t="Include" />
               <e p="SubjectProgressData.cs" t="Include" />
+              <e p="VariableDecorator.cs" t="Include" />
               <e p="VersionData.cs" t="Include" />
             </e>
             <e p="Device" t="Include">
@@ -111,6 +132,7 @@
               <e p="ParticleDecalController.cs" t="Include" />
               <e p="ParticleDecalManager.cs" t="Include" />
               <e p="ParticleManager.cs" t="Include" />
+              <e p="WaterEffectController.cs" t="Include" />
             </e>
             <e p="Game" t="Include">
               <e p="LevelController.cs" t="Include" />
@@ -194,13 +216,109 @@
             </e>
           </e>
           <e p="Shaders" t="Include">
+            <e p="CuboidWireframeShader.shader" t="Include" />
             <e p="DissolutionToonShader.shader" t="Include" />
             <e p="OutlinedTextureToonShader.shader" t="Include" />
             <e p="OutlinedToonShader.shader" t="Include" />
             <e p="ParticleOutlinedToonShader.shader" t="Include" />
             <e p="RadialBlurShader.shader" t="Include" />
+            <e p="SandFallShader.shader" t="Include" />
+            <e p="SimpleWaterSurfaceShader.shader" t="Include" />
             <e p="SingleColorShader.shader" t="Include" />
             <e p="ToonShader.shader" t="Include" />
+          </e>
+        </e>
+        <e p="Rotary Heart" t="Include">
+          <e p="PhysicsDebugExtension" t="Include">
+            <e p="Editor" t="Include">
+              <e p="SupportWindow.cs" t="Include" />
+            </e>
+            <e p="Example" t="Include">
+              <e p="ObjMover.cs" t="Include" />
+              <e p="PhysicsDebugPreview.cs" t="Include" />
+            </e>
+            <e p="GLlineZOff.shader" t="Include" />
+            <e p="GLlineZOn.shader" t="Include" />
+            <e p="PhysicsExtension.cs" t="Include" />
+          </e>
+        </e>
+        <e p="Standard Assets" t="Include">
+          <e p="Editor" t="Include">
+            <e p="Water" t="Include">
+              <e p="Water4" t="Include">
+                <e p="GerstnerDisplaceEditor.cs" t="Include" />
+                <e p="PlanarReflectionEditor.cs" t="Include" />
+                <e p="SpecularLightingEditor.cs" t="Include" />
+                <e p="WaterBaseEditor.cs" t="Include" />
+                <e p="WaterEditorUtility.cs" t="Include" />
+                <e p="WaterQualitySettingAttributeDrawer.cs" t="Include" />
+              </e>
+            </e>
+          </e>
+          <e p="Effects" t="Include">
+            <e p="GlassRefraction" t="Include">
+              <e p="Shaders" t="Include">
+                <e p="GlassStainedBumpDistort.shader" t="Include" />
+              </e>
+            </e>
+            <e p="Projectors" t="Include">
+              <e p="Guidelines.txt" t="Include" />
+              <e p="Shaders" t="Include">
+                <e p="ProjectorLight.shader" t="Include" />
+                <e p="ProjectorMultiply.shader" t="Include" />
+              </e>
+            </e>
+            <e p="TessellationShaders" t="Include">
+              <e p="Shaders" t="Include">
+                <e p="BumpedSpecularDisplacement.shader" t="Include" />
+                <e p="BumpedSpecularSmooth.shader" t="Include" />
+              </e>
+            </e>
+            <e p="ToonShading" t="Include">
+              <e p="Shaders" t="Include">
+                <e p="ToonBasic.shader" t="Include" />
+                <e p="ToonBasicOutline.shader" t="Include" />
+                <e p="ToonLit.shader" t="Include" />
+                <e p="ToonLitOutline.shader" t="Include" />
+              </e>
+            </e>
+          </e>
+          <e p="Environment" t="Include">
+            <e p="Water" t="Include">
+              <e p="Water" t="Include">
+                <e p="Scripts" t="Include">
+                  <e p="Displace.cs" t="Include" />
+                  <e p="GerstnerDisplace.cs" t="Include" />
+                  <e p="MeshContainer.cs" t="Include" />
+                  <e p="PlanarReflection.cs" t="Include" />
+                  <e p="SpecularLighting.cs" t="Include" />
+                  <e p="Water.cs" t="Include" />
+                  <e p="WaterBase.cs" t="Include" />
+                  <e p="WaterTile.cs" t="Include" />
+                </e>
+                <e p="Shaders" t="Include">
+                  <e p="FXWaterPro.shader" t="Include" />
+                </e>
+              </e>
+              <e p="Water4" t="Include">
+                <e p="Shaders" t="Include">
+                  <e p="FXWater4Advanced.shader" t="Include" />
+                  <e p="FXWater4Simple.shader" t="Include" />
+                  <e p="WaterInclude.cginc" t="Include" />
+                </e>
+              </e>
+            </e>
+            <e p="Water (Basic)" t="Include">
+              <e p="Scripts" t="Include">
+                <e p="WaterBasic.cs" t="Include" />
+              </e>
+              <e p="Shaders" t="Include">
+                <e p="FXWaterBasic.shader" t="Include" />
+              </e>
+            </e>
+          </e>
+          <e p="Utility" t="Include">
+            <e p="FPSCounter.cs" t="Include" />
           </e>
         </e>
       </e>

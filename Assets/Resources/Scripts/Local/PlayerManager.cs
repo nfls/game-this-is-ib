@@ -6,19 +6,14 @@ public static class PlayerManager {
 	
 	public static readonly string PlayerDataPath = LocalDataManager.DataStorageRoot + "/pData";
 
-	public static bool HasRemotePlayer => remotePlayerData != null;
 	public static LocalPlayerData LocalPlayerData => localPlayerData;
-	public static RemotePlayerData RemotePlayerData => remotePlayerData;
 
 	private static LocalPlayerData localPlayerData;
-	private static RemotePlayerData remotePlayerData;
 
 	private static LocalPlayerData localPlayerDataCache;
-	private static RemotePlayerData remotePlayerDataCache;
 
 	static PlayerManager() {
 		localPlayerDataCache = new LocalPlayerData();
-		remotePlayerDataCache = new RemotePlayerData();
 	}
 
 	public static void Init() {
@@ -66,9 +61,5 @@ public static class PlayerManager {
 
 	public static void RefreshLocalPlayerDataCache() {
 		localPlayerDataCache.Cache(localPlayerData);
-	}
-
-	public static void RefreshRemotePlayerDataCache() {
-		remotePlayerDataCache.Cache(remotePlayerData);
 	}
 }

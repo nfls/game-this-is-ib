@@ -6,26 +6,20 @@ public class InputManager : MonoSingleton {
 	private static Dictionary<InputDetector, int> detectorRecords = new Dictionary<InputDetector, int>(10);
 
 	private void Update() {
-		foreach (InputDetector detector in registeredDetectors) {
-			detector.Refresh();
-		}
+		foreach (InputDetector detector in registeredDetectors) detector.Refresh();
 	}
 
 	public static void NotifyDetectorOnBusy(InputDetector detector) {
 		if (!registeredDetectors.Contains(detector)) {
 			detectorRecords[detector] = 1;
 			RegisterDetector(detector);
-		} else {
-			detectorRecords[detector] += 1;
-		}
+		} else detectorRecords[detector] += 1;
 	}
 
 	public static void NotifyDetectorOnIdle(InputDetector detector) {
 		if (registeredDetectors.Contains(detector)) {
 			detectorRecords[detector] -= 1;
-			if (detectorRecords[detector] == 0) {
-				RemoveDetector(detector);
-			}
+			if (detectorRecords[detector] == 0) RemoveDetector(detector);
 		}
 	}
 

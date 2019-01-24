@@ -3,6 +3,7 @@ using System.Collections;
 using System.Diagnostics;
 using UnityEngine;
 using UnityEngine.Rendering;
+using Debug = UnityEngine.Debug;
 
 [RequireComponent(typeof(CharacterMotor))]
 public class CharacterController : MonoBehaviour {
@@ -65,10 +66,12 @@ public class CharacterController : MonoBehaviour {
 	protected Coroutine _dodgeCooldownCoroutine;
 	protected Coroutine _staminaRecoveryCoroutine;
 
+	/*
 	[Conditional("UNITY_EDITOR")]
 	private void OnGUI() {
 		GUI.Button(new Rect(0f, 0f, 100f, 50f), (int) stamina + "/" + (int) maxStamina);
 	}
+	*/
 
 	public virtual void Awake() {
 		_characterMotor = GetComponent<CharacterMotor>();
@@ -92,7 +95,6 @@ public class CharacterController : MonoBehaviour {
 
 	public void Move(FaceDirection direction) {
 		if (_isStunned) return;
-
 		float velocity = speed * (float) direction;
 		if (_isAccelerating) velocity *= acceleration;
 		if (direction != _characterMotor.FaceDirection) _characterMotor.Flip();
@@ -148,7 +150,6 @@ public class CharacterController : MonoBehaviour {
 
 	public void SwitchOnIBSprite() {
 		if (carriedIBSpriteControllers.Length == 0) return;
-
 		_currentIBSpriteControllerIndex = 0;
 		_currentIBSpriteController = carriedIBSpriteControllers[0];
 		_currentIBSpriteController.OnSwitchOn();
@@ -156,7 +157,6 @@ public class CharacterController : MonoBehaviour {
 
 	public void SwitchOffIBSprite() {
 		if (!_currentIBSpriteController) return;
-		
 		_currentIBSpriteControllerIndex = -1;
 		_currentIBSpriteController.OnSwitchOff();
 	}
@@ -195,16 +195,13 @@ public class CharacterController : MonoBehaviour {
 		DetectionSettings detectionSettings = new DetectionSettings();
 		if (CompareTag(TagManager.ENEMY_TAG)) {
 			detectionSettings.detectsLocalPlayer = true;
-			detectionSettings.detectsRemotePlayer = true;
 			detectionSettings.detectsEnemy = false;
 		} else {
 			detectionSettings.detectsLocalPlayer = false;
-			detectionSettings.detectsRemotePlayer = false;
 			detectionSettings.detectsEnemy = true;
 		}
 		
 		controller.DetectionSettings = detectionSettings;
-		
 		if (autoSwitch) {
 			if (IsIBSpriteOn) _currentIBSpriteController.OnSwitchOff();
 			_currentIBSpriteControllerIndex = CarriedIBSpriteCount - 1;
@@ -234,7 +231,6 @@ public class CharacterController : MonoBehaviour {
 		SprayBlood();
 		health -= damage;
 		onDamaged?.Invoke(damage);
-		
 		if (health <= 0f) {
 			health = 0f;
 			Die();
@@ -302,7 +298,6 @@ public class CharacterController : MonoBehaviour {
 	protected IEnumerator ExeDodgeCoroutine(float dodgeInvincibilityTime) {
 		_isDodging = true;
 		if (hasDodgeTrail) EnableTrail(dodgeTrailSettings);
-		
 		yield return new WaitForSeconds(dodgeInvincibilityTime);
 		if (hasDodgeTrail) {
 			DisableTrail();
@@ -317,9 +312,8 @@ public class CharacterController : MonoBehaviour {
 	protected IEnumerator ExeDodgeCooldownCoroutine() {
 		while (true) {
 			float endTime = Time.time + dodgeCooldown;
-			do {
-				yield return null;
-			} while (Time.time < endTime);
+			do yield return null;
+			while (Time.time < endTime);
 			_dodgeTimes -= 1;
 			if (_dodgeTimes == 0) break;
 		}
@@ -329,7 +323,6 @@ public class CharacterController : MonoBehaviour {
 
 	protected IEnumerator ExeStaminaRecoveryCoroutine() {
 		yield return new WaitForSeconds(staminaRecoveryDelay);
-		
 		while (stamina < maxStamina) {
 			yield return null;
 			stamina += maxStamina * staminaRecoveryRate * Time.deltaTime;

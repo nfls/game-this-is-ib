@@ -8,13 +8,6 @@ public static class CharacterFactory {
 		TagManager.SetAllTags(player, TagManager.LOCAL_PLAYER_TAG);
 		return player;
 	}
-
-	public static GameObject GenerateRemotePlayer() {
-		GameObject player = GeneratePlayer(PlayerManager.RemotePlayerData);
-		player.name = "Remote Player";
-		TagManager.SetAllTags(player, TagManager.REMOTE_PLAYER_TAG);
-		return player;
-	}
 	
 	private static GameObject GeneratePlayer(PlayerData data) {
 		GameObject go = new GameObject();
@@ -70,8 +63,21 @@ public static class CharacterFactory {
 		return go;
 	}
 
+	/// <summary>
+	/// only for temporary use
+	/// </summary>
+	/// <param name="enemy display name"></param>
+	/// <returns></returns>
 	public static GameObject GenerateEnemy(string name) {
-
-		return null;
+		GameObject enemy = GeneratePlayer(PlayerManager.LocalPlayerData);
+		Gradient bloodColor = new Gradient();
+		bloodColor.alphaKeys = new [] { new GradientAlphaKey(1f, 0f), new GradientAlphaKey(1f, 0f) };
+		bloodColor.colorKeys = new[] { new GradientColorKey(new Color(1f, 0.95f, 0.6f, 1f), 0f), new GradientColorKey(new Color(1f, 0.8f, 0.1f, 1f), 1f) };
+		enemy.GetComponent<CharacterController>().bloodColor = bloodColor;
+		Renderer bodyRenderer = enemy.transform.Find("body@default(Clone)").GetComponent<Renderer>();
+		bodyRenderer.material.SetColor(ShaderManager.TOON_COLOR_KEYWORD, Color.yellow);
+		TagManager.SetAllTags(enemy, TagManager.ENEMY_TAG);
+		enemy.name = name;
+		return enemy;
 	}
 }

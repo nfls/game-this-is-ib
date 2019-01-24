@@ -16,7 +16,7 @@ public class InterlocutionController : DeviceController {
 
 	public void StartInterlocution(CharacterController characterController) {
 		if (_uiController) return;
-		_uiController = UIManager.GetInterlocutionUI(characterController.CompareTag(TagManager.LOCAL_PLAYER_TAG));
+		_uiController = UIManager.LocalInterlocutionController;
 		float direction = (transform.position - characterController.transform.position).x > 0 ? 1f : -1f;
 		Vector3 originalPos = transform.position;
 		Vector3 position = new Vector3 {
@@ -46,13 +46,9 @@ public class InterlocutionController : DeviceController {
 		_uiController = null;
 	}
 
-	private void OnCorrection() {
-		correctionEvent?.Invoke();
-	}
+	private void OnCorrection() => correctionEvent?.Invoke();
 
-	private void OnIncorrection() {
-		incorrectionEvent?.Invoke();
-	}
+	private void OnIncorrection() => incorrectionEvent?.Invoke();
 }
 
 [Serializable]

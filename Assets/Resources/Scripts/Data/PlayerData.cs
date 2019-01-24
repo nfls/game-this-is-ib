@@ -125,23 +125,6 @@ public class LocalPlayerData : PlayerData {
 	}
 }
 
-public class RemotePlayerData : PlayerData {
-	
-	public int reward;
-	
-	public RemotePlayerData() { }
-
-	public RemotePlayerData(RemotePlayerDataProxy data) : base(data) {
-		reward = data.reward;
-	}
-	
-	public override void Cache(PlayerData data) {
-		base.Cache(data);
-		var d = data as RemotePlayerData;
-		if (d != null) reward = d.reward;
-	}
-}
-
 public class PlayerDataProxy {
 
 	public string name;
@@ -223,16 +206,5 @@ public class LocalPlayerDataProxy : PlayerDataProxy {
 		numGoldMeritCards = data.numGoldMeritCards;
 		items = new List<string>(data.items);
 		unlockedItems = new List<string>(data.unlockedItems);
-	}
-}
-
-public class RemotePlayerDataProxy : PlayerDataProxy {
-
-	public int reward;
-	
-	public RemotePlayerDataProxy() { }
-
-	public RemotePlayerDataProxy(RemotePlayerData data) : base(data) {
-		reward = data.reward;
 	}
 }

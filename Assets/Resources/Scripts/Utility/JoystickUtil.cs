@@ -278,10 +278,7 @@ public static class JoystickUtil {
 	private static unsafe string UTF8_ToManaged(IntPtr s, bool freePtr = false) {
 		if (s == IntPtr.Zero) return null;
 		byte* ptr = (byte*) s;
-		while (*ptr != 0) {
-			ptr++;
-		}
-
+		while (*ptr != 0) ptr++;
 		string result = System.Text.Encoding.UTF8.GetString((byte*) s, (int) (ptr - (byte*) s));
 		if (freePtr) SDL_free(s);
 		return result;
@@ -304,13 +301,9 @@ public static class JoystickUtil {
 
 	private static readonly Dictionary<int, IntPtr> availableDevices = new Dictionary<int, IntPtr>();
 
-	public static void Init() {
-		SDL_Init(SDL_INIT_HAPTIC);
-	}
+	public static void Init() => SDL_Init(SDL_INIT_HAPTIC);
 
-	public static void Quit() {
-		SDL_Quit();
-	}
+	public static void Quit() => SDL_Quit();
 
 	public static bool Rumble(int deviceIndex, float strength, int milliseconds) {
 		if (milliseconds < 0) return false;
@@ -319,13 +312,9 @@ public static class JoystickUtil {
 		return SDL_HapticRumblePlay(device, strength, (uint) milliseconds) == SDL_SUCCESS;
 	}
 
-	public static bool Rumble(float strength, int milliseconds) {
-		return Rumble(0, strength, milliseconds);
-	}
+	public static bool Rumble(float strength, int milliseconds) => Rumble(0, strength, milliseconds);
 
-	public static bool Rumble(int milliseconds = 1000) {
-		return Rumble(0, 1, milliseconds);
-	}
+	public static bool Rumble(int milliseconds = 1000) => Rumble(0, 1, milliseconds);
 
 	public static void StopRumble(int deviceIndex) {
 		if (availableDevices.ContainsKey(deviceIndex)) return;
@@ -333,9 +322,7 @@ public static class JoystickUtil {
 	}
 
 	public static void StopRumbleAll() {
-		foreach (var pair in availableDevices) {
-			SDL_HapticRumbleStop(pair.Value);
-		}
+		foreach (var pair in availableDevices) SDL_HapticRumbleStop(pair.Value);
 	}
 
 	private static bool CheckAndInitDevice(int deviceIndex) {
@@ -344,7 +331,6 @@ public static class JoystickUtil {
 		IntPtr ptr = SDL_HapticOpen(deviceIndex);
 		if (SDL_HapticRumbleSupported(ptr) == SDL_BOOL.SDL_FALSE) return false;
 		if (SDL_HapticRumbleInit(ptr) != SDL_SUCCESS) return false;
-
 		availableDevices[deviceIndex] = ptr;
 		Debug.Log("Register Device [" + deviceIndex + "] " + SDL_HapticName(deviceIndex) + " !");
 		return true;

@@ -43,11 +43,6 @@ public class IBSpriteTrigger : MonoBehaviour {
 				return;
 			}
 
-			if (detectionSettings.detectsRemotePlayer && other.CompareTag(TagManager.REMOTE_PLAYER_TAG)) {
-				onDetectCharacterEnter?.Invoke(this, other);
-				return;
-			}
-
 			if (detectionSettings.detectsEnemy && other.CompareTag(TagManager.ENEMY_TAG)) onDetectCharacterEnter?.Invoke(this, other);
 		}
 	}
@@ -61,11 +56,6 @@ public class IBSpriteTrigger : MonoBehaviour {
 				return;
 			}
 
-			if (detectionSettings.detectsRemotePlayer && other.CompareTag(TagManager.REMOTE_PLAYER_TAG)) {
-				onDetectCharacterExit?.Invoke(this, other);
-				return;
-			}
-
 			if (detectionSettings.detectsEnemy && other.CompareTag(TagManager.ENEMY_TAG)) onDetectCharacterExit?.Invoke(this, other);
 		}
 	}
@@ -75,6 +65,5 @@ public class IBSpriteTrigger : MonoBehaviour {
 public class DetectionSettings {
 	
 	public bool detectsLocalPlayer;
-	public bool detectsRemotePlayer;
 	public bool detectsEnemy;
 }

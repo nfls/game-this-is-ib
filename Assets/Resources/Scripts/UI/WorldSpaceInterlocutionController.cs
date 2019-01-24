@@ -20,16 +20,19 @@ public class WorldSpaceInterlocutionController : MonoBehaviour {
 	public Action correctAction;
 	public Action incorrectAction;
 	public Action exitAction;
+	public Color releaseTipColor;
 	public Color normalColor;
 	public Color highlightedColor;
 	public Color correctColor;
 	public Color incorrectColor;
 	public GameObject basePanel;
+	public HorizontalLayoutGroup releaseTipGroup;
 	public VerticalLayoutGroup optionGroup;
 	public Image optionABackgroud;
 	public Image optionBBackgroud;
 	public Image optionCBackgroud;
 	public Image optionDBackgroud;
+	public Image releaseTipBackground;
 	public Text questionTextHolder;
 	public Text optionATextHolder;
 	public Text optionBTextHolder;
@@ -50,10 +53,12 @@ public class WorldSpaceInterlocutionController : MonoBehaviour {
 	public FaceDirection faceDirection {
 		set {
 			if (value == FaceDirection.Left) {
+				releaseTipGroup.childAlignment = TextAnchor.UpperRight;
 				optionGroup.childAlignment = TextAnchor.UpperRight;
 				optionGroup.padding.left = 0;
 				optionGroup.padding.right = 30;
 			} else {
+				releaseTipGroup.childAlignment = TextAnchor.UpperLeft;
 				optionGroup.childAlignment = TextAnchor.UpperLeft;
 				optionGroup.padding.left = 30;
 				optionGroup.padding.right = 0;
@@ -61,7 +66,7 @@ public class WorldSpaceInterlocutionController : MonoBehaviour {
 		}
 	}
 
-	private bool releaseTipEmerged;
+	private bool _releaseTipEmerged;
 	[SerializeField]
 	private InputMapper _inputMapper;
 	private InterlocutionData _interlocutionData;
@@ -96,9 +101,7 @@ public class WorldSpaceInterlocutionController : MonoBehaviour {
 		_inputMapper.BindReleaseEvent(InputMapper.INTERACT, ConfirmOrExit);
 	}
 	
-	private void Update() {
-		_inputMapper.Refresh();
-	}
+	private void Update() => _inputMapper.Refresh();
 	
 	private void RefreshHighlight() {
 		optionABackgroud.color = normalColor;
@@ -118,12 +121,14 @@ public class WorldSpaceInterlocutionController : MonoBehaviour {
 	}
 
 	private void SwitchUp() {
+		Debug.Log("Switch Up");
 		if (SelectedOption == 0) SelectedOption = (Option) 3;
 		else SelectedOption -= 1;
 		if (switchSound) _audioSource.PlayOneShot(switchSound.Source);
 	}
 
 	private void SwitchDown() {
+		Debug.Log("Switch Down");
 		if ((int) SelectedOption == 3) SelectedOption = 0;
 		else SelectedOption += 1;
 		if (switchSound) _audioSource.PlayOneShot(switchSound.Source);
@@ -140,37 +145,64 @@ public class WorldSpaceInterlocutionController : MonoBehaviour {
 	}
 
 	private void CheckExit() {
-		if (!releaseTipEmerged && _inputMapper[InputMapper.INTERACT].ChargeTime > releaseTime) {
-			releaseTipEmerged = true;
-			if (releaseTipSound) _audioSource.PlayOneShot(releaseTipSound.Source);
-		}
+		if (!_releaseTipEmerged && _inputMapper[InputMapper.INTERACT].ChargeTime > releaseTime) ShowReleaseTip();
+	}
+
+	private void ShowReleaseTip() {
+		_releaseTipEmerged = true;
+		if (releaseTipSound) _audioSource.PlayOneShot(releaseTipSound.Source);
+		releaseTipBackground.color = releaseTipColor;
+		releaseTipTextHolder.text = releaseTip;
+	}
+
+	private void HideReleaseTip() {
+		_releaseTipEmerged = false;
+		Color color = releaseTipBackground.color;
+		color.a = 0f;
+		releaseTipBackground.color = color;
+		releaseTipTextHolder.text = " ";
 	}
 
 	private void BindInput(InputMapper inputMapper) {
-		_inputMapper.Remap(InputMapper.SWITCH_UP, inputMapper[InputMapper.SWITCH_UP]);
-		_inputMapper.Remap(InputMapper.SWITCH_DOWN, inputMapper[InputMapper.SWITCH_DOWN]);
-		_inputMapper.Remap(InputMapper.INTERACT, inputMapper[InputMapper.INTERACT]);
+		_inputMapper[InputMapper.INTERACT] = inputMapper[InputMapper.INTERACT];
+		_inputMapper[InputMapper.SWITCH_UP] = inputMapper[InputMapper.SWITCH_UP];
+		_inputMapper[InputMapper.SWITCH_DOWN] = inputMapper[InputMapper.SWITCH_DOWN];
+		_inputMapper.UDebug();
 	}
 
-	private void ActivateInput() {
-		_inputMapper.isInControl = true;
-	}
+	private void ActivateInput() => _inputMapper.isInControl = true;
 
-	private void DeactivateInput() {
-		_inputMapper.isInControl = false;
-	}
+	private void DeactivateInput() => _inputMapper.isInControl = false;
 
 	private void OnCorrect() {
 		if (correctSound) _audioSource.PlayOneShot(correctSound.Source);
+		Vector3 position;
 		switch (SelectedOption) {
-			case Option.A: optionABackgroud.color = correctColor;
+			case Option.A:
+				optionABackgroud.color = correctColor;
+				position = optionABackgroud.transform.position;
 				break;
-			case Option.B: optionBBackgroud.color = correctColor;
+			case Option.B:
+				optionBBackgroud.color = correctColor;
+				position = optionBBackgroud.transform.position;
 				break;
-			case Option.C: optionCBackgroud.color = correctColor;
+			case Option.C:
+				optionCBackgroud.color = correctColor;
+				position = optionCBackgroud.transform.position;
 				break;
-			case Option.D: optionDBackgroud.color = correctColor;
+			case Option.D:
+				optionDBackgroud.color = correctColor;
+				position = optionDBackgroud.transform.position;
 				break;
+			default:
+				position = Vector3.zero;
+				break;
+		}
+		
+		if (correctEffect) {
+			BurstParticleController effect = correctEffect.Get<BurstParticleController>();
+			effect.transform.position = position;
+			effect.Burst();
 		}
 		
 		correctAction?.Invoke();
@@ -178,15 +210,33 @@ public class WorldSpaceInterlocutionController : MonoBehaviour {
 
 	private void OnIncorrect() {
 		if (incorrectSound) _audioSource.PlayOneShot(incorrectSound.Source);
+		Vector3 position;
 		switch (SelectedOption) {
-			case Option.A: optionABackgroud.color = incorrectColor;
+			case Option.A:
+				optionABackgroud.color = incorrectColor;
+				position = optionABackgroud.transform.position;
 				break;
-			case Option.B: optionBBackgroud.color = incorrectColor;
+			case Option.B:
+				optionBBackgroud.color = incorrectColor;
+				position = optionBBackgroud.transform.position;
 				break;
-			case Option.C: optionCBackgroud.color = incorrectColor;
+			case Option.C:
+				optionCBackgroud.color = incorrectColor;
+				position = optionCBackgroud.transform.position;
 				break;
-			case Option.D: optionDBackgroud.color = incorrectColor;
+			case Option.D:
+				optionDBackgroud.color = incorrectColor;
+				position = optionDBackgroud.transform.position;
 				break;
+			default:
+				position = Vector3.zero;
+				break;
+		}
+		
+		if (incorrectEffect) {
+			BurstParticleController effect = incorrectEffect.Get<BurstParticleController>();
+			effect.transform.position = position;
+			effect.Burst();
 		}
 		
 		incorrectAction?.Invoke();
@@ -195,6 +245,7 @@ public class WorldSpaceInterlocutionController : MonoBehaviour {
 	public void Show(InputMapper inputMapper, InterlocutionData data) {
 		_interlocutionData = data;
 		SelectedOption = 0;
+		gameObject.SetActive(true);
 		BindInput(inputMapper);
 		ActivateInput();
 		if (_showCoroutine != null) {
@@ -207,7 +258,6 @@ public class WorldSpaceInterlocutionController : MonoBehaviour {
 			_hideCoroutine = null;
 		}
 		
-		gameObject.SetActive(true);
 		if (showSound) _audioSource.PlayOneShot(showSound.Source);
 		_showCoroutine = StartCoroutine(ExeShowCoroutine());
 	}
@@ -228,8 +278,8 @@ public class WorldSpaceInterlocutionController : MonoBehaviour {
 	}
 	
 	public void Exit() {
-		releaseTipEmerged = false;
 		DeactivateInput();
+		HideReleaseTip();
 		Hide();
 	}
 

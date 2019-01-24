@@ -32,7 +32,7 @@ public class TestSceneController : MonoBehaviour {
 
 		GameObject localPlayer = CharacterFactory.GenerateLocalPlayer();
 		GameObject interactionSystem = new GameObject("Interaction System");
-		interactionSystem.transform.localScale = new Vector3(6f, 3f, 4f);
+		interactionSystem.transform.localScale = new Vector3(4f, 2f, 4f);
 		interactionSystem.layer = LayerManager.InteractionLayer;
 		localPlayer.AddComponent<InputOperator>().InteractionSystem = interactionSystem.AddComponent<InteractionSystem>();
 		GameObject sprite0 = IBSpriteFactory.GenerateIBSprite("up_punch");
@@ -53,10 +53,8 @@ public class TestSceneController : MonoBehaviour {
 		mainTargetGroup.m_Targets = new[] { new CinemachineTargetGroup.Target { target = localPlayer.transform, weight = 1f, radius = 5f} };
 		combatVirtualCamera.Follow = localPlayer.transform;
 		combatVirtualCamera.LookAt = localPlayer.transform;
-		
-		GameObject enemy0 = CharacterFactory.GenerateLocalPlayer();
-		TagManager.SetAllTags(enemy0, TagManager.ENEMY_TAG);
-		enemy0.name = "Enemy 0";
+
+		GameObject enemy0 = CharacterFactory.GenerateEnemy("Enemy 0");
 		enemy0.transform.position = new Vector3(10, 8, 0);
 		GameObject sprite6 = IBSpriteFactory.GenerateIBSprite("straight_punch");
 		enemy0.GetComponent<CharacterController>().EquipIBSprite(sprite6.GetComponent<IBSpriteController>());

@@ -54,7 +54,7 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: db66f848087046a09d23cd0ee5a93634, type: 3}
   m_Name: 
   m_EditorClassIdentifier: 
-  decalRate: 0.5
+  decalRate: 0.3
   minSize: 1
   maxSize: 2.5
 --- !u!114 &114640097261583646

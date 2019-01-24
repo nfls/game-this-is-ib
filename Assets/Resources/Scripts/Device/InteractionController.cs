@@ -30,8 +30,10 @@ public class InteractionController : MonoBehaviour {
 	private bool _interacted;
 	private bool _interactive = true;
 	private Collider _trigger;
+	private InputOperator _characterOperator;
 
 	public void Interact(CharacterController characterController) {
+		_characterOperator = characterController.GetComponent<InputOperator>();
 		if (hasCounterInteraction) {
 			if (_interacted) counterInteractionEvent?.Invoke(characterController);
 			else interactionEvent?.Invoke(characterController);
@@ -54,6 +56,14 @@ public class InteractionController : MonoBehaviour {
 		_interactive = false;
 		gameObject.SetActive(!disappearWhenDisabled);
 		onDisable?.Invoke();
+	}
+
+	public void LockOperator() {
+		if (_characterOperator) _characterOperator.InputMapper.isInControl = false;
+	}
+
+	public void UnlockOperator() {
+		if (_characterOperator) _characterOperator.InputMapper.isInControl = true;
 	}
 	
 	public enum PanelShowDirection {

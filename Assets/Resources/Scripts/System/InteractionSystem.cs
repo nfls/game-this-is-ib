@@ -3,7 +3,6 @@ using UnityEngine;
 
 public class InteractionSystem : MonoBehaviour {
 
-	public bool isLocalPlayer;
 	public CharacterController characterController;
 
 	public Collider Trigger => _trigger;
@@ -38,12 +37,12 @@ public class InteractionSystem : MonoBehaviour {
 	}
 
 	public void Preinteract() {
-		if (interactionController) UIManager.HighlightInteractionTip(interactionController.highlightColor, isLocalPlayer);
+		if (interactionController) UIManager.HighlightInteractionTip(interactionController.highlightColor);
 	}
 
 	public void Interact() {
 		if (interactionController) {
-			UIManager.NormalInteractionTip(isLocalPlayer);
+			UIManager.NormalInteractionTip();
 			interactionController.Interact(characterController);
 		}
 	}
@@ -66,8 +65,8 @@ public class InteractionSystem : MonoBehaviour {
 				y = (float) interactionController.showDirection
 			};
 
-			UIManager.ShowInteractionTip(interactionController.Text, position, pivot, isLocalPlayer);
-		} else UIManager.HideInteractionTip(isLocalPlayer);
+			UIManager.ShowInteractionTip(interactionController.Text, position, pivot);
+		} else UIManager.HideInteractionTip();
 	}
 
 	private bool CalculateInteractionController() {

@@ -57,7 +57,6 @@
 		
 		    ENDCG
 		}
-		
 		pass { //平行光的的pass渲染
 		
 		    Tags {

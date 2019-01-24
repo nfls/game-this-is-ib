@@ -73,7 +73,7 @@ public class LauncherSpriteController : ShooterSpriteController {
 		Collider target = null;
 		for (int i = 0; i < num; i++) {
 			Collider collider = _lockResults[i];
-			if (DetectionSettings.detectsEnemy && collider.CompareTag(TagManager.ENEMY_TAG) || DetectionSettings.detectsLocalPlayer && collider.CompareTag(TagManager.LOCAL_PLAYER_TAG) || DetectionSettings.detectsRemotePlayer && collider.CompareTag(TagManager.REMOTE_PLAYER_TAG)) {
+			if (DetectionSettings.detectsEnemy && collider.CompareTag(TagManager.ENEMY_TAG) || DetectionSettings.detectsLocalPlayer && collider.CompareTag(TagManager.LOCAL_PLAYER_TAG)) {
 				float deltaSqr = (collider.transform.position - pos).sqrMagnitude;
 				if (deltaSqr < minSqr) {
 					minSqr = deltaSqr;

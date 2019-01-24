@@ -152,7 +152,6 @@ public class CharacterMotor : MonoBehaviour {
 		/*
 		if ((float) _faceDirection * velocity <= 0f) Flip();
 		*/
-		
 		_hasMoved = true;
 		_moveVelocityX = velocity;
 	}
@@ -160,6 +159,11 @@ public class CharacterMotor : MonoBehaviour {
 	public void Dodge(float distance) {
 		_hasDodged = true;
 		_dodgeDistance = distance;
+	}
+
+	public void Dodge() {
+		float sign;
+		string collision;
 	}
 
 	private void Teleport(float distance) {
@@ -181,7 +185,7 @@ public class CharacterMotor : MonoBehaviour {
 		if (_rigidbody.SweepTest(new Vector3(sign, 0, 0), out hitInfo, distance * sign, QueryTriggerInteraction.Ignore)) distance = hitInfo.point.x - transform.position.x - transform.localScale.x / 2;
 		gameObject.layer = LayerManager.CharacterLayer;
 		
-		transform.position += new Vector3(distance, 0, 0);
+		transform.position = transform.position + new Vector3(distance, 0, 0);
 	}
 
 	public void Jump(float jumpPower) {

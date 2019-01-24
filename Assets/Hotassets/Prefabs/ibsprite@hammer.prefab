@@ -268,7 +268,7 @@ MonoBehaviour:
   hitTimeEffect:
     layer: 2
     priority: 0
-    value: 0.3
+    value: 0.1
     duration: 0.2
     lifeRemained: 0
   attackRotation: 220
@@ -321,5 +321,4 @@ MonoBehaviour:
   m_EditorClassIdentifier: 
   detectionSettings:
     detectsLocalPlayer: 0
-    detectsRemotePlayer: 0
     detectsEnemy: 0
