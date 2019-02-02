@@ -34,7 +34,6 @@ public class DInt : DVariable<int> {
 
 	public override int DecoratorCount => variableDecorators.Count;
 
-	[SerializeField]
 	public List<IntDecorator> variableDecorators = new List<IntDecorator>(2);
 	
 	public override void Refresh() {
@@ -67,7 +66,6 @@ public class DLong : DVariable<long> {
 	
 	public override int DecoratorCount => variableDecorators.Count;
 	
-	[SerializeField]
 	public List<LongDecorator> variableDecorators = new List<LongDecorator>(2);
 	
 	public override void Refresh() {
@@ -100,7 +98,6 @@ public class DFloat : DVariable<float> {
 	
 	public override int DecoratorCount => variableDecorators.Count;
 	
-	[SerializeField]
 	private List<FloatDecorator> variableDecorators = new List<FloatDecorator>(2);
 	
 	public override void Refresh() {

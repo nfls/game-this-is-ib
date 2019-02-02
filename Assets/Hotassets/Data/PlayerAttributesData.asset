@@ -44,7 +44,7 @@ MonoBehaviour:
     m_NumAlphaKeys: 2
   dodgeTrailSettings:
     motionVectorMode: 1
-    color: {r: 0.6, g: 0.1, b: 1, a: 1}
+    color: {r: 0, g: 0, b: 0.5019608, a: 1}
     brightness: 1
     lifespan: 0.3
     minDistance: 0.5
@@ -188,7 +188,7 @@ MonoBehaviour:
       value: 2
       cost: 10
     - name: Call On Universities
-      value: 2.5
+      value: 2.2
       cost: 20
   jumpPower:
     name: Jump Power
@@ -238,37 +238,37 @@ MonoBehaviour:
     - name: After Exams
       value: 1
       cost: 20
-  dodgeDistance:
-    name: Dodge Distance
-    description: The maximum displacement when dodge
+  dodgeSpeed:
+    name: Dodge Speed
+    description: The speed when player dodges
     attributes:
-    - name: Met Teacher
-      value: 3
+    - name: 
+      value: 25
       cost: 0
-    - name: Met Tutor
-      value: 4
+    - name: 
+      value: 30
       cost: 5
-    - name: Met Coordinator
-      value: 5
+    - name: 
+      value: 35
       cost: 10
-    - name: Met Principal
-      value: 6
+    - name: 
+      value: 40
       cost: 20
-  dodgeInvincibilityTime:
-    name: Dodge Invincibility Time
-    description: The invincible time after dodging
+  dodgeDuration:
+    name: Dodge Duration
+    description: The time needed to finish one dodge
     attributes:
-    - name: Absence
-      value: 0.3
+    - name: 
+      value: 0.15
       cost: 0
-    - name: Exam Leave
-      value: 0.5
+    - name: 
+      value: 0.2
       cost: 5
-    - name: Sick Note
-      value: 0.8
+    - name: 
+      value: 0.25
       cost: 10
-    - name: Official Leave
-      value: 1
+    - name: 
+      value: 0.3
       cost: 20
   dodgeCapacity:
     name: Dodge Capacity

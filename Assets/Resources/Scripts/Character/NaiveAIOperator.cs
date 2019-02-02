@@ -60,10 +60,13 @@ public class NaiveAIOperator : CharacterOperator {
 
 		} else {
 			int length = Physics.RaycastNonAlloc(transform.position, new Vector3((float) _characterController.FaceDirection, 0f, 0f), hitResults, detectionDistance, 1 << LayerManager.TerrainLayer | 1 << LayerManager.DeviceLayer | 1 << LayerManager.CharacterLayer, QueryTriggerInteraction.Ignore);
+			Array.Sort(hitResults, (x, y) => x.transform == null ? 1 : y.transform == null ? -1 : x.distance.CompareTo(y.distance));
 			for (int i = 0; i < length; i++) {
-				if (hitResults[i].transform.gameObject.layer == LayerManager.TerrainLayer || hitResults[i].transform.gameObject.layer == LayerManager.DeviceLayer) break;
-				if (!hitResults[i].transform.CompareTag(TagManager.ENEMY_TAG)) {
-					_target = hitResults[i].transform.GetComponent<CharacterController>();
+				Transform transform = hitResults[i].transform;
+				int layer = transform.gameObject.layer;
+				if (layer == LayerManager.TerrainLayer || layer == LayerManager.DeviceLayer) break;
+				if (transform.CompareTag(TagManager.LOCAL_PLAYER_TAG)) {
+					_target = transform.GetComponent<CharacterController>();
 					break;
 				}
 			}

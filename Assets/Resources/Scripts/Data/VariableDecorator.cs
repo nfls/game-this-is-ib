@@ -1,9 +1,10 @@
 ﻿using System;
+using UnityEngine;
 
 [Serializable]
 public abstract class VariableDecorator<T> where T : struct {
 
-	public string type;
+	public VariableDecoratorType type;
 	public int priority;
 	public T value;
 
@@ -17,82 +18,52 @@ public abstract class VariableDecorator<T> where T : struct {
 }
 
 [Serializable]
-public abstract class IntDecorator : VariableDecorator<int> { }
-
-[Serializable]
-public class IntAdd : IntDecorator {
-	public IntAdd() { type = "Add"; }
-	public override int Execuate(int f) => f + value;
+public enum VariableDecoratorType {
+	Add,
+	Sub,
+	Mul,
+	Div
 }
 
 [Serializable]
-public class IntSub : IntDecorator {
-	public IntSub() { type = "Sub"; }
-	public override int Execuate(int f) => f - value;
+public class IntDecorator : VariableDecorator<int> {
+	
+	public override int Execuate(int t) {
+		switch (type) {
+			case VariableDecoratorType.Add: return t + value;
+			case VariableDecoratorType.Sub: return t - value;
+			case VariableDecoratorType.Mul: return t * value;
+			case VariableDecoratorType.Div: return t / value;
+		}
+
+		return t;
+	}
 }
 
 [Serializable]
-public class IntMul : IntDecorator {
-	public IntMul() { type = "Mul"; }
-	public override int Execuate(int f) => f * value;
+public class LongDecorator : VariableDecorator<long> {
+	public override long Execuate(long t) {
+		switch (type) {
+			case VariableDecoratorType.Add: return t + value;
+			case VariableDecoratorType.Sub: return t - value;
+			case VariableDecoratorType.Mul: return t * value;
+			case VariableDecoratorType.Div: return t / value;
+		}
+
+		return t;
+	}
 }
 
 [Serializable]
-public class IntDiv : IntDecorator {
-	public IntDiv() { type = "Div"; }
-	public override int Execuate(int f) => f / value;
-}
+public class FloatDecorator : VariableDecorator<float> {
+	public override float Execuate(float t) {
+		switch (type) {
+			case VariableDecoratorType.Add: return t + value;
+			case VariableDecoratorType.Sub: return t - value;
+			case VariableDecoratorType.Mul: return t * value;
+			case VariableDecoratorType.Div: return t / value;
+		}
 
-[Serializable]
-public abstract class LongDecorator : VariableDecorator<long> { }
-
-[Serializable]
-public class LongAdd : LongDecorator {
-	public LongAdd() { type = "Add"; }
-	public override long Execuate(long f) => f + value;
-}
-
-[Serializable]
-public class LongSub : LongDecorator {
-	public LongSub() { type = "Sub"; }
-	public override long Execuate(long f) => f - value;
-}
-
-[Serializable]
-public class LongMul : LongDecorator {
-	public LongMul() { type = "Mul"; }
-	public override long Execuate(long f) => f * value;
-}
-
-[Serializable]
-public class LongDiv : LongDecorator {
-	public LongDiv() { type = "Div"; }
-	public override long Execuate(long f) => f / value;
-}
-
-[Serializable]
-public abstract class FloatDecorator : VariableDecorator<float> { }
-
-[Serializable]
-public class FloatAdd : FloatDecorator {
-	public FloatAdd() { type = "Add"; }
-	public override float Execuate(float f) => f + value;
-}
-
-[Serializable]
-public class FloatSub : FloatDecorator {
-	public FloatSub() { type = "Sub"; }
-	public override float Execuate(float f) => f - value;
-}
-
-[Serializable]
-public class FloatMul : FloatDecorator {
-	public FloatMul() { type = "Mul"; }
-	public override float Execuate(float f) => f * value;
-}
-
-[Serializable]
-public class FloatDiv : FloatDecorator {
-	public FloatDiv() { type = "Div"; }
-	public override float Execuate(float f) => f / value;
+		return t;
+	}
 }

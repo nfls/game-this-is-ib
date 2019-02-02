@@ -45,8 +45,8 @@ public static class CharacterFactory {
 		controller.jumpPower = ResourcesManager.PlayerAttributesData.jumpPower[data.jumpPowerIndex].value;
 		controller.jumpTimes = ResourcesManager.PlayerAttributesData.jumpTimes[data.jumpTimesIndex].value;
 		controller.jumpPowerDecay = ResourcesManager.PlayerAttributesData.jumpPowerDecay[data.jumpPowerDecayIndex].value;
-		controller.dodgeDistance = ResourcesManager.PlayerAttributesData.dodgeDistance[data.dodgeDistanceIndex].value;
-		controller.dodgeInvincibilityTime = ResourcesManager.PlayerAttributesData.dodgeInvincibilityTime[data.dodgeInvincibilityTimeIndex].value;
+		controller.dodgeSpeed = ResourcesManager.PlayerAttributesData.dodgeSpeed[data.dodgeSpeedIndex].value;
+		controller.dodgeDuration = ResourcesManager.PlayerAttributesData.dodgeDuration[data.dodgeDurationIndex].value;
 		controller.dodgeCapacity = ResourcesManager.PlayerAttributesData.dodgeCapacity[data.dodgeCapacityIndex].value;
 		controller.dodgeCooldown = ResourcesManager.PlayerAttributesData.dodgeCooldown[data.dodgeCooldownIndex].value;
 		controller.carriedIBSpriteControllers = new IBSpriteController[ResourcesManager.PlayerAttributesData.ibSpriteCapacity[data.ibSpriteCapacityIndex].value];

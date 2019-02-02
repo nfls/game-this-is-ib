@@ -11,6 +11,14 @@ public class TestSceneController : MonoBehaviour {
 	public AudioClip bgm;
 	public bool openCombatClearShot;
 	public float combatClearShotDuration;
+	public int joystickIndex;
+	public int buttonIndex;
+	public KeyCode key;
+	[Range(0, ushort.MaxValue)]
+	public ushort lowStrength;
+	[Range(0, ushort.MaxValue)]
+	public ushort highStrength;
+	public uint milliseconds;
 
 	private void Start() {
 		LocalDataManager.Init();
@@ -75,6 +83,8 @@ public class TestSceneController : MonoBehaviour {
 		}
 
 		combatComposer = combatVirtualCamera.GetCinemachineComponent<CinemachineComposer>();
+		Debug.Log(JoystickUtil.JoystickNum + " Joysticks Detected : " + string.Join(", ", JoystickUtil.JoystickNames));
+		Debug.Log(JoystickUtil.HapticDeviceNum + " Haptic Device Detected : " + string.Join(", ", JoystickUtil.HapticDeviceNames));
 	}
 
 	private float endTime;

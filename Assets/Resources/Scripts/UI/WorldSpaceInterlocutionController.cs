@@ -94,7 +94,7 @@ public class WorldSpaceInterlocutionController : MonoBehaviour {
 		_textHolders[3] = optionCTextHolder;
 		_textHolders[4] = optionDTextHolder;
 		
-		_inputMapper = new InputMapper(InputMapper.defaultKeyboardMap);
+		_inputMapper = new InputMapper();
 		_inputMapper.BindPressEvent(InputMapper.SWITCH_UP, SwitchUp);
 		_inputMapper.BindPressEvent(InputMapper.SWITCH_DOWN, SwitchDown);
 		_inputMapper.BindHoldEvent(InputMapper.INTERACT, CheckExit);
@@ -121,14 +121,12 @@ public class WorldSpaceInterlocutionController : MonoBehaviour {
 	}
 
 	private void SwitchUp() {
-		Debug.Log("Switch Up");
 		if (SelectedOption == 0) SelectedOption = (Option) 3;
 		else SelectedOption -= 1;
 		if (switchSound) _audioSource.PlayOneShot(switchSound.Source);
 	}
 
 	private void SwitchDown() {
-		Debug.Log("Switch Down");
 		if ((int) SelectedOption == 3) SelectedOption = 0;
 		else SelectedOption += 1;
 		if (switchSound) _audioSource.PlayOneShot(switchSound.Source);
@@ -167,7 +165,6 @@ public class WorldSpaceInterlocutionController : MonoBehaviour {
 		_inputMapper[InputMapper.INTERACT] = inputMapper[InputMapper.INTERACT];
 		_inputMapper[InputMapper.SWITCH_UP] = inputMapper[InputMapper.SWITCH_UP];
 		_inputMapper[InputMapper.SWITCH_DOWN] = inputMapper[InputMapper.SWITCH_DOWN];
-		_inputMapper.UDebug();
 	}
 
 	private void ActivateInput() => _inputMapper.isInControl = true;
@@ -249,7 +246,7 @@ public class WorldSpaceInterlocutionController : MonoBehaviour {
 		BindInput(inputMapper);
 		ActivateInput();
 		if (_showCoroutine != null) {
-			StopCoroutine(_hideCoroutine);
+			StopCoroutine(_showCoroutine);
 			_showCoroutine = null;
 		}
 		

@@ -24,6 +24,7 @@ public class CharacterMotor : MonoBehaviour {
 	public event Action onGroundEnter;
 	public event Action onGroundExit;
 	public event Action onFreeBodyExit;
+	public event Action onDodgeExit;
 
 	public bool IsGrounded => _isGrounded;
 
@@ -43,11 +44,13 @@ public class CharacterMotor : MonoBehaviour {
 	private bool _isGrounded;
 
 	private bool _hasMoved;
-	private bool _hasDodged;
+	private bool _isDodging;
 
 	private float _freeVelocityX;
 	private float _moveVelocityX;
-	private float _dodgeDistance;
+	private float _dodgeVelocity;
+	private float _dodgeDuration;
+	private float _dodgeTime;
 	private float _velocityY;
 	
 	private void Awake() {
@@ -93,41 +96,44 @@ public class CharacterMotor : MonoBehaviour {
 	}
 
 	private void FixedUpdate() {
-		if (_physix.IsColliding(BOTTOM_COLLISION)) {
-			if (!_isGrounded) {
-				_velocityY = 0f;
-				_isGrounded = true;
-				onGroundEnter?.Invoke();
+		if (_isDodging) {
+			if (Time.time - _dodgeTime >= _dodgeDuration) {
+				_isDodging = false;
+				gameObject.layer = LayerManager.CharacterLayer;
+				onDodgeExit?.Invoke();
+			} else _physix.ApplyMovement(GLOBAL_MOVEMENT, _dodgeVelocity, AxisType.x, ValueType.value, 0f, AxisType.y, ValueType.value);
+		} else {
+			if (_physix.IsColliding(BOTTOM_COLLISION)) {
+				if (!_isGrounded) {
+					_velocityY = 0f;
+					_isGrounded = true;
+					onGroundEnter?.Invoke();
+				}
+			
+			} else {
+				if (usesGravity) _velocityY -= gravity;
+				if (_isGrounded) {
+					_isGrounded = false;
+					onGroundExit?.Invoke();
+				}
+			}
+
+			if (!_hasMoved) {
+				if (_moveVelocityX != 0f)
+					if (_moveVelocityX * (float) _faceDirection > brakePower) _moveVelocityX += -brakePower * (float) _faceDirection;
+					else _moveVelocityX = 0f;
+			} else _hasMoved = false;
+
+			if (_freeVelocityX != 0f) {
+				int direction = _freeVelocityX > 0 ? 1 : -1;
+				if (_freeVelocityX * direction > freeBodyDrag) _freeVelocityX += -freeBodyDrag * direction;
+				else {
+					_freeVelocityX = 0f;
+					onFreeBodyExit?.Invoke();
+				}
 			}
 			
-		} else {
-			if (usesGravity) _velocityY -= gravity;
-			if (_isGrounded) {
-				_isGrounded = false;
-				onGroundExit?.Invoke();
-			}
-		}
-
-		if (!_hasMoved) {
-			if (_moveVelocityX != 0f)
-				if (_moveVelocityX * (float) _faceDirection > brakePower) _moveVelocityX += -brakePower * (float) _faceDirection;
-				else _moveVelocityX = 0f;
-		} else _hasMoved = false;
-
-		if (_freeVelocityX != 0f) {
-			int direction = _freeVelocityX > 0 ? 1 : -1;
-			if (_freeVelocityX * direction > freeBodyDrag) _freeVelocityX += -freeBodyDrag * direction;
-			else {
-				_freeVelocityX = 0f;
-				onFreeBodyExit?.Invoke();
-			}
-		}
-		
-		_physix.ApplyMovement(GLOBAL_MOVEMENT, _freeVelocityX + _moveVelocityX, AxisType.x, ValueType.value, _velocityY, AxisType.y, ValueType.value);
-		
-		if (_hasDodged) {
-			_hasDodged = false;
-			Teleport(_dodgeDistance);
+			_physix.ApplyMovement(GLOBAL_MOVEMENT, _freeVelocityX + _moveVelocityX, AxisType.x, ValueType.value, _velocityY, AxisType.y, ValueType.value);
 		}
 	}
 	
@@ -156,14 +162,12 @@ public class CharacterMotor : MonoBehaviour {
 		_moveVelocityX = velocity;
 	}
 
-	public void Dodge(float distance) {
-		_hasDodged = true;
-		_dodgeDistance = distance;
-	}
-
-	public void Dodge() {
-		float sign;
-		string collision;
+	public void Dodge(float velocity, float duration) {
+		_dodgeVelocity = velocity;
+		_dodgeDuration = duration;
+		_dodgeTime = Time.time;
+		gameObject.layer = LayerManager.DodgeLayer;
+		_isDodging = true;
 	}
 
 	private void Teleport(float distance) {
@@ -188,9 +192,7 @@ public class CharacterMotor : MonoBehaviour {
 		transform.position = transform.position + new Vector3(distance, 0, 0);
 	}
 
-	public void Jump(float jumpPower) {
-		_velocityY = jumpPower;
-	}
+	public void Jump(float jumpPower) => _velocityY = jumpPower;
 
 	public void GetHit(float velocityX, float velocityY) {
 		_freeVelocityX += velocityX;

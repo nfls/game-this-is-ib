@@ -13,20 +13,24 @@ public class TrailSettings {
 	public int cornerVertices;
 	public int endCapVertices;
 	public LineAlignment alignment;
-	
-	[HideInInspector]
 	public Material material;
+
+	private MaterialPropertyBlock _props;
 
 	public void InitRenderer(ref TrailRenderer renderer) {
 		if (material == null) {
-			material = new Material(Shader.Find(ShaderManager.SINGLE_COLOR_SHADER_NAME));
+			material = MaterialManager.GetMaterial(ShaderManager.SINGLE_COLOR_SHADER_NAME);
+			renderer.material = material;
 		}
 		
-		material.SetColor(ShaderManager.TOON_COLOR_KEYWORD, color);
-		material.SetFloat(ShaderManager.BRIGHTNESS_KEYWORD, brightness);
+		if (_props == null) _props = new MaterialPropertyBlock();
+		
+		_props.SetColor(ShaderManager.TOON_COLOR_KEYWORD, color);
+		_props.SetFloat(ShaderManager.BRIGHTNESS_KEYWORD, brightness);
+		
+		renderer.SetPropertyBlock(_props);
 		
 		renderer.motionVectorGenerationMode = motionVectorMode;
-		renderer.material = material;
 		renderer.time = lifespan;
 		renderer.minVertexDistance = minDistance;
 		renderer.widthCurve = width;

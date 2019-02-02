@@ -35,8 +35,8 @@ public static class PlayerManager {
 		localPlayerDataCache.eyeStyle = "default";
 		localPlayerDataCache.eyeOutlineColor = Color.black;
 		localPlayerDataCache.eyeColor = Color.cyan;
-		localPlayerDataCache.dodgeTrailColor = new Color(.6f, .1f, 1f);
-		localPlayerDataCache.accelerationTrailColor = Color.cyan;
+		localPlayerDataCache.dodgeTrailColor = ResourcesManager.PlayerAttributesData.dodgeTrailSettings.color;
+		localPlayerDataCache.accelerationTrailColor = ResourcesManager.PlayerAttributesData.accelerationTrailSettings.color;
 		localPlayerDataCache.bloodColor = ResourcesManager.PlayerAttributesData.bloodColor;
 		localPlayerDataCache.items = new List<string>();
 		localPlayerDataCache.unlockedItems = new List<string>();
@@ -44,6 +44,8 @@ public static class PlayerManager {
 		#if UNITY_EDITOR
 		localPlayerDataCache.jumpPowerDecayIndex = 3;
 		localPlayerDataCache.jumpTimesIndex = 2;
+		localPlayerDataCache.dodgeCapacityIndex = 2;
+		localPlayerDataCache.dodgeCooldownIndex = 3;
 		localPlayerDataCache.ibSpriteCapacityIndex = 3;
 		#endif
 		

@@ -26,14 +26,20 @@ public class DVariableDrawer : PropertyDrawer {
 		EditorGUI.BeginChangeCheck();
 		int result = EditorGUI.DelayedIntField(pos, "[Real Value]", property.FindPropertyRelative("_realValue").intValue);
 		if (EditorGUI.EndChangeCheck()) dInt.Value = result;
-		pos.xMin -= 3 * SPACE;
+		pos.xMin -= 6 * SPACE;
 		if (property.isExpanded) {
 			pos.height = FIELD_HEIGHT;
 			int delete = -1;
+			/*
+			pos.y += LINE_HEIGHT;
+			pos.height = position.yMax - pos.y;
+			Debug.Log(property.FindPropertyRelative("variableDecorators") == null);
+			EditorGUI.PropertyField(pos, property.FindPropertyRelative("variableDecorators"));
+			*/
 			for (int i = 0, l = dInt.DecoratorCount; i < l; i++) {
 				IntDecorator decorator = dInt.variableDecorators[i];
 				pos.y += LINE_HEIGHT;
-				Rect rect = new Rect(pos) { width = 6.5f * CHARACTER_WIDTH };
+				Rect rect = new Rect(pos) { width = 6f * CHARACTER_WIDTH };
 				EditorGUI.LabelField(rect, "Priority");
 				rect.x += rect.width + SPACE;
 				rect.width = 3 * CHARACTER_WIDTH;
@@ -46,10 +52,16 @@ public class DVariableDrawer : PropertyDrawer {
 				}
 				
 				rect.x += rect.width + SPACE;
-				rect.width = 4 * CHARACTER_WIDTH;
-				EditorGUI.LabelField(rect, decorator.type);
+				rect.width = 5 * CHARACTER_WIDTH;
+				EditorGUI.BeginChangeCheck();
+				VariableDecoratorType type = (VariableDecoratorType) EditorGUI.EnumPopup(rect, decorator.type);
+				if (EditorGUI.EndChangeCheck()) {
+					decorator.type = type;
+					dInt.Refresh();
+				}
+				
 				rect.x += rect.width + SPACE;
-				rect.width = 7 * CHARACTER_WIDTH;
+				rect.width = 5 * CHARACTER_WIDTH;
 				EditorGUI.BeginChangeCheck();
 				result = EditorGUI.DelayedIntField(rect, decorator.value);
 				if (EditorGUI.EndChangeCheck()) {
@@ -70,8 +82,7 @@ public class DVariableDrawer : PropertyDrawer {
 			pos.y += LINE_HEIGHT;
 			if (GUI.Button(pos, "Add Decorator")) {
 				pos.height = LINE_HEIGHT * 5;
-				IntDecorator decorator = EditorExtensions.IntDecoratorPopup(pos);
-				if (decorator != null) dInt.AddDecorator(decorator);
+				dInt.AddDecorator(new IntDecorator());
 				EditorUtility.SetDirty(property.serializedObject.targetObject);
 				sizeChanged = false;
 			}
@@ -90,3 +101,13 @@ public class DVariableDrawer : PropertyDrawer {
 		return height;
 	}
 }
+
+/*
+[CustomPropertyDrawer(typeof(IntDecorator))]
+public class VariableDecoratorDrawer : PropertyDrawer {
+	
+	public override void OnGUI(Rect position, SerializedProperty property, GUIContent label) {
+		EditorGUI.PropertyField(position, property, label);
+	}
+}
+*/

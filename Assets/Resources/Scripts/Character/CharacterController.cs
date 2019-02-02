@@ -12,6 +12,8 @@ public class CharacterController : MonoBehaviour {
 	public event Action onDeath;
 	public event Action<CharacterController> onJump;
 
+	public float dodgeAngle = -45f;
+
 	public string characterName;
 	public float health;
 	public float maxStamina;
@@ -23,8 +25,8 @@ public class CharacterController : MonoBehaviour {
 	public float jumpPower;
 	public float jumpTimes;
 	public float jumpPowerDecay;
-	public float dodgeDistance;
-	public float dodgeInvincibilityTime;
+	public float dodgeSpeed;
+	public float dodgeDuration;
 	public int dodgeCapacity;
 	public float dodgeCooldown;
 	public ParticleAsset bloodSprayEffect = "cube_blood";
@@ -76,6 +78,7 @@ public class CharacterController : MonoBehaviour {
 	public virtual void Awake() {
 		_characterMotor = GetComponent<CharacterMotor>();
 		_characterMotor.onGroundEnter += ResetJumpTimes;
+		_characterMotor.onDodgeExit += FinishDodge;
 		
 		_trailRenderer = gameObject.AddComponent<TrailRenderer>();
 		_trailRenderer.shadowCastingMode = ShadowCastingMode.Off;
@@ -85,13 +88,9 @@ public class CharacterController : MonoBehaviour {
 		_trailRenderer.emitting = false;
 	}
 
-	public void MoveLeft() {
-		Move(FaceDirection.Left);
-	}
+	public void MoveLeft() => Move(FaceDirection.Left);
 
-	public void MoveRight() {
-		Move(FaceDirection.Right);
-	}
+	public void MoveRight() => Move(FaceDirection.Right);
 
 	public void Move(FaceDirection direction) {
 		if (_isStunned) return;
@@ -120,8 +119,10 @@ public class CharacterController : MonoBehaviour {
 	public void Dodge() {
 		if (_isStunned || _isDodging || _dodgeTimes == dodgeCapacity) return;
 		_dodgeTimes += 1;
-		_characterMotor.Dodge(dodgeDistance * (float) _characterMotor.FaceDirection);
-		_dodgeCoroutine = StartCoroutine(ExeDodgeCoroutine(dodgeInvincibilityTime));
+		transform.rotation = new Vector3(0, 0, dodgeAngle * (float) _characterMotor.FaceDirection).ToQuaternion();
+		_characterMotor.Dodge(dodgeSpeed * (float) _characterMotor.FaceDirection, dodgeDuration);
+		_isDodging = true;
+		if (hasDodgeTrail) EnableTrail(dodgeTrailSettings);
 		if (_dodgeCooldownCoroutine == null) _dodgeCooldownCoroutine = StartCoroutine(ExeDodgeCooldownCoroutine());
 	}
 
@@ -138,7 +139,7 @@ public class CharacterController : MonoBehaviour {
 	}
 
 	public void Jump() {
-		if (_isStunned) return;
+		if (_isStunned || _isDodging) return;
 		float power = jumpPower;
 		if (_jumpTimes < jumpTimes) {
 			for (int i = 0, l = _jumpTimes; i < l; i ++) power *= jumpPowerDecay;
@@ -263,8 +264,16 @@ public class CharacterController : MonoBehaviour {
 		Destroy(gameObject);
 	}
 
-	protected void ResetJumpTimes() {
-		_jumpTimes = 0;
+	protected void ResetJumpTimes() => _jumpTimes = 0;
+
+	protected void FinishDodge() {
+		transform.rotation = Quaternion.identity;
+		_isDodging = false;
+		if (hasDodgeTrail) {
+			DisableTrail();
+			if (_isAccelerating)
+				if (hasAccelerationTrail) EnableTrail(accelerationTrailSettings);
+		}
 	}
 	
 	protected void EnableTrail(TrailSettings settings) {
@@ -275,6 +284,7 @@ public class CharacterController : MonoBehaviour {
 
 	protected void DisableTrail() {
 		_trailRenderer.emitting = false;
+		_trailRenderer.Clear();
 	}
 
 	protected void EnterStunState(float stunnedAngle, float stunnedTime) {
@@ -293,20 +303,6 @@ public class CharacterController : MonoBehaviour {
 		yield return new WaitForSeconds(stunnedTime);
 		transform.rotation = Quaternion.identity;
 		ExitStunState();
-	}
-
-	protected IEnumerator ExeDodgeCoroutine(float dodgeInvincibilityTime) {
-		_isDodging = true;
-		if (hasDodgeTrail) EnableTrail(dodgeTrailSettings);
-		yield return new WaitForSeconds(dodgeInvincibilityTime);
-		if (hasDodgeTrail) {
-			DisableTrail();
-			if (_isAccelerating)
-				if (hasAccelerationTrail) EnableTrail(accelerationTrailSettings);
-		}
-
-		_dodgeCoroutine = null;
-		_isDodging = false;
 	}
 
 	protected IEnumerator ExeDodgeCooldownCoroutine() {

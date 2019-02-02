@@ -17,8 +17,8 @@ public class PlayerAttributesData : ScriptableObject {
 	public PlayerFloatAttribute jumpPower;
 	public PlayerIntAttribute jumpTimes;
 	public PlayerFloatAttribute jumpPowerDecay;
-	public PlayerFloatAttribute dodgeDistance;
-	public PlayerFloatAttribute dodgeInvincibilityTime;
+	public PlayerFloatAttribute dodgeSpeed;
+	public PlayerFloatAttribute dodgeDuration;
 	public PlayerIntAttribute dodgeCapacity;
 	public PlayerFloatAttribute dodgeCooldown;
 	public PlayerIntAttribute ibSpriteCapacity;
@@ -27,6 +27,7 @@ public class PlayerAttributesData : ScriptableObject {
 	public class PlayerIntAttribute {
 		
 		public string name;
+		[Multiline]
 		public string description;
 		public IntAttribute[] attributes;
 		
@@ -38,15 +39,14 @@ public class PlayerAttributesData : ScriptableObject {
 			public int cost;
 		}
 
-		public IntAttribute this[int i] {
-			get { return attributes[i]; }
-		}
+		public IntAttribute this[int i] => attributes[i];
 	}
 	
 	[Serializable]
 	public class PlayerFloatAttribute {
 		
 		public string name;
+		[Multiline]
 		public string description;
 		public FloatAttribute[] attributes;
 		
@@ -58,8 +58,6 @@ public class PlayerAttributesData : ScriptableObject {
 			public int cost;
 		}
 		
-		public FloatAttribute this[int i] {
-			get { return attributes[i]; }
-		}
+		public FloatAttribute this[int i] => attributes[i];
 	}
 }

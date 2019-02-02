@@ -139,11 +139,13 @@
               <e p="Subject.cs" t="Include" />
             </e>
             <e p="Input" t="Include">
-              <e p="AxisDetector.cs" t="Include" />
               <e p="IInputDetectable.cs" t="Include" />
               <e p="InputDetector.cs" t="Include" />
               <e p="InputManager.cs" t="Include" />
               <e p="InputMapper.cs" t="Include" />
+              <e p="JoystickAxisDetector.cs" t="Include" />
+              <e p="JoystickButtonDetector.cs" t="Include" />
+              <e p="JoystickInputDetector.cs" t="Include" />
               <e p="KeyDetector.cs" t="Include" />
             </e>
             <e p="local" t="Include">
@@ -188,6 +190,7 @@
               <e p="HotAsset.cs" t="Include" />
               <e p="InteractionSystem.cs" t="Include" />
               <e p="LayerManager.cs" t="Include" />
+              <e p="MaterialManager.cs" t="Include" />
               <e p="ShaderManager.cs" t="Include" />
               <e p="TagManager.cs" t="Include" />
               <e p="TimeManager.cs" t="Include" />
@@ -208,7 +211,7 @@
             <e p="Utility" t="Include">
               <e p="CommonUtils.cs" t="Include" />
               <e p="Extensions.cs" t="Include" />
-              <e p="JoystickUtil.cs" t="Include" />
+              <e p="JoystickUtils.cs" t="Include" />
               <e p="MonoSingleton.cs" t="Include" />
               <e p="PhysicsVisualizer.cs" t="Include" />
               <e p="PrimitiveHelper.cs" t="Include" />
@@ -240,6 +243,12 @@
             <e p="GLlineZOff.shader" t="Include" />
             <e p="GLlineZOn.shader" t="Include" />
             <e p="PhysicsExtension.cs" t="Include" />
+          </e>
+        </e>
+        <e p="ShaderlabVSCode" t="Include">
+          <e p="Editor" t="Include">
+            <e p="ShaderlabVSCodeEditor.cs" t="Include" />
+            <e p="VSCodeBridge.cs" t="Include" />
           </e>
         </e>
         <e p="Standard Assets" t="Include">

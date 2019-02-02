@@ -166,7 +166,8 @@ public abstract class IBSpriteController : MonoBehaviour {
 
 	protected virtual void OnDetectCharacterEnter(IBSpriteTrigger trigger, Collider detectedCollider) {
 		CharacterController character = detectedCollider.GetComponentInParent<CharacterController>();
-		float hitDirection = GetHitDirection(detectedCollider.transform, characterMotor.transform);
+		float distance;
+		float hitDirection = GetHitDirection(detectedCollider.transform, characterMotor.transform, out distance);
 		if (attackEffectSettings.doesHit) character.GetHit(attackEffectSettings.hitVelocityX * hitDirection, attackEffectSettings.hitVelocityY);
 		if (attackEffectSettings.doesStun) character.GetStunned(hitDirection * attackEffectSettings.stunAngle, attackEffectSettings.stunTime);
 		if (attackEffectSettings.doesDamage) character.GetDamaged(attackEffectSettings.damage);
@@ -177,17 +178,31 @@ public abstract class IBSpriteController : MonoBehaviour {
 			particle.transform.position = trigger.transform.position;
 			particle.Burst();
 		}
+
+		if (characterController.CompareTag(TagManager.LOCAL_PLAYER_TAG)) {
+			CameraManager.RadialBlur(CameraManager.MainCamera.WorldToViewportPoint(trigger.transform.position));
+			ushort rumbleStrength = 5000;
+			float maxDistance = 1.9f;
+			float portion;
+			if (distance * hitDirection > maxDistance) portion = hitDirection * .5f;
+			else portion = distance / maxDistance * .5f;
+			ushort leftStrength = Convert.ToUInt16((.5f - portion) * rumbleStrength);
+			ushort rightStrength = Convert.ToUInt16((.5f + portion) * rumbleStrength);
+			JoystickUtil.RumbleJoystick(leftStrength, rightStrength, 200);
+		}
 		
-		CameraManager.RadialBlur(CameraManager.MainCamera.WorldToViewportPoint(trigger.transform.position));
-		FindObjectOfType<TestSceneController>().CombatClearShot(characterController.transform, detectedCollider.transform);
+		// FindObjectOfType<TestSceneController>().CombatClearShot(characterController.transform, detectedCollider.transform);
 	}
 
 	protected virtual void OnDetectCharacterExit(IBSpriteTrigger trigger, Collider detectedCollider) {
 		
 	}
+	
+	protected float GetHitDirection(Transform receiver, Transform attacker) => receiver.position.x - attacker.position.x > 0 ? 1 : -1;
 
-	protected float GetHitDirection(Transform receiver, Transform attacker) {
-		return receiver.position.x - attacker.position.x > 0 ? 1 : -1;
+	protected float GetHitDirection(Transform receiver, Transform attacker, out float distance) {
+		distance = receiver.position.x - attacker.position.x;
+		return distance > 0 ? 1 : -1;
 	}
 }
 

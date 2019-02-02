@@ -19,8 +19,8 @@ public class InputMapper {
 	public const string SWITCH_DOWN = "Switch Down";
 	public const string SWITCH_CAMERA = "Swtich Camera";
 	public const string PAUSE = "Pause";
-	
-	public static readonly Dictionary<string, InputDetector> defaultMacXboxOneMap;
+
+	public static readonly Dictionary<string, InputDetector> defaultSwitchProControllerMap;
 	public static readonly Dictionary<string, InputDetector> defaultKeyboardMap;
 	
 	public delegate void OnPressHandler();
@@ -38,24 +38,23 @@ public class InputMapper {
 	private Dictionary<string, InputDetector> _inputMap;
 
 	static InputMapper() {
-		defaultMacXboxOneMap =
-			new Dictionary<string, InputDetector>(11) {
-				[MOVE_LEFT] = AxisDetector.ToAxisDetector("Axis1st Negative"),
-				[MOVE_RIGHT] = AxisDetector.ToAxisDetector("Axis1st Positive"),
-				[ACCELERATE] = KeyDetector.ToKeyDetector("Joystick1Button14"),
-				[JUMP] = KeyDetector.ToKeyDetector("Joystick1Button16"),
-				[ATTACK] = KeyDetector.ToKeyDetector("Joystick1Button18"),
-				[DODGE] = KeyDetector.ToKeyDetector("Joystick1Button17"),
-				[INTERACT] = KeyDetector.ToKeyDetector("Joystick1Button19"),
-				[RECOVER] = KeyDetector.ToKeyDetector("Joystick1Button13"),
-				[SWITCH_PREV] = KeyDetector.ToKeyDetector("Joystick1Button7"),
-				[SWITCH_NEXT] = KeyDetector.ToKeyDetector("Joystick1Button8"),
-				[SWITCH_UP] = KeyDetector.ToKeyDetector("Joystick1Button5"),
-				[SWITCH_DOWN] = KeyDetector.ToKeyDetector("Joystick1Button6"),
-				[SWITCH_CAMERA] = KeyDetector.ToKeyDetector("Joystick1Button12"),
-				[PAUSE] = KeyDetector.ToKeyDetector("Joystick1Button10")
-			};
-
+		defaultSwitchProControllerMap = new Dictionary<string, InputDetector>(11) {
+			[MOVE_LEFT] = JoystickAxisDetector.ToJoystickAxisDetector("Joystick0Axis0Negative"),
+			[MOVE_RIGHT] = JoystickAxisDetector.ToJoystickAxisDetector("Joystick0Axis0Positive"),
+			[ACCELERATE] = JoystickButtonDetector.ToJoystickButtonDetector("Joystick0Button10"),
+			[JUMP] = JoystickButtonDetector.ToJoystickButtonDetector("Joystick0Button0"),
+			[ATTACK] = JoystickButtonDetector.ToJoystickButtonDetector("Joystick0Button2"),
+			[DODGE] = JoystickButtonDetector.ToJoystickButtonDetector("Joystick0Button1"),
+			[INTERACT] = JoystickButtonDetector.ToJoystickButtonDetector("Joystick0Button3"),
+			[RECOVER] = JoystickButtonDetector.ToJoystickButtonDetector("Joystick0Button7"),
+			[SWITCH_PREV] = JoystickButtonDetector.ToJoystickButtonDetector("Joystick0Button13"),
+			[SWITCH_NEXT] = JoystickButtonDetector.ToJoystickButtonDetector("Joystick0Button14"),
+			[SWITCH_UP] = JoystickButtonDetector.ToJoystickButtonDetector("Joystick0Button11"),
+			[SWITCH_DOWN] = JoystickButtonDetector.ToJoystickButtonDetector("Joystick0Button12"),
+			[SWITCH_CAMERA] = JoystickButtonDetector.ToJoystickButtonDetector("Joystick0Button9"),
+			[PAUSE] = JoystickButtonDetector.ToJoystickButtonDetector("Joystick0Button8")
+		};
+		
 		defaultKeyboardMap = new Dictionary<string, InputDetector>(11) {
 			[MOVE_LEFT] = KeyDetector.ToKeyDetector("A"),
 			[MOVE_RIGHT] = KeyDetector.ToKeyDetector("D"),
@@ -74,32 +73,29 @@ public class InputMapper {
 		};
 	}
 
-	public bool marked;
-
-	public InputMapper(Dictionary<string, InputDetector> defaultMap) {
+	public InputMapper() {
 		_inputMap = new Dictionary<string, InputDetector>(10);
 		_onPressedBindings = new Dictionary<string, OnPressHandler>(10);
 		_onHeldBindings = new Dictionary<string, OnHoldHandler>(10);
 		_onReleasedBindings = new Dictionary<string, OnReleaseHandler>(10);
+	}
 
+	public InputMapper(Dictionary<string, InputDetector> defaultMap) : this() {
 		_defaultMap = defaultMap;
 		Reset();
 	}
 
+	public bool marked;
+
 	public void Refresh() {
-		if (isInControl)
+		if (isInControl) {
 			foreach (string name in _onPressedBindings.Keys)
 				if (_inputMap[name].IsPressed) _onPressedBindings[name]();
 			foreach (string name in _onHeldBindings.Keys)
 				if (_inputMap[name].IsHeld) _onHeldBindings[name]();
 			foreach (string name in _onReleasedBindings.Keys)
 				if (_inputMap[name].IsReleased) _onReleasedBindings[name]();
-	}
-
-	public void UDebug() {
-		Debug.Log(_onPressedBindings.Count);
-		Debug.Log(_onHeldBindings.Count);
-		Debug.Log(_onReleasedBindings.Count);
+		}
 	}
 
 	public void Reset() {
@@ -108,13 +104,11 @@ public class InputMapper {
 	}
 
 	public void Remap(string name, InputDetector detector) {
-		if (_inputMap.ContainsKey(name)) {
-			InputManager.NotifyDetectorOnIdle(_inputMap[name]);
-			return;
-		}
-
-		InputManager.NotifyDetectorOnBusy(detector);
-		_inputMap[name] = detector;
+		if (_inputMap.ContainsKey(name)) InputManager.NotifyDetectorOnIdle(_inputMap[name]);
+		if (detector != null) {
+			InputManager.NotifyDetectorOnBusy(detector);
+			_inputMap[name] = detector;
+		} else _inputMap.Remove(name);
 	}
 	
 	public bool BindPressEvent(string name, OnPressHandler e) {

@@ -11,6 +11,7 @@ public class InterlocutionController : DeviceController {
 	public float verticalOffset;
 	public UnityEvent correctionEvent;
 	public UnityEvent incorrectionEvent;
+	public UnityEvent exitEvent;
 
 	private WorldSpaceInterlocutionController _uiController;
 
@@ -36,7 +37,7 @@ public class InterlocutionController : DeviceController {
 		_uiController.basePanel.transform.eulerAngles = new Vector3(0f, rotationAngle * direction);
 		_uiController.correctAction = OnCorrection;
 		_uiController.incorrectAction = OnIncorrection;
-		_uiController.exitAction = EndInterlocution;
+		_uiController.exitAction = delegate { exitEvent?.Invoke(); };
 		_uiController.Show(characterController.GetComponent<InputOperator>().InputMapper, ResourcesManager.InterlocutionData[interlocution.subject][interlocution.id]);
 	}
 

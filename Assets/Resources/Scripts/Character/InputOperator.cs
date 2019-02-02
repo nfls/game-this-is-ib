@@ -12,16 +12,18 @@ public sealed class InputOperator : CharacterOperator {
 				_interactionSystem.characterController = _characterController;
 				_inputMapper.BindPressEvent(InputMapper.INTERACT, _interactionSystem.Preinteract);
 				_inputMapper.BindReleaseEvent(InputMapper.INTERACT, _interactionSystem.Interact);
+				/*
 				_temperInputMapper.BindPressEvent(InputMapper.INTERACT, _interactionSystem.Preinteract);
 				_temperInputMapper.BindReleaseEvent(InputMapper.INTERACT, _interactionSystem.Interact);
-				
+				*/
 				Physics.IgnoreCollision(GetComponent<Collider>(), _interactionSystem.Trigger, true);
 			} else {
 				_inputMapper.UnbindPressEvent(InputMapper.INTERACT);
 				_inputMapper.UnbindReleaseEvent(InputMapper.INTERACT);
+				/*
 				_temperInputMapper.UnbindPressEvent(InputMapper.INTERACT);
 				_temperInputMapper.UnbindReleaseEvent(InputMapper.INTERACT);
-				
+				*/
 				Physics.IgnoreCollision(GetComponent<Collider>(), _interactionSystem.Trigger, false);
 			}
 		}
@@ -35,7 +37,7 @@ public sealed class InputOperator : CharacterOperator {
 	protected override void Awake() {
 		base.Awake();
 		
-		_inputMapper = new InputMapper(InputMapper.defaultKeyboardMap);
+		_inputMapper = new InputMapper(InputMapper.defaultSwitchProControllerMap);
 		_inputMapper.BindHoldEvent(InputMapper.MOVE_LEFT, _characterController.MoveLeft);
 		_inputMapper.BindHoldEvent(InputMapper.MOVE_RIGHT, _characterController.MoveRight);
 		_inputMapper.BindPressEvent(InputMapper.ACCELERATE, _characterController.EnterAcceleratingState);
@@ -49,6 +51,7 @@ public sealed class InputOperator : CharacterOperator {
 
 		_inputMapper.isInControl = true;
 		
+		/*
 		_temperInputMapper = new InputMapper(InputMapper.defaultMacXboxOneMap);
 		_temperInputMapper.BindHoldEvent(InputMapper.MOVE_LEFT, _characterController.MoveLeft);
 		_temperInputMapper.BindHoldEvent(InputMapper.MOVE_RIGHT, _characterController.MoveRight);
@@ -62,11 +65,12 @@ public sealed class InputOperator : CharacterOperator {
 		_temperInputMapper.BindPressEvent(InputMapper.SWITCH_NEXT, _characterController.SwitchNextIBSprite);
 
 		_temperInputMapper.isInControl = true;
+		*/
 	}
 
 	private void Update() {
 		_interactionSystem.transform.position = transform.position;
 		_inputMapper.Refresh();
-		_temperInputMapper.Refresh();
+		// _temperInputMapper.Refresh();
 	}
 }

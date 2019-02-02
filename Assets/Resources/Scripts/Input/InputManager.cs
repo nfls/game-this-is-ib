@@ -1,4 +1,5 @@
 ﻿using System.Collections.Generic;
+using UnityEngine;
 
 public class InputManager : MonoSingleton {
 
@@ -6,6 +7,7 @@ public class InputManager : MonoSingleton {
 	private static Dictionary<InputDetector, int> detectorRecords = new Dictionary<InputDetector, int>(10);
 
 	private void Update() {
+		JoystickUtil.UpdateJoystick();
 		foreach (InputDetector detector in registeredDetectors) detector.Refresh();
 	}
 
@@ -23,9 +25,7 @@ public class InputManager : MonoSingleton {
 		}
 	}
 
-	private static void RegisterDetector(InputDetector inputDetector) {
-		registeredDetectors.Add(inputDetector);
-	}
+	private static void RegisterDetector(InputDetector inputDetector) => registeredDetectors.Add(inputDetector);
 
 	private static void RemoveDetector(InputDetector inputDetector) {
 		inputDetector.Reset();

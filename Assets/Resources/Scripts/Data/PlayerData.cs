@@ -13,8 +13,8 @@ public abstract class PlayerData {
 	public int jumpPowerIndex;
 	public int jumpTimesIndex;
 	public int jumpPowerDecayIndex;
-	public int dodgeDistanceIndex;
-	public int dodgeInvincibilityTimeIndex;
+	public int dodgeSpeedIndex;
+	public int dodgeDurationIndex;
 	public int dodgeCapacityIndex;
 	public int dodgeCooldownIndex;
 	public int ibSpriteCapacityIndex;
@@ -43,8 +43,8 @@ public abstract class PlayerData {
 		jumpPowerIndex = data.jumpPowerIndex;
 		jumpTimesIndex = data.jumpTimesIndex;
 		jumpPowerDecayIndex = data.jumpPowerDecayIndex;
-		dodgeDistanceIndex = data.dodgeDistanceIndex;
-		dodgeInvincibilityTimeIndex = data.dodgeInvincibilityTimeIndex;
+		dodgeSpeedIndex = data.dodgeSpeedIndex;
+		dodgeDurationIndex = data.dodgeDurationIndex;
 		dodgeCapacityIndex = data.dodgeCapacityIndex;
 		dodgeCooldownIndex = data.dodgeCooldownIndex;
 		ibSpriteCapacityIndex = data.ibSpriteCapacityIndex;
@@ -72,8 +72,8 @@ public abstract class PlayerData {
 		jumpPowerIndex = data.jumpPowerIndex;
 		jumpTimesIndex = data.jumpTimesIndex;
 		jumpPowerDecayIndex = data.jumpPowerDecayIndex;
-		dodgeDistanceIndex = data.dodgeDistanceIndex;
-		dodgeInvincibilityTimeIndex = data.dodgeInvincibilityTimeIndex;
+		dodgeSpeedIndex = data.dodgeSpeedIndex;
+		dodgeDurationIndex = data.dodgeDurationIndex;
 		dodgeCapacityIndex = data.dodgeCapacityIndex;
 		dodgeCooldownIndex = data.dodgeCooldownIndex;
 		ibSpriteCapacityIndex = data.ibSpriteCapacityIndex;
@@ -137,8 +137,8 @@ public class PlayerDataProxy {
 	public int jumpPowerIndex;
 	public int jumpTimesIndex;
 	public int jumpPowerDecayIndex;
-	public int dodgeDistanceIndex;
-	public int dodgeInvincibilityTimeIndex;
+	public int dodgeSpeedIndex;
+	public int dodgeDurationIndex;
 	public int dodgeCapacityIndex;
 	public int dodgeCooldownIndex;
 	public int ibSpriteCapacityIndex;
@@ -169,8 +169,8 @@ public class PlayerDataProxy {
 		jumpPowerIndex = data.jumpPowerIndex;
 		jumpTimesIndex = data.jumpTimesIndex;
 		jumpPowerDecayIndex = data.jumpPowerDecayIndex;
-		dodgeDistanceIndex = data.dodgeDistanceIndex;
-		dodgeInvincibilityTimeIndex = data.dodgeInvincibilityTimeIndex;
+		dodgeSpeedIndex = data.dodgeSpeedIndex;
+		dodgeDurationIndex = data.dodgeDurationIndex;
 		dodgeCapacityIndex = data.dodgeCapacityIndex;
 		dodgeCooldownIndex = data.dodgeCooldownIndex;
 		ibSpriteCapacityIndex = data.ibSpriteCapacityIndex;
