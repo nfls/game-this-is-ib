@@ -68,12 +68,10 @@ public class CharacterController : MonoBehaviour {
 	protected Coroutine _dodgeCooldownCoroutine;
 	protected Coroutine _staminaRecoveryCoroutine;
 
-	/*
 	[Conditional("UNITY_EDITOR")]
 	private void OnGUI() {
 		GUI.Button(new Rect(0f, 0f, 100f, 50f), (int) stamina + "/" + (int) maxStamina);
 	}
-	*/
 
 	public virtual void Awake() {
 		_characterMotor = GetComponent<CharacterMotor>();
@@ -100,9 +98,7 @@ public class CharacterController : MonoBehaviour {
 		_characterMotor.Move(velocity);
 	}
 
-	public void Flip() {
-		_characterMotor.Flip();
-	}
+	public void Flip() => _characterMotor.Flip();
 
 	public void EnterAcceleratingState() {
 		if (_isStunned || _isDodging) return;

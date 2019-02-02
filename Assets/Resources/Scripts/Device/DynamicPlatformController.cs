@@ -108,14 +108,16 @@ public class DynamicPlatformController : DeviceController {
 	}
 
 	private void OnCollisionEnter(Collision other) {
-		if (other.gameObject.layer == LayerManager.CharacterLayer) {
+		int layer = other.gameObject.layer;
+		if (layer == LayerManager.CharacterLayer || layer == LayerManager.DodgeLayer) {
 			CharacterController controller = other.transform.GetComponent<CharacterController>();
 			if (controller) AddCharacter(controller);
 		}
 	}
 
 	private void OnCollisionExit(Collision other) {
-		if (other.gameObject.layer == LayerManager.CharacterLayer) {
+		int layer = other.gameObject.layer;
+		if (layer == LayerManager.CharacterLayer || layer == LayerManager.DodgeLayer) {
 			CharacterController controller = other.transform.GetComponent<CharacterController>();
 			if (controller) RemoveCharacter(controller);
 		}
