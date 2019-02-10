@@ -4,6 +4,7 @@ using UnityEngine;
 public class InteractionSystem : MonoBehaviour {
 
 	public CharacterController characterController;
+	public Vector3 offset = new Vector3(0f, .4f, 0f);
 
 	public Collider Trigger => _trigger;
 
@@ -36,6 +37,8 @@ public class InteractionSystem : MonoBehaviour {
 		_rigidbody.isKinematic = true;
 	}
 
+	private void Update() => Refresh();
+
 	public void Preinteract() {
 		if (interactionController) UIManager.HighlightInteractionTip(interactionController.highlightColor);
 	}
@@ -48,7 +51,7 @@ public class InteractionSystem : MonoBehaviour {
 	}
 
 	private void Refresh() {
-		if (CalculateInteractionController() || !interactionController.Interactive) RefreshInteractionTip();
+		if (CalculateInteractionController()) RefreshInteractionTip();
 	}
 
 	private void RefreshInteractionTip() {
@@ -70,19 +73,22 @@ public class InteractionSystem : MonoBehaviour {
 	}
 
 	private bool CalculateInteractionController() {
+		bool flag = false;
 		if (interactionController && !interactionController.Interactive) {
 			_potentialInteractionControllers.Remove(interactionController);
 			interactionController.loseInteractionEvent?.Invoke();
 			interactionController = null;
+			flag = true;
 		}
 		
+		/*
 		if (_potentialInteractionControllers.Count == 0) {
 			if (!interactionController) return true;
 			interactionController.loseInteractionEvent?.Invoke();
 			interactionController = null;
-
 			return true;
 		}
+		*/
 
 		InteractionController oldInteractionController = interactionController;
 		float minSqrDistance = 9999f;
@@ -93,6 +99,7 @@ public class InteractionSystem : MonoBehaviour {
 			interactionController = controller;
 		}
 
+		if (flag) return true;
 		if (interactionController == oldInteractionController) return false;
 		if (oldInteractionController) oldInteractionController.loseInteractionEvent?.Invoke();
 		return true;
@@ -102,10 +109,7 @@ public class InteractionSystem : MonoBehaviour {
 	private void OnTriggerEnter(Collider other) {
 		if (other.CompareTag(TagManager.INTERACTIVE_TAG)) {
 			InteractionController controller = other.GetComponentInParent<InteractionController>();
-			if (controller.Interactive) {
-				_potentialInteractionControllers.Add(controller);
-				Refresh();
-			}
+			if (controller.Interactive) _potentialInteractionControllers.Add(controller);
 		}
 	}
 
@@ -114,7 +118,11 @@ public class InteractionSystem : MonoBehaviour {
 			InteractionController controller = other.GetComponentInParent<InteractionController>();
 			if (controller.Interactive) {
 				_potentialInteractionControllers.Remove(controller);
-				Refresh();
+				if (controller == interactionController) {
+					interactionController.loseInteractionEvent?.Invoke();
+					interactionController = null;
+					RefreshInteractionTip();
+				}
 			}
 		}
 	}

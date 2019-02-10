@@ -91,7 +91,7 @@ public class CharacterController : MonoBehaviour {
 	public void MoveRight() => Move(FaceDirection.Right);
 
 	public void Move(FaceDirection direction) {
-		if (_isStunned) return;
+		if (_isStunned || _isDodging) return;
 		float velocity = speed * (float) direction;
 		if (_isAccelerating) velocity *= acceleration;
 		if (direction != _characterMotor.FaceDirection) _characterMotor.Flip();

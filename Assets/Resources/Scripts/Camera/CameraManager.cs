@@ -14,6 +14,7 @@ public class CameraManager : MonoSingleton {
 
 	private void Awake() {
 		mainCamera = Camera.main;
+		mainCamera.depthTextureMode = DepthTextureMode.Depth;
 		mainImpulseSource = mainCamera.GetComponent<CinemachineImpulseSource>();
 		radialBlurController = mainCamera.GetComponent<RadialBlurController>();
 		virtualMainCamera = FindObjectOfType<CinemachineVirtualCamera>();

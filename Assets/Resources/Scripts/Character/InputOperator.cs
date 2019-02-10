@@ -69,7 +69,7 @@ public sealed class InputOperator : CharacterOperator {
 	}
 
 	private void Update() {
-		_interactionSystem.transform.position = transform.position;
+		_interactionSystem.transform.position = transform.position + _interactionSystem.offset;
 		_inputMapper.Refresh();
 		// _temperInputMapper.Refresh();
 	}

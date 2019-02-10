@@ -6,8 +6,8 @@ Material:
   m_ObjectHideFlags: 0
   m_CorrespondingSourceObject: {fileID: 0}
   m_PrefabInternal: {fileID: 0}
-  m_Name: SandFallMaterial
-  m_Shader: {fileID: 4800000, guid: d2ee85830fad4ee49d2a56f775e1d563, type: 3}
+  m_Name: ForceFieldMaterial
+  m_Shader: {fileID: 4800000, guid: 1c960d4496fba4fe48e52fa04b86c7b5, type: 3}
   m_ShaderKeywords: 
   m_LightmapFlags: 4
   m_EnableInstancingVariants: 0
@@ -39,11 +39,15 @@ Material:
         m_Scale: {x: 1, y: 1}
         m_Offset: {x: 0, y: 0}
     - _MainTex:
-        m_Texture: {fileID: 2800000, guid: 2032089e935b2e0408d311bb6efa5c46, type: 3}
+        m_Texture: {fileID: 0}
         m_Scale: {x: 1, y: 1}
         m_Offset: {x: 0, y: 0}
     - _MetallicGlossMap:
         m_Texture: {fileID: 0}
+        m_Scale: {x: 1, y: 1}
+        m_Offset: {x: 0, y: 0}
+    - _NoiseTex:
+        m_Texture: {fileID: 2800000, guid: d0ab70cd0c7bf46dcaea49739ce1449f, type: 3}
         m_Scale: {x: 1, y: 1}
         m_Offset: {x: 0, y: 0}
     - _OcclusionMap:
@@ -55,27 +59,31 @@ Material:
         m_Scale: {x: 1, y: 1}
         m_Offset: {x: 0, y: 0}
     m_Floats:
-    - _Acceleration: 10
     - _BumpScale: 1
     - _Cutoff: 0.5
     - _DetailNormalMapScale: 1
+    - _DistanceFactor: 60
+    - _DistortionPower: 1
+    - _DistortionTimeFactor: 0.2
     - _DstBlend: 0
-    - _FallSpeed: 0.4
-    - _FloorY: 0
     - _GlossMapScale: 1
     - _Glossiness: 0.5
     - _GlossyReflections: 1
-    - _Level: 0.646
+    - _IntersectionPower: 5
+    - _MaxWaveDistance: 1
     - _Metallic: 0
     - _Mode: 0
     - _OcclusionStrength: 1
     - _Parallax: 0.02
+    - _RimlightPower: 1.5
     - _SmoothnessTextureChannel: 0
     - _SpecularHighlights: 1
-    - _Speed: -3
     - _SrcBlend: 1
+    - _TimeFactor: -30
+    - _TotalFactor: 1
     - _UVSec: 0
+    - _WaveWidth: 0.3
     - _ZWrite: 1
     m_Colors:
-    - _Color: {r: 1, g: 1, b: 1, a: 1}
+    - _Color: {r: 0.99215686, g: 0.5019608, b: 0.03137255, a: 1}
     - _EmissionColor: {r: 0, g: 0, b: 0, a: 1}

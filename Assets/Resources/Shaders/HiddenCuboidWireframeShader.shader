@@ -1,4 +1,4 @@
-﻿Shader "这就是IB/CuboidWireframeShader"
+﻿Shader "这就是IB/HiddenCuboidWireframeShader"
 {
     Properties
     {
@@ -23,6 +23,7 @@
             
             Blend SrcAlpha OneMinusSrcAlpha
             Cull Off
+			Offset -1, 0
             
             CGPROGRAM
 

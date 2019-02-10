@@ -101,7 +101,24 @@ public class CharacterMotor : MonoBehaviour {
 				_isDodging = false;
 				gameObject.layer = LayerManager.CharacterLayer;
 				onDodgeExit?.Invoke();
-			} else _physix.ApplyMovement(GLOBAL_MOVEMENT, _dodgeVelocity, AxisType.x, ValueType.value, 0f, AxisType.y, ValueType.value);
+			} else {
+				Vector3 dodgeVelocity = new Vector3(_dodgeVelocity, 0f, 0f);
+				if (_physix.IsColliding(BOTTOM_COLLISION)) {
+					dodgeVelocity = Vector3.ProjectOnPlane(dodgeVelocity, _physix.GetNormal(BOTTOM_COLLISION));
+					if (!_isGrounded) {
+						_velocityY = 0f;
+						_isGrounded = true;
+						onGroundEnter?.Invoke();
+					}
+				} else {
+					if (_isGrounded) {
+						_isGrounded = false;
+						onGroundExit?.Invoke();
+					}
+				}
+				
+				_physix.ApplyMovement(GLOBAL_MOVEMENT, dodgeVelocity.x, AxisType.x, ValueType.value, dodgeVelocity.y, AxisType.y, ValueType.value);
+			}
 		} else {
 			if (_physix.IsColliding(BOTTOM_COLLISION)) {
 				if (!_isGrounded) {
@@ -109,7 +126,6 @@ public class CharacterMotor : MonoBehaviour {
 					_isGrounded = true;
 					onGroundEnter?.Invoke();
 				}
-			
 			} else {
 				if (usesGravity) _velocityY -= gravity;
 				if (_isGrounded) {

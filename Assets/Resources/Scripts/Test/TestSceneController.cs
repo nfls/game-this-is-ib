@@ -45,10 +45,10 @@ public class TestSceneController : MonoBehaviour {
 		localPlayer.AddComponent<InputOperator>().InteractionSystem = interactionSystem.AddComponent<InteractionSystem>();
 		GameObject sprite0 = IBSpriteFactory.GenerateIBSprite("up_punch");
 		GameObject sprite1 = IBSpriteFactory.GenerateIBSprite("complex_shooter");
-		GameObject sprite2 = IBSpriteFactory.GenerateIBSprite("hammer");
+		GameObject sprite2 = IBSpriteFactory.GenerateIBSprite("shooter");
 		GameObject sprite3 = IBSpriteFactory.GenerateIBSprite("rocket_launcher");
 		GameObject sprite4 = IBSpriteFactory.GenerateIBSprite("complex_newton_thrower");
-		GameObject sprite5 = IBSpriteFactory.GenerateIBSprite("shooter");
+		GameObject sprite5 = IBSpriteFactory.GenerateIBSprite("hammer");
 		localPlayer.GetComponent<CharacterController>().EquipIBSprite(sprite0.GetComponent<IBSpriteController>());
 		localPlayer.GetComponent<CharacterController>().EquipIBSprite(sprite1.GetComponent<IBSpriteController>());
 		localPlayer.GetComponent<CharacterController>().EquipIBSprite(sprite2.GetComponent<IBSpriteController>());
@@ -63,8 +63,8 @@ public class TestSceneController : MonoBehaviour {
 		combatVirtualCamera.LookAt = localPlayer.transform;
 
 		GameObject enemy0 = CharacterFactory.GenerateEnemy("Enemy 0");
-		enemy0.transform.position = new Vector3(10, 8, 0);
-		GameObject sprite6 = IBSpriteFactory.GenerateIBSprite("straight_punch");
+		enemy0.transform.position = new Vector3(3, 8, 0);
+		GameObject sprite6 = IBSpriteFactory.GenerateIBSprite("hammer");
 		enemy0.GetComponent<CharacterController>().EquipIBSprite(sprite6.GetComponent<IBSpriteController>());
 		enemy0.AddComponent<NaiveAIOperator>();
 		/*

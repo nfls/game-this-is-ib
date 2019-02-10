@@ -89,6 +89,8 @@
           <e p="Scripts" t="Include">
             <e p="Camera" t="Include">
               <e p="CameraManager.cs" t="Include" />
+              <e p="CameraWanderer.cs" t="Include" />
+              <e p="PixelationController.cs" t="Include" />
               <e p="RadialBlurController.cs" t="Include" />
             </e>
             <e p="Character" t="Include">
@@ -119,6 +121,7 @@
               <e p="DeviceController.cs" t="Include" />
               <e p="DoorController.cs" t="Include" />
               <e p="DynamicPlatformController.cs" t="Include" />
+              <e p="HiddenAreaController.cs" t="Include" />
               <e p="InteractionController.cs" t="Include" />
               <e p="InterlocutionController.cs" t="Include" />
               <e p="SignalReceiver.cs" t="Include" />
@@ -128,6 +131,7 @@
             </e>
             <e p="Effect" t="Include">
               <e p="BurstParticleController.cs" t="Include" />
+              <e p="ForceShieldController.cs" t="Include" />
               <e p="ParticleController.cs" t="Include" />
               <e p="ParticleDecalController.cs" t="Include" />
               <e p="ParticleDecalManager.cs" t="Include" />
@@ -221,13 +225,17 @@
           <e p="Shaders" t="Include">
             <e p="CuboidWireframeShader.shader" t="Include" />
             <e p="DissolutionToonShader.shader" t="Include" />
+            <e p="ForceFieldShader.shader" t="Include" />
+            <e p="HiddenCuboidWireframeShader.shader" t="Include" />
             <e p="OutlinedTextureToonShader.shader" t="Include" />
             <e p="OutlinedToonShader.shader" t="Include" />
             <e p="ParticleOutlinedToonShader.shader" t="Include" />
+            <e p="PixelationShader.shader" t="Include" />
             <e p="RadialBlurShader.shader" t="Include" />
             <e p="SandFallShader.shader" t="Include" />
             <e p="SimpleWaterSurfaceShader.shader" t="Include" />
             <e p="SingleColorShader.shader" t="Include" />
+            <e p="ThisIsIB.cginc" t="Include" />
             <e p="ToonShader.shader" t="Include" />
           </e>
         </e>

@@ -124,7 +124,7 @@ MeshRenderer:
   m_ReflectionProbeUsage: 0
   m_RenderingLayerMask: 4294967295
   m_Materials:
-  - {fileID: 2100000, guid: 7542762f3f55b47ae9ca406d5eac779f, type: 2}
+  - {fileID: 2100000, guid: 615c86b13118242f18a61eaffd641ea8, type: 2}
   m_StaticBatchInfo:
     firstSubMesh: 0
     subMeshCount: 0
@@ -159,7 +159,7 @@ MeshRenderer:
   m_ReflectionProbeUsage: 0
   m_RenderingLayerMask: 4294967295
   m_Materials:
-  - {fileID: 2100000, guid: 7542762f3f55b47ae9ca406d5eac779f, type: 2}
+  - {fileID: 2100000, guid: 615c86b13118242f18a61eaffd641ea8, type: 2}
   m_StaticBatchInfo:
     firstSubMesh: 0
     subMeshCount: 0
@@ -412,6 +412,16 @@ MonoBehaviour:
   highlightColor: {r: 1, g: 0, b: 0, a: 1}
   interactionText: ' OPEN '
   counterInteractionText: ' CLOSE '
+  interactionEvent:
+    m_PersistentCalls:
+      m_Calls: []
+    m_TypeName: UnityEventWithCharacterController, Assembly-CSharp, Version=0.0.0.0,
+      Culture=neutral, PublicKeyToken=null
+  counterInteractionEvent:
+    m_PersistentCalls:
+      m_Calls: []
+    m_TypeName: UnityEventWithCharacterController, Assembly-CSharp, Version=0.0.0.0,
+      Culture=neutral, PublicKeyToken=null
   loseInteractionEvent:
     m_PersistentCalls:
       m_Calls: []

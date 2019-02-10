@@ -36,7 +36,7 @@ public class DynamicPlatformController : DeviceController {
 	}
 	
 	private void Update() {
-		if (_isEnabled) UpdateStandOns();
+		UpdateStandOns();
 	}
 
 	private void UpdateStandOns() {

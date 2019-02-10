@@ -1,15 +1,12 @@
 ﻿using UnityEngine;
 
-[RequireComponent(typeof(AudioSource))]
 public abstract class DeviceController : MonoBehaviour {
 
 	protected bool _isEnabled;
 
 	protected virtual void Awake() { }
 
-	public virtual void Replay() {
-		Play();
-	}
+	public virtual void Replay() => Play();
 
 	public virtual void Play() {
 		_isEnabled = true;

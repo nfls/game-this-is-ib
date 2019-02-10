@@ -2,7 +2,7 @@
 {
 	Properties 
 	{
-		_MainTex ("Base (RGB)", 2D) = "white" {}
+		_MainTex ("Texture", 2D) = "white" {}
 	}
  
 	CGINCLUDE
@@ -39,7 +39,7 @@
 			ZTest Always
 			Cull Off
 			ZWrite Off
-			Fog{ Mode off }
+			Fog { Mode off }
  
 			// 调用CG函数	
 			CGPROGRAM
