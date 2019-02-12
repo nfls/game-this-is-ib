@@ -9,7 +9,7 @@
 		_DistanceFactor ("Distance Factor", Float) = 60
 		_TotalFactor ("Total Factor", Float) = 1
 		_WaveWidth ("Wave Width", Range (0, 2)) = .3
-		_MaxWaveDistance ("Maximum Wave Distance", Float) = 1
+		_MaxDistance ("Maximum Distance", Float) = 1
 	}
 
 	SubShader {
@@ -54,12 +54,12 @@
 			float _DistortionPower;
 			float _RimlightPower;
 			float _IntersectionPower;
-			half4x4 _Hits;
+			float4x4 _Hits;
 			float _TimeFactor;
 			float _DistanceFactor;
 			float _TotalFactor;
 			float _WaveWidth;
-			float _MaxWaveDistance;
+			float _MaxDistance;
 			float4 _CurrentWaveDists;
 			sampler2D _CameraDepthTexture;
 
@@ -93,28 +93,28 @@
 				dv0 = normalize(dv0);
 				float sinFactor0 = sin(dist0 * _DistanceFactor + timeFactor);
 				float discardFactor0 = clamp(_WaveWidth - abs(_CurrentWaveDists[0] - dist0), 0, 1);
-				float2 offset0 = dv0 * sinFactor0 * discardFactor0 * clamp((1 - dist0 / _MaxWaveDistance), 0, 1);
+				float2 offset0 = dv0 * sinFactor0 * discardFactor0 * clamp((1 - dist0 / _MaxDistance), 0, 1);
 
 				float3 dv1 = _Hits[1].xyz - i.pos;
 				float dist1 = sqrt(dv1.x * dv1.x + dv1.y * dv1.y + dv1.z * dv1.z);
 				dv1 = normalize(dv1);
 				float sinFactor1 = sin(dist1 * _DistanceFactor + timeFactor);
 				float discardFactor1 = clamp(_WaveWidth - abs(_CurrentWaveDists[1] - dist1), 0, 1);
-				float2 offset1 = dv1 * sinFactor1 * discardFactor1 * clamp((1 - dist1 / _MaxWaveDistance), 0, 1);
+				float2 offset1 = dv1 * sinFactor1 * discardFactor1 * clamp((1 - dist1 / _MaxDistance), 0, 1);
 
 				float3 dv2 = _Hits[2].xyz - i.pos;
 				float dist2 = sqrt(dv2.x * dv2.x + dv2.y * dv2.y + dv2.z * dv2.z);
 				dv2 = normalize(dv2);
 				float sinFactor2 = sin(dist2 * _DistanceFactor + timeFactor);
 				float discardFactor2 = clamp(_WaveWidth - abs(_CurrentWaveDists[2] - dist2), 0, 1);
-				float2 offset2 = dv2 * sinFactor2 * discardFactor2 * clamp((1 - dist2 / _MaxWaveDistance), 0, 1);
+				float2 offset2 = dv2 * sinFactor2 * discardFactor2 * clamp((1 - dist2 / _MaxDistance), 0, 1);
 
 				float3 dv3 = _Hits[3].xyz - i.pos;
 				float dist3 = sqrt(dv3.x * dv3.x + dv3.y * dv3.y + dv3.z * dv3.z);
 				dv3 = normalize(dv3);
 				float sinFactor3 = sin(dist3 * _DistanceFactor + timeFactor);
 				float discardFactor3 = clamp(_WaveWidth - abs(_CurrentWaveDists[3] - dist3), 0, 1);
-				float2 offset3 = dv3 * sinFactor3 * discardFactor3 * clamp((1 - dist3 / _MaxWaveDistance), 0, 1);
+				float2 offset3 = dv3 * sinFactor3 * discardFactor3 * clamp((1 - dist3 / _MaxDistance), 0, 1);
 
 				float2 offset = (offset0 + offset1 + offset2 + offset3);
 				i.grabPos.xy += offset * _DistortionPower;

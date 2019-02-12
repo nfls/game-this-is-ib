@@ -124,7 +124,10 @@ public static class MaterialTool {
 					}
 				}
 			}
+			
 			texture2D.Apply();
+			texture2D.filterMode = FilterMode.Bilinear;
+			texture2D.wrapMode = TextureWrapMode.Repeat;
 			File.WriteAllBytes(path, texture2D.EncodeToPNG());
 			EditorUtility.ClearProgressBar();
 			AssetDatabase.ImportAsset(path.Substring(path.IndexOf("Assets")));

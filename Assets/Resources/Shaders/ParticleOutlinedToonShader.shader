@@ -26,7 +26,7 @@
 		    #pragma fragment frag
 		    #include "UnityCG.cginc"
 		    
-		    float4 _OutlineColor;
+		    fixed4 _OutlineColor;
 		    float _OutlineWidth;
 		    float _OutlineDistance;
 		    
@@ -41,9 +41,9 @@
 
 		    v2f vert (appdata v) {
 		    	v2f o;
-		    	float3 dir=normalize(v.vertex.xyz);
-		    	float3 dir2=v.normal;
-			    float D=dot(dir,dir2);
+		    	fixed3 dir=normalize(v.vertex.xyz);
+		    	fixed3 dir2=v.normal;
+			    fixed D=dot(dir,dir2);
 		    	dir=dir*sign(D);
 		    	dir=dir*_OutlineDistance+dir2*(1-_OutlineDistance);
 		    	v.vertex.xyz+=dir*_OutlineWidth;
@@ -51,7 +51,7 @@
 		    	return o;
 		    }
 		
-		    float4 frag(v2f i) : COLOR {
+		    fixed4 frag(v2f i) : COLOR {
 		    	return _OutlineColor;
 		    }
 		
@@ -72,10 +72,10 @@
 		    #pragma fragment frag
 		    #include "UnityCG.cginc"
             
-		    float4 _LightColor0;
-		    float4 _ToonColor;
-		    float _ToonSteps;
-		    float _ToonLevel;
+		    fixed4 _LightColor0;
+		    fixed4 _ToonColor;
+		    fixed _ToonSteps;
+		    fixed _ToonLevel;
 		    
 		    struct appdata {
 		        float4 color : COLOR;
@@ -101,15 +101,15 @@
 		    	return o;
 		    }
 		    		
-		    float4 frag(v2f i) : COLOR {
-		    	float4 c=1;
-		    	float3 N=normalize(i.normal);
-		    	float3 viewDir=normalize(i.viewDir);
-		    	float3 lightDir=normalize(i.lightDir);
-		    	float diff=max(0,dot(N,i.lightDir));//求漫反射颜色
+		    fixed4 frag(v2f i) : COLOR {
+		    	fixed4 c=1;
+		    	fixed3 N=normalize(i.normal);
+		    	fixed3 viewDir=normalize(i.viewDir);
+		    	fixed3 lightDir=normalize(i.lightDir);
+		    	fixed diff=max(0,dot(N,i.lightDir));//求漫反射颜色
 		    	diff=(diff+1)/2;//做亮化处理
 		    	diff=smoothstep(0,1,diff);//使颜色平滑的在[0,1]范围之内
-		    	float toon=floor(diff*_ToonSteps)/_ToonSteps;//把颜色做离散化处理，把diffuse颜色限制在_ToonSteps种
+		    	fixed toon=floor(diff*_ToonSteps)/_ToonSteps;//把颜色做离散化处理，把diffuse颜色限制在_ToonSteps种
 		    	diff=lerp(diff,toon,_ToonLevel);//调节比重
 		    	c=i.color*_LightColor0*(diff);//颜色混合
 		    	

@@ -67,12 +67,12 @@ public class CharacterController : MonoBehaviour {
 	protected Coroutine _dodgeCoroutine;
 	protected Coroutine _dodgeCooldownCoroutine;
 	protected Coroutine _staminaRecoveryCoroutine;
-
+/*
 	[Conditional("UNITY_EDITOR")]
 	private void OnGUI() {
 		GUI.Button(new Rect(0f, 0f, 100f, 50f), (int) stamina + "/" + (int) maxStamina);
 	}
-
+*/
 	public virtual void Awake() {
 		_characterMotor = GetComponent<CharacterMotor>();
 		_characterMotor.onGroundEnter += ResetJumpTimes;
@@ -84,6 +84,13 @@ public class CharacterController : MonoBehaviour {
 		_trailRenderer.allowOcclusionWhenDynamic = true;
 		_trailRenderer.autodestruct = false;
 		_trailRenderer.emitting = false;
+	}
+
+	private void OnDestroy() {
+		StopAllCoroutines();
+		foreach (var ibSpriteController in carriedIBSpriteControllers)
+			if (ibSpriteController) Destroy(ibSpriteController.gameObject);
+		carriedIBSpriteControllers = null;
 	}
 
 	public void MoveLeft() => Move(FaceDirection.Left);
@@ -243,7 +250,7 @@ public class CharacterController : MonoBehaviour {
 		if (_isDodging) return;
 		if (_stunCoroutine == null) _currentIBSpriteController?.CancelAttack();
 		else ExitStunState();
-		EnterStunState(stunnedAngle, stunnedTime);
+		EnterStunState(stunnedAngle * (float) FaceDirection, stunnedTime);
 	}
 
 	protected void SprayBlood() {

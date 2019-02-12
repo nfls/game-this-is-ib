@@ -2,7 +2,7 @@
 {
 	Properties 
 	{
-		_MainTex ("Texture", 2D) = "white" {}
+		_MainTex ("Main Texture", 2D) = "white" {}
 	}
  
 	CGINCLUDE
@@ -18,7 +18,7 @@
 		//模糊方向为模糊中点指向边缘（当前像素点），而越边缘该值越大，越模糊
 		float2 dir = i.uv - _BlurCenter.xy;
 		float2 c = _BlurFactor * dir;
-		float4 outColor = 0;
+		fixed4 outColor = 0;
 		//采样SAMPLE_COUNT次
 		for (int j = 0; j < SAMPLE_COUNT; ++j)
 		{

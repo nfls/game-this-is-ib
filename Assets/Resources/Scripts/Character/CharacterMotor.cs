@@ -184,6 +184,10 @@ public class CharacterMotor : MonoBehaviour {
 		_dodgeTime = Time.time;
 		gameObject.layer = LayerManager.DodgeLayer;
 		_isDodging = true;
+		float portion = Mathf.Sign(velocity) * .5f;
+		ushort leftStrength = Convert.ToUInt16((.5f - portion) * 3000);
+		ushort rightStrength = Convert.ToUInt16((.5f + portion) * 3000);
+		JoystickUtil.RumbleJoystick(leftStrength, rightStrength, 200);
 	}
 
 	private void Teleport(float distance) {

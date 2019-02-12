@@ -580,7 +580,7 @@ return null;
 public Collider GetTriggerExiting (string identifier, TriggerType identifierType){
 for (int i = 0; i < TriggerExits.Length; i++) {
 if(identifierType == TriggerType.name && TriggerExits[i].name == identifier){return TriggerExits[i]; break;}
-if(identifierType == TriggerType.tag && TriggerExits[i].tag == identifier){return TriggerExits[i]; break;}
+if(identifierType == TriggerType.tag && TriggerExits[i].CompareTag(identifier)){return TriggerExits[i]; break;}
 if(identifierType == TriggerType.layer && TriggerExits[i].gameObject.layer == LayerMask.NameToLayer(identifier)){return TriggerExits[i]; break;}
 }
 return null;

@@ -8,8 +8,8 @@ public class ZoneTrigger : DeviceController {
 	[TagField]
 	public List<string> detectedTags;
 
-	public UnityEvent enterEvent;
-	public UnityEvent exitEvent;
+	public UnityEventWithVector3 enterEvent;
+	public UnityEventWithVector3 exitEvent;
 
 	private int _count;
 
@@ -17,7 +17,7 @@ public class ZoneTrigger : DeviceController {
 		foreach (var tag in detectedTags) {
 			if (other.CompareTag(tag)) {
 				_count += 1;
-				if (_count == 1) enterEvent?.Invoke();
+				if (_count == 1) enterEvent?.Invoke(other.transform.position);
 				break;
 			}
 		}
@@ -27,7 +27,7 @@ public class ZoneTrigger : DeviceController {
 		foreach (var tag in detectedTags) {
 			if (other.CompareTag(tag)) {
 				_count -= 1;
-				if (_count == 0) exitEvent?.Invoke();
+				if (_count == 0) exitEvent?.Invoke(other.transform.position);
 				break;
 			}
 		}

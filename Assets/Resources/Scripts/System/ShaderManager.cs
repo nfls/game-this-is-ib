@@ -1,4 +1,6 @@
-﻿public class ShaderManager : MonoSingleton {
+﻿using UnityEngine;
+
+public class ShaderManager : MonoSingleton {
 
 	public const string PREFIX = "这就是IB/";
 
@@ -6,14 +8,34 @@
 	public const string TOON_SHADER_NAME = PREFIX + "ToonShader";
 	public const string SINGLE_COLOR_SHADER_NAME = PREFIX + "SingleColorShader";
 
-	public const string TOON_COLOR_KEYWORD = "_ToonColor";
-	public const string BRIGHTNESS_KEYWORD = "_Brightness";
-	public const string OUTLINE_COLOR_KEYWORD = "_OutlineColor";
-	public const string OUTLINE_WIDTH_KEYWORD = "_OutlineWidth";
-	public const string OUTLINE_DISTANCE_KEYWORD = "_OutlineDistance";
-	public const string TOON_LEVEL_KEYWORD = "_ToonLevel";
-	public const string TOON_STEPS_KEYWORD = "_ToonSteps";
-	public const string DISSOLVE_COLOR_KEYWORD = "_DissolveColor";
-	public const string DISSOLVE_EDGE_COLOR_KEYWORD = "_DissolveEdgeColor";
-	public const string DISSOLVE_THRESHOLD_KEYWORD = "_DissolveThreshold";
+	public static readonly int MAIN_TEXTURE_KEYWORD = Shader.PropertyToID("_MainTex");
+	public static readonly int NOISE_TEXTURE_KEYWORD = Shader.PropertyToID("_NoiseTex");
+	public static readonly int COLOR_KEYWORD = Shader.PropertyToID("_Color");
+	public static readonly int TOON_COLOR_KEYWORD = Shader.PropertyToID("_ToonColor");
+	public static readonly int THICKNESS_KEYWORD = Shader.PropertyToID("_Thickness");
+	public static readonly int BRIGHTNESS_KEYWORD = Shader.PropertyToID("_Brightness");
+	public static readonly int OUTLINE_COLOR_KEYWORD = Shader.PropertyToID("_OutlineColor");
+	public static readonly int OUTLINE_WIDTH_KEYWORD = Shader.PropertyToID("_OutlineWidth");
+	public static readonly int OUTLINE_DISTANCE_KEYWORD = Shader.PropertyToID("_OutlineDistance");
+	public static readonly int TOON_LEVEL_KEYWORD = Shader.PropertyToID("_ToonLevel");
+	public static readonly int TOON_STEPS_KEYWORD = Shader.PropertyToID("_ToonSteps");
+	public static readonly int THRESHOLD_KEYWORD = Shader.PropertyToID("_Threshold");
+	public static readonly int MAX_DISTANCE_KEYWORD = Shader.PropertyToID("_MaxDistance");
+	public static readonly int START_POINT_KEYWORD = Shader.PropertyToID("_StartPoint");
+	public static readonly int EDGE_LENGTH_KEYWORD = Shader.PropertyToID("_EdgeLength");
+	public static readonly int BLUR_FACTOR_KEYWORD = Shader.PropertyToID("_BlurFactor");
+	public static readonly int BLUR_CENTER_KEYWORD = Shader.PropertyToID("_BlurCenter");
+	public static readonly int BLUR_DISTANCE_KEYWORD = Shader.PropertyToID("_BlurDistance");
+	public static readonly int DISSOLVE_COLOR_KEYWORD = Shader.PropertyToID("_DissolveColor");
+	public static readonly int DISSOLVE_EDGE_COLOR_KEYWORD = Shader.PropertyToID("_DissolveEdgeColor");
+	public static readonly int DISSOLVE_THRESHOLD_KEYWORD = Shader.PropertyToID("_DissolveThreshold");
+	public static readonly int DISTORTION_POWER_KEYWORD = Shader.PropertyToID("_DistortionPower");
+	public static readonly int RIMLIGHT_POWER_KEYWORD = Shader.PropertyToID("_RimlightPower");
+	public static readonly int INTERSECTION_POWER_KEYWORD = Shader.PropertyToID("_IntersectionPower");
+	public static readonly int TIME_FACTOR_KEYWORD = Shader.PropertyToID("_TimeFactor");
+	public static readonly int DISTANCE_FACTOR_KEYWORD = Shader.PropertyToID("_DistanceFactor");
+	public static readonly int TOTAL_FACTOR_KEYWORD = Shader.PropertyToID("_TotalFactor");
+	public static readonly int HITS_KEYWORD = Shader.PropertyToID("_Hits");
+	public static readonly int CURRENT_WAVE_DISTS_KEYWORD = Shader.PropertyToID("_CurrentWaveDists");
+	public static readonly int WAVE_WIDTH_KEYWORD = Shader.PropertyToID("_WaveWidth");
 }

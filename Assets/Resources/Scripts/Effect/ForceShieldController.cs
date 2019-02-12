@@ -45,15 +45,15 @@ public class ForceShieldController : MonoBehaviour {
 			_waveDistances[i] = dt * waveSpeed;
 		}
 		
-		_material.SetFloat("_DistortionPower", distortionPower);
-		_material.SetFloat("_RimlightPower", rimlightPower);
-		_material.SetFloat("_IntersectionPower", intersectionPower);
-		_material.SetFloat("_DistanceFactor", distanceFactor);
-		_material.SetFloat("_TimeFactor", timeFactor);
-		_material.SetFloat("_TotalFactor", totalFactor);
-		_material.SetFloat("_WaveWidth", waveWidth);
-		_material.SetFloat("_MaxWaveDistance", maxWaveDistance);
-		_material.SetVector("_CurrentWaveDists", new Vector4(_waveDistances[0], _waveDistances[1], _waveDistances[2], _waveDistances[3]));
-		_material.SetMatrix("_Hits", _hits);
+		_material.SetFloat(ShaderManager.DISTORTION_POWER_KEYWORD, distortionPower);
+		_material.SetFloat(ShaderManager.RIMLIGHT_POWER_KEYWORD, rimlightPower);
+		_material.SetFloat(ShaderManager.INTERSECTION_POWER_KEYWORD, intersectionPower);
+		_material.SetFloat(ShaderManager.DISTANCE_FACTOR_KEYWORD, distanceFactor);
+		_material.SetFloat(ShaderManager.TIME_FACTOR_KEYWORD, timeFactor);
+		_material.SetFloat(ShaderManager.TOTAL_FACTOR_KEYWORD, totalFactor);
+		_material.SetFloat(ShaderManager.WAVE_WIDTH_KEYWORD, waveWidth);
+		_material.SetFloat(ShaderManager.MAX_DISTANCE_KEYWORD, maxWaveDistance);
+		_material.SetVector(ShaderManager.CURRENT_WAVE_DISTS_KEYWORD, new Vector4(_waveDistances[0], _waveDistances[1], _waveDistances[2], _waveDistances[3]));
+		_material.SetMatrix(ShaderManager.HITS_KEYWORD, _hits);
 	}
 }

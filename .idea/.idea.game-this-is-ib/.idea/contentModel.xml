@@ -237,6 +237,7 @@
             <e p="SingleColorShader.shader" t="Include" />
             <e p="ThisIsIB.cginc" t="Include" />
             <e p="ToonShader.shader" t="Include" />
+            <e p="WireframePointDissolutionShader.shader" t="Include" />
           </e>
         </e>
         <e p="Rotary Heart" t="Include">

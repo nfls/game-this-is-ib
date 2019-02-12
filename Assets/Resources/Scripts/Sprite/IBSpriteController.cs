@@ -181,7 +181,7 @@ public abstract class IBSpriteController : MonoBehaviour {
 
 		if (characterController.CompareTag(TagManager.LOCAL_PLAYER_TAG)) {
 			CameraManager.RadialBlur(CameraManager.MainCamera.WorldToViewportPoint(trigger.transform.position));
-			ushort rumbleStrength = 5000;
+			ushort rumbleStrength = 10000;
 			float maxDistance = 1.9f;
 			float portion;
 			if (distance * hitDirection > maxDistance) portion = hitDirection * .5f;

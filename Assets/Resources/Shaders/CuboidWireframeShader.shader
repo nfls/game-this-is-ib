@@ -2,11 +2,9 @@
 {
     Properties
     {
-        _Color ("Color", Color) = (1,1,1,1)
-        _MainTex ("Main Texture", 2D) = "white" {}
-        _Thickness ("Thickness", Range (0, 10)) = 3
-        
-        // temporal
+        _Color("Color", Color) = (1,1,1,1)
+        _MainTex("Main Texture", 2D) = "white" {}
+        _Thickness("Thickness", Range (0, 10)) = 3
         _ToonColor("Toon Color", color) = (1,1,1,1)
 		_ToonLevel("Toon Level", range(0,1)) = 0.5
 		_ToonSteps("Toon Steps", range(0,9)) = 3

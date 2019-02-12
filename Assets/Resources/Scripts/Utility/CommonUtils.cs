@@ -15,3 +15,6 @@ public static class CommonUtils {
 
 [Serializable]
 public class UnityEventWithCharacterController : UnityEvent<CharacterController> { }
+
+[Serializable]
+public class UnityEventWithVector3 : UnityEvent<Vector3> { }
