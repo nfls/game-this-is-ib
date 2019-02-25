@@ -1,9 +1,16 @@
 ﻿using System;
 using System.Collections.Generic;
+using System.Diagnostics;
 using UnityEngine;
 
 [Serializable]
-public abstract class DVariable<T> where T : struct {
+public abstract class DData {
+	[NonSerialized]
+	public bool isExpanded;
+}
+
+[Serializable]
+public abstract class DVariable<T> : DData where T : struct {
 
 	public delegate void Listener(T t);
 	public event Listener onChanged;
@@ -11,7 +18,7 @@ public abstract class DVariable<T> where T : struct {
 	public T Value {
 		get { return _value; }
 		set {
-			_realValue = value;
+			realValue = value;
 			Refresh();
 			onChanged?.Invoke(value);
 		}
@@ -20,11 +27,11 @@ public abstract class DVariable<T> where T : struct {
 	public abstract int DecoratorCount { get; }
 	
 	[SerializeField]
-	protected T _realValue;
+	public T realValue;
 	[SerializeField]
 	protected T _value;
 
-	public virtual void Refresh() => _value = _realValue;
+	public virtual void Refresh() => _value = realValue;
 
 	public static implicit operator T(DVariable<T> dVar) => dVar._value;
 }
@@ -98,7 +105,7 @@ public class DFloat : DVariable<float> {
 	
 	public override int DecoratorCount => variableDecorators.Count;
 	
-	private List<FloatDecorator> variableDecorators = new List<FloatDecorator>(2);
+	public List<FloatDecorator> variableDecorators = new List<FloatDecorator>(2);
 	
 	public override void Refresh() {
 		base.Refresh();
@@ -111,6 +118,11 @@ public class DFloat : DVariable<float> {
 		int index = 0;
 		for (int l = variableDecorators.Count; index < l; index++) if (decorator.priority < variableDecorators[index].priority) break;
 		variableDecorators.Insert(index, decorator);
+		Refresh();
+	}
+
+	public void RemoveDecorator(int index) {
+		variableDecorators.RemoveAt(index);
 		Refresh();
 	}
 

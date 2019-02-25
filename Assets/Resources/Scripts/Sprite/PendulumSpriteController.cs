@@ -98,11 +98,11 @@ public class PendulumSpriteController : IBSpriteController {
 		characterController.StartStaminaRecovery();
 	}
 
-	protected override void OnDetectCharacterEnter(IBSpriteTrigger trigger, Collider detectedCollider) {
-		base.OnDetectCharacterEnter(trigger, detectedCollider);
+	protected override void OnDetectCharacterEnter(IBSpriteTrigger trigger, Collider detectedCollider, Vector3 contactPosition) {
+		base.OnDetectCharacterEnter(trigger, detectedCollider, contactPosition);
 		
 		if (hitSound) _audioSource.PlayOneShot(hitSound.Source);
-		CameraManager.Shake(trigger.transform.position, hitShake);
+		CameraManager.Shake(contactPosition, hitShake);
 		TimeManager.HandleRequest(hitTimeEffect);
 	}
 }

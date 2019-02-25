@@ -12,13 +12,11 @@
 	    }
 	    
         Lighting Off
-        Fog {
-            Mode Off
-        }
 		
-		pass {
+		Pass {
 		
-		    Cull Back
+		    Cull Off
+			Offset -1, 0
 		
 		    CGPROGRAM
 		    
@@ -59,8 +57,8 @@
 		
 		    ENDCG
 	    }
-
-		pass {
+/*
+		Pass {
 			
 			Cull Front
 
@@ -103,5 +101,6 @@
 
 			ENDCG
 		}
+*/
 	}
 }

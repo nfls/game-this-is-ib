@@ -15,7 +15,7 @@ public class ProjectileController : MonoBehaviour {
 	public Collider ownerCollider;
 	public TrailSettings trailSettings;
 
-	public Action<IBSpriteTrigger, Collider> OnDetectCharacterEnter {
+	public Action<IBSpriteTrigger, Collider, Vector3> OnDetectCharacterEnter {
 		get { return _ibSpriteTrigger.onDetectCharacterEnter; }
 		set { _ibSpriteTrigger.onDetectCharacterEnter = value; }
 	}

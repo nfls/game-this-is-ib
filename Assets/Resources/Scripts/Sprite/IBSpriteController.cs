@@ -164,10 +164,10 @@ public abstract class IBSpriteController : MonoBehaviour {
 		_trailRenderer.emitting = false;
 	}
 
-	protected virtual void OnDetectCharacterEnter(IBSpriteTrigger trigger, Collider detectedCollider) {
+	protected virtual void OnDetectCharacterEnter(IBSpriteTrigger trigger, Collider detectedCollider, Vector3 contactPosition) {
 		CharacterController character = detectedCollider.GetComponentInParent<CharacterController>();
 		float distance;
-		float hitDirection = GetHitDirection(detectedCollider.transform, characterMotor.transform, out distance);
+		float hitDirection = GetHitDirection(contactPosition, characterMotor.transform, out distance);
 		if (attackEffectSettings.doesHit) character.GetHit(attackEffectSettings.hitVelocityX * hitDirection, attackEffectSettings.hitVelocityY);
 		if (attackEffectSettings.doesStun) character.GetStunned(hitDirection * attackEffectSettings.stunAngle, attackEffectSettings.stunTime);
 		if (attackEffectSettings.doesDamage) character.GetDamaged(attackEffectSettings.damage);
@@ -175,12 +175,12 @@ public abstract class IBSpriteController : MonoBehaviour {
 			BurstParticleController particle = hitEffect.Get<BurstParticleController>();
 			ParticleSystem.MainModule main = particle.ParticleSystem.main;
 			main.startColor = hitEffectColor;
-			particle.transform.position = trigger.transform.position;
+			particle.transform.position = contactPosition;
 			particle.Burst();
 		}
 
 		if (characterController.CompareTag(TagManager.LOCAL_PLAYER_TAG)) {
-			CameraManager.RadialBlur(CameraManager.MainCamera.WorldToViewportPoint(trigger.transform.position));
+			CameraManager.RadialBlur(CameraManager.MainCamera.WorldToViewportPoint(contactPosition));
 			ushort rumbleStrength = 10000;
 			float maxDistance = 1.9f;
 			float portion;
@@ -200,8 +200,14 @@ public abstract class IBSpriteController : MonoBehaviour {
 	
 	protected float GetHitDirection(Transform receiver, Transform attacker) => receiver.position.x - attacker.position.x > 0 ? 1 : -1;
 
-	protected float GetHitDirection(Transform receiver, Transform attacker, out float distance) {
-		distance = receiver.position.x - attacker.position.x;
+	protected float GetHitDirection(Transform receiver, Transform attacker, out float distance) => GetHitDirection(receiver.position, attacker.position, out distance);
+	
+	protected float GetHitDirection(Vector3 receiverPosition, Transform attacker, out float distance) => GetHitDirection(receiverPosition, attacker.position, out distance);
+	
+	protected float GetHitDirection(Transform receiver, Vector3 attackerPosition, out float distance) => GetHitDirection(receiver.position, attackerPosition, out distance);
+
+	protected float GetHitDirection(Vector3 receiverPosition, Vector3 attackerPosition, out float distance) {
+		distance = receiverPosition.x - attackerPosition.x;
 		return distance > 0 ? 1 : -1;
 	}
 }

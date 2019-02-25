@@ -35,11 +35,12 @@ public class InterlocutionDataEditorWindow : EditorWindow {
 				_dataPath = CommonUtils.NULL_STRING;
 			}
 		}
+		
 		_editingInterlocution = -1;
 		_scrollPostion = Vector2.zero;
 	}
 
-	public void OnGUI() {
+	private void OnGUI() {
 		UG.BeginVertical();
 
 		UG.BeginHorizontal();
@@ -49,9 +50,7 @@ public class InterlocutionDataEditorWindow : EditorWindow {
 			if (!string.IsNullOrEmpty(path)) {
 				Dictionary<string, List<InterlocutionData>> temperData = null;
 				try {
-					temperData =
-						JsonConvert.DeserializeObject<Dictionary<string, List<InterlocutionData>>>(
-							File.ReadAllText(path));
+					temperData = JsonConvert.DeserializeObject<Dictionary<string, List<InterlocutionData>>>(File.ReadAllText(path));
 				} catch (JsonException) {
 					temperData = _data;
 					path = _dataPath;
@@ -78,17 +77,13 @@ public class InterlocutionDataEditorWindow : EditorWindow {
 		
 		_scrollPostion = UG.BeginScrollView(_scrollPostion);
 
-		if (!_data.ContainsKey(key)) {
-			_data[key] = new List<InterlocutionData>();
-		}
-
+		if (!_data.ContainsKey(key)) _data[key] = new List<InterlocutionData>();
 		List<InterlocutionData> interlocutions = _data[key];
 
 		int _deletedInterlocution = -1;
 
 		UG.LabelField("[已有 " + interlocutions.Count + " 道问答]");
 		for (int i = 0, l = interlocutions.Count; i < l; i++) {
-			
 			UG.BeginHorizontal();
 			
 			UG.LabelField("[Q " + i + "] " + interlocutions[i].question);
@@ -107,9 +102,7 @@ public class InterlocutionDataEditorWindow : EditorWindow {
 			UG.EndHorizontal();
 		}
 
-		if (_deletedInterlocution != -1) {
-			interlocutions.RemoveAt(_deletedInterlocution);
-		}
+		if (_deletedInterlocution != -1) interlocutions.RemoveAt(_deletedInterlocution);
 		
 		UG.EndScrollView();
 		
@@ -133,18 +126,15 @@ public class InterlocutionDataEditorWindow : EditorWindow {
 			UG.LabelField("选项D");
 			interlocution.optionD = UG.TextArea(interlocution.optionD);
 			
-		} else {
-			UG.HelpBox("需要选择一个问答进行编辑！", MessageType.Warning);
-		}
+		} else UG.HelpBox("需要选择一个问答进行编辑！", MessageType.Warning);
 
 		if (GUILayout.Button("保存")) {
 			bool toSave = true;
 			bool toImport = false;
 			if (_dataPath.IsNullPath()) {
 				string path = EditorUtility.SaveFilePanel("保存问答数据", Application.dataPath + "/Hotassets/Data", "InterlocutionData", "txt");
-				if (string.IsNullOrEmpty(path)) {
-					toSave = false;
-				} else {
+				if (string.IsNullOrEmpty(path))toSave = false;
+				else {
 					_dataPath = path;
 					toImport = true;
 				}
@@ -155,9 +145,7 @@ public class InterlocutionDataEditorWindow : EditorWindow {
 				EditorPrefs.SetString(DATA_SAVE_PATH, _dataPath);
 			}
 
-			if (toImport) {
-				AssetDatabase.ImportAsset(_dataPath.Substring(_dataPath.IndexOf("Assets")));
-			}
+			if (toImport) AssetDatabase.ImportAsset(_dataPath.Substring(_dataPath.IndexOf("Assets")));
 		}
 		
 		UG.EndVertical();

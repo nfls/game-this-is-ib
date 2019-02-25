@@ -11,6 +11,7 @@
           <e p="AssetBundleTool.cs" t="Include" />
           <e p="CameraBackgroundColorAttributeDrawer.cs" t="Include" />
           <e p="DataTool.cs" t="Include" />
+          <e p="DictionaryDrawer.cs" t="Include" />
           <e p="DVariableDrawer.cs" t="Include" />
           <e p="EditorExtensions.cs" t="Include" />
           <e p="EditorHelper.cs" t="Include" />
@@ -19,6 +20,8 @@
           <e p="InterlocutionDataEditorWindow.cs" t="Include" />
           <e p="InterlocutionSubjectAttributeDrawer.cs" t="Include" />
           <e p="MaterialTool.cs" t="Include" />
+          <e p="MeshGenerationEditorWindow.cs" t="Include" />
+          <e p="MeshTool.cs" t="Include" />
           <e p="SubjectAttributeDrawer.cs" t="Include" />
         </e>
         <e p="HolyShift" t="Include">
@@ -113,6 +116,7 @@
               <e p="ItemAttributesData.cs" t="Include" />
               <e p="PlayerAttributesData.cs" t="Include" />
               <e p="PlayerData.cs" t="Include" />
+              <e p="SerializableDictionary.cs" t="Include" />
               <e p="SubjectProgressData.cs" t="Include" />
               <e p="VariableDecorator.cs" t="Include" />
               <e p="VersionData.cs" t="Include" />

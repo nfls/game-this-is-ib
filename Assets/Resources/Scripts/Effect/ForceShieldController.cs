@@ -30,16 +30,6 @@ public class ForceShieldController : MonoBehaviour {
 	}
 
 	private void Update() {
-		if (Input.GetMouseButtonDown(0)) {
-			Ray ray = _camera.ScreenPointToRay(Input.mousePosition);
-			RaycastHit hitInfo;
-			if (_collider.Raycast(ray, out hitInfo, 100f)) {
-				if (++_hitIndex == 4) _hitIndex = 0;
-				_hits.SetRow(_hitIndex, transform.InverseTransformPoint(hitInfo.point));
-				_waveStartTimes[_hitIndex] = Time.time;
-			}
-		}
-
 		for (int i = 0; i < 4; i++) {
 			float dt = Time.time - _waveStartTimes[i];
 			_waveDistances[i] = dt * waveSpeed;
@@ -55,5 +45,47 @@ public class ForceShieldController : MonoBehaviour {
 		_material.SetFloat(ShaderManager.MAX_DISTANCE_KEYWORD, maxWaveDistance);
 		_material.SetVector(ShaderManager.CURRENT_WAVE_DISTS_KEYWORD, new Vector4(_waveDistances[0], _waveDistances[1], _waveDistances[2], _waveDistances[3]));
 		_material.SetMatrix(ShaderManager.HITS_KEYWORD, _hits);
+	}
+
+	private void OnCollisionEnter(Collision collision) {
+		int layer = collision.gameObject.layer;
+		if (layer == LayerManager.SpriteLayer || layer == LayerManager.ProjectileLayer) {
+			if (++_hitIndex == 4) _hitIndex = 0;
+			_hits.SetRow(_hitIndex, transform.InverseTransformPoint(collision.contacts[0].point));
+			_waveStartTimes[_hitIndex] = Time.time;
+		}
+	}
+	
+	private void OnCollisionExit(Collision collision) {
+		int layer = collision.gameObject.layer;
+		if (layer == LayerManager.SpriteLayer || layer == LayerManager.ProjectileLayer) {
+			if (++_hitIndex == 4) _hitIndex = 0;
+			_hits.SetRow(_hitIndex, transform.InverseTransformPoint(collision.contacts[0].point));
+			_waveStartTimes[_hitIndex] = Time.time;
+		}
+	}
+
+	private void OnTriggerEnter(Collider other) {
+		int layer = other.gameObject.layer;
+		if (layer == LayerManager.SpriteLayer || layer == LayerManager.ProjectileLayer) {
+			Vector3 diff = transform.position - other.transform.position;
+			RaycastHit hitInfo;
+			Vector3 contactPosition = other.Raycast(new Ray(other.transform.position - diff * 2, diff), out hitInfo, diff.magnitude * 2) ? hitInfo.point : _collider.ClosestPoint(other.transform.position);
+			if (++_hitIndex == 4) _hitIndex = 0;
+			_hits.SetRow(_hitIndex, transform.InverseTransformPoint(contactPosition));
+			_waveStartTimes[_hitIndex] = Time.time;
+		}
+	}
+
+	private void OnTriggerExit(Collider other) {
+		int layer = other.gameObject.layer;
+		if (layer == LayerManager.SpriteLayer || layer == LayerManager.ProjectileLayer) {
+			Vector3 diff = transform.position - other.transform.position;
+			RaycastHit hitInfo;
+			Vector3 contactPosition = other.Raycast(new Ray(other.transform.position - diff * 2, diff), out hitInfo, diff.magnitude * 2) ? hitInfo.point : _collider.ClosestPoint(other.transform.position);
+			if (++_hitIndex == 4) _hitIndex = 0;
+			_hits.SetRow(_hitIndex, transform.InverseTransformPoint(contactPosition));
+			_waveStartTimes[_hitIndex] = Time.time;
+		}
 	}
 }

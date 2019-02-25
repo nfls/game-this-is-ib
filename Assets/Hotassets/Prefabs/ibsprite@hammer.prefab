@@ -319,6 +319,7 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: bc607304d46f448aa3a4d1aac3ca1918, type: 3}
   m_Name: 
   m_EditorClassIdentifier: 
+  detectionSource: {fileID: 4776442888376806}
   detectionSettings:
     detectsLocalPlayer: 0
     detectsEnemy: 0

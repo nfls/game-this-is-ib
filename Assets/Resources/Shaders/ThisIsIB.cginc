@@ -87,8 +87,6 @@
     }
 
     inline fixed4 getcolor(float4 pos, float2 uv, float3 dist, float3 lightDir, float3 normal) {
-        fixed4 color = _Color * tex2D(_MainTex, uv);
-        
 		fixed3 N=normalize(normal);
 		fixed3 lDir=normalize(lightDir);
 		fixed diff=max(0,dot(N,lDir));//求漫反射颜色
@@ -96,9 +94,9 @@
 		diff=smoothstep(0,1,diff);//使颜色平滑的在[0,1]范围之内
 		fixed toon=floor(diff*_ToonSteps)/_ToonSteps;//把颜色做离散化处理，把diffuse颜色限制在_ToonSteps种
 		diff=lerp(diff,toon,_ToonLevel);//调节比重
-		fixed3 transColor=_ToonColor*_LightColor0*(diff);//颜色混合
+		fixed3 transColor=_ToonColor*tex2D(_MainTex, uv)*_LightColor0*(diff);//颜色混合
 		
-        color = (_Thickness > dist.y || _Thickness  > dist.z) ? color : fixed4(transColor, _ToonColor.a);
+        fixed4 color = (_Thickness > dist.y || _Thickness  > dist.z) ? _Color : fixed4(transColor, _ToonColor.a);
         return color;
     }
     

@@ -4,9 +4,10 @@ using UnityEngine;
 [RequireComponent(typeof(Collider))]
 public class IBSpriteTrigger : MonoBehaviour {
 
+	public Transform detectionSource;
 	public DetectionSettings detectionSettings;
 
-	public Action<IBSpriteTrigger, Collider> onDetectCharacterEnter;
+	public Action<IBSpriteTrigger, Collider, Vector3> onDetectCharacterEnter;
 	public Action<IBSpriteTrigger, Collider> onDetectCharacterExit;
 
 	public Collider Collider => _collider;
@@ -38,12 +39,17 @@ public class IBSpriteTrigger : MonoBehaviour {
 		int layer = other.gameObject.layer;
 		
 		if (layer == LayerManager.CharacterLayer) {
+			detectionSource = detectionSource != null ? detectionSource : transform;
+			Vector3 diff = other.transform.position - detectionSource.position;
+			RaycastHit hitInfo;
+			Vector3 contactPosition = other.Raycast(new Ray(detectionSource.position - diff * 2, diff), out hitInfo, diff.magnitude * 2) ? hitInfo.point : other.ClosestPoint(detectionSource.position);
+			
 			if (detectionSettings.detectsLocalPlayer && other.CompareTag(TagManager.LOCAL_PLAYER_TAG)) {
-				onDetectCharacterEnter?.Invoke(this, other);
+				onDetectCharacterEnter?.Invoke(this, other, contactPosition);
 				return;
 			}
 
-			if (detectionSettings.detectsEnemy && other.CompareTag(TagManager.ENEMY_TAG)) onDetectCharacterEnter?.Invoke(this, other);
+			if (detectionSettings.detectsEnemy && other.CompareTag(TagManager.ENEMY_TAG)) onDetectCharacterEnter?.Invoke(this, other, contactPosition);
 		}
 	}
 

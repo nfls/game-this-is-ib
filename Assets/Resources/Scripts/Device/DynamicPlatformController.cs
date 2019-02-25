@@ -35,9 +35,7 @@ public class DynamicPlatformController : DeviceController {
 		if (_isEnabled) _rigidbody.MovePosition(Vector3.MoveTowards(transform.position, _currentDestination, speed * Time.deltaTime));
 	}
 	
-	private void Update() {
-		UpdateStandOns();
-	}
+	private void Update() => UpdateStandOns();
 
 	private void UpdateStandOns() {
 		Vector3 pos = transform.position;

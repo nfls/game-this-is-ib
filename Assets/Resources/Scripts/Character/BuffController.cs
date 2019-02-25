@@ -8,6 +8,4 @@ public class BuffController : MonoBehaviour {
 	public int enabledBuffs;
 	public int updatingBuffs;
 	public Buff[] buffs = new Buff[32];
-	
-	
 }

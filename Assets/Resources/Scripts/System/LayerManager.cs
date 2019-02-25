@@ -2,6 +2,7 @@
 
 public static class LayerManager {
 
+	public static readonly int WaterLayer = LayerMask.NameToLayer("Water");
 	public static readonly int InteractionLayer = LayerMask.NameToLayer("Interaction");
 	public static readonly int TerrainLayer = LayerMask.NameToLayer("Terrain");
 	public static readonly int DeviceLayer = LayerMask.NameToLayer("Device");
@@ -10,6 +11,8 @@ public static class LayerManager {
 	public static readonly int ProjectileLayer = LayerMask.NameToLayer("Projectile");
 	public static readonly int DodgeLayer = LayerMask.NameToLayer("Dodge");
 	public static readonly int PickupLayer = LayerMask.NameToLayer("Pickup");
+	public static readonly int HiddenLayer = LayerMask.NameToLayer("Hidden");
+	public static readonly int ShieldLayer = LayerMask.NameToLayer("Shield");
 	
 	public static void SetAllLayers(GameObject go, int layer) {
 		go.layer = layer;
