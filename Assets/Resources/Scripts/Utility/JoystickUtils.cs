@@ -1,8 +1,8 @@
 ﻿using System;
 using System.Collections.Generic;
+using System.Linq;
 using System.Runtime.InteropServices;
 using UnityEngine;
-using Zios;
 
 public static class JoystickUtil {
 
@@ -303,6 +303,9 @@ public static class JoystickUtil {
 	private static extern int SDL_HapticUpdateEffect(IntPtr haptic, int effect, ref SDL_HapticEffect data);
 	
 	[DllImport(NATIVE_LIB_NAME, CallingConvention = CallingConvention.Cdecl)]
+	public static extern int SDL_JoystickGetAttached(IntPtr joystick);
+	
+	[DllImport(NATIVE_LIB_NAME, CallingConvention = CallingConvention.Cdecl)]
 	public static extern int SDL_JoystickIsHaptic(IntPtr joystick);
 
 	[DllImport(NATIVE_LIB_NAME, CallingConvention = CallingConvention.Cdecl)]
@@ -393,18 +396,11 @@ public static class JoystickUtil {
 		}
 	}
 
-	public static string[] JoystickNames {
-		get {
-			int joystickNum = JoystickNum;
-			if (joystickNum < 0) return null;
-			string[] joystickNames = new string[joystickNum];
-			for (int i = 0; i < joystickNum; i++) joystickNames[i] = SDL_JoystickNameForIndex(i);
-			return joystickNames;
-		}
-	}
+	public static string[] JoystickNames => availableJoystickNames.Values.ToArray();
 
 	private static readonly Dictionary<int, IntPtr> availableHapticDevices = new Dictionary<int, IntPtr>();
 	private static readonly Dictionary<int, IntPtr> availableJoysticks = new Dictionary<int, IntPtr>();
+	private static readonly Dictionary<int, string> availableJoystickNames = new Dictionary<int, string>();
 
 	public static void Init() => SDL_Init(SDL_INIT_VIDEO | SDL_INIT_HAPTIC | SDL_INIT_JOYSTICK);
 
@@ -442,7 +438,31 @@ public static class JoystickUtil {
 		return true;
 	}
 
-	public static void UpdateJoystick() => SDL_JoystickUpdate();
+	public static void UpdateJoysticks() => SDL_JoystickUpdate();
+
+	public static void CheckJoysticks() {
+		uint deleteFlags = 0;
+		uint standard = 1;
+		foreach (var joystick in availableJoysticks) {
+			int result = SDL_JoystickGetAttached(joystick.Value);
+			if (result == SDL_BOOL.SDL_FALSE) {
+				SDL_JoystickClose(joystick.Value);
+				deleteFlags |= standard << joystick.Key;
+			}
+		}
+
+		int shift = 0;
+		while (shift < 32) {
+			if ((deleteFlags & (1 << shift)) != 0) {
+				Debug.Log("Joystick [" + shift + "] " + availableJoystickNames[shift] + " Has Lost Connection !");
+				availableJoystickNames.Remove(shift);
+				availableJoysticks.Remove(shift);
+			}
+			
+			deleteFlags = deleteFlags >> 1;
+			shift++;
+		}
+	}
 
 	public static bool GetAxis(int axisIndex, out float value) => GetAxis(0, axisIndex, out value);
 
@@ -483,8 +503,9 @@ public static class JoystickUtil {
 		IntPtr ptr = SDL_JoystickOpen(joystickIndex);
 		if (ptr == IntPtr.Zero) return false;
 		availableJoysticks[joystickIndex] = ptr;
-		Debug.Log("Register Joystick [" + joystickIndex + "] " + SDL_JoystickName(ptr) + " With " + SDL_JoystickNumAxes(ptr) + " Axes And " + SDL_JoystickNumButtons(ptr) + " Buttons !");
-		Debug.Log(SDL_JoystickName(ptr) + (SDL_JoystickIsHaptic(ptr) == SDL_BOOL.SDL_TRUE ? " Is " : "Is Not") + "Haptic");
+		availableJoystickNames[joystickIndex] = SDL_JoystickName(ptr);
+		Debug.Log("Register Joystick [" + joystickIndex + "] " + availableJoystickNames[joystickIndex] + " With " + SDL_JoystickNumAxes(ptr) + " Axes And " + SDL_JoystickNumButtons(ptr) + " Buttons !");
+		Debug.Log(availableJoystickNames[joystickIndex] + (SDL_JoystickIsHaptic(ptr) == SDL_BOOL.SDL_TRUE ? " Is " : "Is Not") + "Haptic");
 		return true;
 	}
 }

@@ -30,12 +30,9 @@ public class ShaderManager : MonoSingleton {
 	public static readonly int DISSOLVE_EDGE_COLOR_KEYWORD = Shader.PropertyToID("_DissolveEdgeColor");
 	public static readonly int DISSOLVE_THRESHOLD_KEYWORD = Shader.PropertyToID("_DissolveThreshold");
 	public static readonly int DISTORTION_POWER_KEYWORD = Shader.PropertyToID("_DistortionPower");
+	public static readonly int RIMLIGHT_COLOR_KEYWORD = Shader.PropertyToID("_RimlightColor");
 	public static readonly int RIMLIGHT_POWER_KEYWORD = Shader.PropertyToID("_RimlightPower");
 	public static readonly int INTERSECTION_POWER_KEYWORD = Shader.PropertyToID("_IntersectionPower");
-	public static readonly int TIME_FACTOR_KEYWORD = Shader.PropertyToID("_TimeFactor");
-	public static readonly int DISTANCE_FACTOR_KEYWORD = Shader.PropertyToID("_DistanceFactor");
-	public static readonly int TOTAL_FACTOR_KEYWORD = Shader.PropertyToID("_TotalFactor");
 	public static readonly int HITS_KEYWORD = Shader.PropertyToID("_Hits");
-	public static readonly int CURRENT_WAVE_DISTS_KEYWORD = Shader.PropertyToID("_CurrentWaveDists");
-	public static readonly int WAVE_WIDTH_KEYWORD = Shader.PropertyToID("_WaveWidth");
+	public static readonly int HIT_AREA_ALPHAS_KEYWORD = Shader.PropertyToID("_HitAreaAlphas");
 }

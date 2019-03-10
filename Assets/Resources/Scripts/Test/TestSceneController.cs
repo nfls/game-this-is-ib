@@ -4,6 +4,13 @@ using UnityEngine;
 
 public class TestSceneController : MonoBehaviour {
 
+	public DInt dInt;
+	public DLong dLong;
+	public DFloat dFloat;
+
+	public IntDecorator intDecorator;
+	public LongDecorator longDecorator;
+	public FloatDecorator floatDecorator;
 	public CinemachineTargetGroup mainTargetGroup;
 	public CinemachineVirtualCamera combatVirtualCamera;
 	public TimeEffectRequest combatTimeEffect;
@@ -58,7 +65,7 @@ public class TestSceneController : MonoBehaviour {
 		localPlayer.transform.position = new Vector3(3, 1, 0);
 		// localPlayer.transform.position = new Vector3(4, 8, 0);
 		
-		mainTargetGroup.m_Targets = new[] { new CinemachineTargetGroup.Target { target = localPlayer.transform, weight = 1f, radius = 5f} };
+		mainTargetGroup.m_Targets = new[] { new CinemachineTargetGroup.Target { target = localPlayer.transform, weight = 1f, radius = 5f } };
 		combatVirtualCamera.Follow = localPlayer.transform;
 		combatVirtualCamera.LookAt = localPlayer.transform;
 

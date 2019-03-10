@@ -4,18 +4,27 @@ using System.Diagnostics;
 using UnityEngine;
 
 [Serializable]
-public abstract class DData {
+public abstract class DVariable {
+	
 	[NonSerialized]
 	public bool isExpanded;
+	
+	public abstract int DecoratorCount { get; }
+	
+	public abstract void Refresh();
+	
+	public abstract void Sort();
+
+	public abstract void Remove(int index);
 }
 
 [Serializable]
-public abstract class DVariable<T> : DData where T : struct {
+public abstract class DVariable<TK, TV> : DVariable where TK : struct where TV : VariableDecorator, new() {
 
-	public delegate void Listener(T t);
+	public delegate void Listener(TK t);
 	public event Listener onChanged;
 
-	public T Value {
+	public TK Value {
 		get { return _value; }
 		set {
 			realValue = value;
@@ -24,110 +33,63 @@ public abstract class DVariable<T> : DData where T : struct {
 		}
 	}
 
-	public abstract int DecoratorCount { get; }
+	public override int DecoratorCount => variableDecorators.Count;
 	
 	[SerializeField]
-	public T realValue;
+	public TK realValue;
 	[SerializeField]
-	protected T _value;
+	public List<TV> variableDecorators = new List<TV>(2);
+	[SerializeField]
+	protected TK _value;
 
-	public virtual void Refresh() => _value = realValue;
-
-	public static implicit operator T(DVariable<T> dVar) => dVar._value;
-}
-
-[Serializable]
-public class DInt : DVariable<int> {
-
-	public override int DecoratorCount => variableDecorators.Count;
-
-	public List<IntDecorator> variableDecorators = new List<IntDecorator>(2);
+	public override void Sort() => variableDecorators.Sort(VariableDecorator.Compare);
 	
-	public override void Refresh() {
-		base.Refresh();
-		foreach (var decorator in variableDecorators) _value = decorator.Execuate(_value);
+	public override void Remove(int index) {
+		variableDecorators.RemoveAt(index);
+		Refresh();
 	}
 
-	public void Reorder() => variableDecorators.Sort(IntDecorator.Compare);
+	public void Remove(TV decorator) {
+		variableDecorators.Remove(decorator);
+		Refresh();
+	}
 	
-	public void AddDecorator(IntDecorator decorator) {
+	public void Add(TV decorator) {
 		int index = 0;
 		for (int l = variableDecorators.Count; index < l; index++) if (decorator.priority < variableDecorators[index].priority) break;
 		variableDecorators.Insert(index, decorator);
 		Refresh();
 	}
 
-	public void RemoveDecorator(int index) {
-		variableDecorators.RemoveAt(index);
-		Refresh();
-	}
-
-	public void RemoveDecorator(IntDecorator decorator) {
-		variableDecorators.Remove(decorator);
-		Refresh();
-	}
+	public static implicit operator TK(DVariable<TK, TV> dVar) => dVar?._value ?? (TK) (object) 0;
 }
 
 [Serializable]
-public class DLong : DVariable<long> {
-	
-	public override int DecoratorCount => variableDecorators.Count;
-	
-	public List<LongDecorator> variableDecorators = new List<LongDecorator>(2);
+public class DInt : DVariable<int, IntDecorator> {
 	
 	public override void Refresh() {
-		base.Refresh();
-		foreach (var decorator in variableDecorators) _value = decorator.Execuate(_value);
+		foreach (var decorator in variableDecorators) _value = decorator.Execute(_value);
 	}
 	
-	public void Reorder() => variableDecorators.Sort(LongDecorator.Compare);
-	
-	public void AddDecorator(LongDecorator decorator) {
-		int index = 0;
-		for (int l = variableDecorators.Count; index < l; index++) if (decorator.priority < variableDecorators[index].priority) break;
-		variableDecorators.Insert(index, decorator);
-		Refresh();
-	}
-	
-	public void RemoveDecorator(int index) {
-		variableDecorators.RemoveAt(index);
-		Refresh();
-	}
-
-	public void RemoveDecorator(LongDecorator decorator) {
-		variableDecorators.Remove(decorator);
-		Refresh();
-	}
+	public static implicit operator DInt(int value) => new DInt { Value = value };
 }
 
 [Serializable]
-public class DFloat : DVariable<float> {
-	
-	public override int DecoratorCount => variableDecorators.Count;
-	
-	public List<FloatDecorator> variableDecorators = new List<FloatDecorator>(2);
+public class DLong : DVariable<long, LongDecorator> {
 	
 	public override void Refresh() {
-		base.Refresh();
-		foreach (var decorator in variableDecorators) _value = decorator.Execuate(_value);
+		foreach (var decorator in variableDecorators) _value = decorator.Execute(_value);
 	}
 	
-	public void Reorder() => variableDecorators.Sort(FloatDecorator.Compare);
+	public static implicit operator DLong(long value) => new DLong { Value = value };
+}
+
+[Serializable]
+public class DFloat : DVariable<float, FloatDecorator> {
 	
-	public void AddDecorator(FloatDecorator decorator) {
-		int index = 0;
-		for (int l = variableDecorators.Count; index < l; index++) if (decorator.priority < variableDecorators[index].priority) break;
-		variableDecorators.Insert(index, decorator);
-		Refresh();
+	public override void Refresh() {
+		foreach (var decorator in variableDecorators) _value = decorator.Execute(_value);
 	}
-
-	public void RemoveDecorator(int index) {
-		variableDecorators.RemoveAt(index);
-		Refresh();
-	}
-
-	public void RemoveDecorator(FloatDecorator decorator) {
-		variableDecorators.Remove(decorator);
-		Refresh();
-	}
+	
+	public static implicit operator DFloat(float value) => new DFloat { Value = value };
 }

@@ -55,7 +55,7 @@ public class NaiveAIOperator : CharacterOperator {
 					}
 			} else {
 				if (diff.x > 0) _currerntAction = _characterController.MoveRight;
-				else _currerntAction = _characterController.MoveLeft;
+				else _currerntAction = _characterController.MoveLeft; 
 			}
 
 		} else {

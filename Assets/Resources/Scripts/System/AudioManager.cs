@@ -26,13 +26,9 @@ public class AudioManager : MonoSingleton {
 		instance.StartCoroutine(ExeRecycleCoroutine(source));
 	}
 
-	public static void PlayAtPoint(AudioAsset audio, Vector3 position, float volume = 1f) {
-		PlayAtPoint(audio.Source, position, volume);
-	}
+	public static void PlayAtPoint(AudioAsset audio, Vector3 position, float volume = 1f) => PlayAtPoint(audio.Source, position, volume);
 
-	public static void PlayAtPoint(string identifier, Vector3 position, float volume = 1f) {
-		PlayAtPoint(ResourcesManager.GetAudio(identifier), position, volume);
-	}
+	public static void PlayAtPoint(string identifier, Vector3 position, float volume = 1f) => PlayAtPoint(ResourcesManager.GetAudio(identifier), position, volume);
 
 	private static AudioSource GetAudioSource() {
 		AudioSource source;

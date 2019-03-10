@@ -176,6 +176,8 @@ public class CharacterController : MonoBehaviour {
 			carriedIBSpriteControllers[oldIndex].OnSwitchOff();
 			_currentIBSpriteController.OnSwitchOn();
 		} else _currentIBSpriteControllerIndex = oldIndex;
+
+		;
 	}
 
 	public void SwitchNextIBSprite() {

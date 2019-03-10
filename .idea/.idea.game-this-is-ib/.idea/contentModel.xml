@@ -97,9 +97,6 @@
               <e p="RadialBlurController.cs" t="Include" />
             </e>
             <e p="Character" t="Include">
-              <e p="Buff.cs" t="Include" />
-              <e p="BuffAsset.cs" t="Include" />
-              <e p="BuffController.cs" t="Include" />
               <e p="CharacterController.cs" t="Include" />
               <e p="CharacterFactory.cs" t="Include" />
               <e p="CharacterMotor.cs" t="Include" />
@@ -109,6 +106,7 @@
               <e p="NaiveAIOperator.cs" t="Include" />
             </e>
             <e p="Data" t="Include">
+              <e p="BuffAsset.cs" t="Include" />
               <e p="DataSystem.cs" t="Include" />
               <e p="DVariable.cs" t="Include" />
               <e p="IBSpriteAttributesData.cs" t="Include" />
@@ -239,6 +237,7 @@
             <e p="SandFallShader.shader" t="Include" />
             <e p="SimpleWaterSurfaceShader.shader" t="Include" />
             <e p="SingleColorShader.shader" t="Include" />
+            <e p="TestShader.shader" t="Include" />
             <e p="ThisIsIB.cginc" t="Include" />
             <e p="ToonShader.shader" t="Include" />
             <e p="WireframePointDissolutionShader.shader" t="Include" />

@@ -61,7 +61,7 @@ MeshRenderer:
   m_ReflectionProbeUsage: 0
   m_RenderingLayerMask: 4294967295
   m_Materials:
-  - {fileID: 2100000, guid: 50ac0917448914a81bc972f9fa67a419, type: 2}
+  - {fileID: 2100000, guid: 615c86b13118242f18a61eaffd641ea8, type: 2}
   m_StaticBatchInfo:
     firstSubMesh: 0
     subMeshCount: 0
@@ -192,8 +192,12 @@ MonoBehaviour:
   m_Name: 
   m_EditorClassIdentifier: 
   identifierName: newton_ball
-  hitSound: 
-  hitEffect: 
+  hitSound:
+    required: 0
+    identifier: 
+  explosionEffect:
+    required: 0
+    identifier: 
   lifespan: 0
   destroyDelay: 0.02
   velocity: {x: 0, y: 0, z: 0}
@@ -250,9 +254,9 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: bc607304d46f448aa3a4d1aac3ca1918, type: 3}
   m_Name: 
   m_EditorClassIdentifier: 
+  detectionSource: {fileID: 0}
   detectionSettings:
     detectsLocalPlayer: 0
-    detectsRemotePlayer: 0
     detectsEnemy: 0
 --- !u!135 &135523214249431618
 SphereCollider:

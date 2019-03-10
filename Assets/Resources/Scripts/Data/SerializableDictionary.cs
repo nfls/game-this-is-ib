@@ -221,7 +221,7 @@ public class SerializableDictionary<TKey, TValue> : IDictionary<TKey, TValue> {
         _FreeList = -1;
     }
 
-    private int FindIndex(TKey key) {
+    public int FindIndex(TKey key) {
         if (key == null)
             throw new ArgumentNullException("key");
  
@@ -349,17 +349,16 @@ public class SerializableDictionary<TKey, TValue> : IDictionary<TKey, TValue> {
             return min;
         }
  
-        public static int ExpandPrime(int oldSize)
-        {
+        public static int ExpandPrime(int oldSize) {
             int num = 2 * oldSize;
             if (num > 2146435069 && 2146435069 > oldSize) return 2146435069;
             return GetPrime(num);
         }
     }
 
-   public ICollection<TKey> Keys => _Keys.Take(Count).ToArray();
+    public ICollection<TKey> Keys => _Keys.Take(Count).ToArray();
 
-   public ICollection<TValue> Values => _Values.Take(Count).ToArray();
+    public ICollection<TValue> Values => _Values.Take(Count).ToArray();
 
     public void Add(KeyValuePair<TKey, TValue> item) => Add(item.Key, item.Value);
 
