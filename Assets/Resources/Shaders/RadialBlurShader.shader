@@ -11,7 +11,7 @@
 	uniform float4 _BlurCenter; //模糊中心点xy值（0-1）屏幕空间
 	uniform float _BlurDistance;
 	#include "UnityCG.cginc"
-	#define SAMPLE_COUNT 6		//迭代次数
+	#define SAMPLE_COUNT 50		//迭代次数
  
 	fixed4 frag(v2f_img i) : SV_Target
 	{

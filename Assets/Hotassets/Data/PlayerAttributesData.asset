@@ -110,6 +110,8 @@ MonoBehaviour:
     endCapVertices: 0
     alignment: 1
     material: {fileID: 0}
+  dodgeTrailMaterial: {fileID: 2100000, guid: 86d6694774eab4f08be8547b54be8787, type: 2}
+  accelerationTrailMaterial: {fileID: 0}
   maxStamina:
     name: Max Stamina
     description: The capability for player to move and attack

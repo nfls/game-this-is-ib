@@ -36,8 +36,10 @@ public class CharacterController : MonoBehaviour {
 
 	public bool hasAccelerationTrail;
 	public TrailSettings accelerationTrailSettings;
+
 	public bool hasDodgeTrail;
 	public TrailSettings dodgeTrailSettings;
+	public Material dodgeTrailMaterial;
 
 	public bool IsIBSpriteOn => _currentIBSpriteControllerIndex >= 0;
 	public bool IsIBSpriteFull => carriedIBSpriteControllers[carriedIBSpriteControllers.Length - 1] != null;
@@ -61,10 +63,10 @@ public class CharacterController : MonoBehaviour {
 	protected int _currentIBSpriteControllerIndex = -1;
 	protected IBSpriteController _currentIBSpriteController;
 	protected CharacterMotor _characterMotor;
+	protected CharacterTrailController _characterTrailController;
 	protected TrailRenderer _trailRenderer;
 
 	protected Coroutine _stunCoroutine;
-	protected Coroutine _dodgeCoroutine;
 	protected Coroutine _dodgeCooldownCoroutine;
 	protected Coroutine _staminaRecoveryCoroutine;
 /*
@@ -77,6 +79,8 @@ public class CharacterController : MonoBehaviour {
 		_characterMotor = GetComponent<CharacterMotor>();
 		_characterMotor.onGroundEnter += ResetJumpTimes;
 		_characterMotor.onDodgeExit += FinishDodge;
+
+		_characterTrailController = gameObject.AddComponent<CharacterTrailController>();
 		
 		_trailRenderer = gameObject.AddComponent<TrailRenderer>();
 		_trailRenderer.shadowCastingMode = ShadowCastingMode.Off;
@@ -101,12 +105,20 @@ public class CharacterController : MonoBehaviour {
 		if (_isStunned || _isDodging) return;
 		float velocity = speed * (float) direction;
 		if (_isAccelerating) velocity *= acceleration;
-		if (direction != _characterMotor.FaceDirection) _characterMotor.Flip();
+		if (direction != _characterMotor.FaceDirection) _characterMotor.Turn();
 		_characterMotor.Move(velocity);
 	}
 
-	public void Flip() => _characterMotor.Flip();
+	public void Turn() {
+		if (_isStunned || _isDodging) return;
+		_characterMotor.Turn();
+	}
 
+	public void Flip() {
+		if (_isStunned || _isDodging) return;
+		_characterMotor.Flip();
+	}
+	
 	public void EnterAcceleratingState() {
 		if (_isStunned || _isDodging) return;
 		_isAccelerating = true;
@@ -122,10 +134,10 @@ public class CharacterController : MonoBehaviour {
 	public void Dodge() {
 		if (_isStunned || _isDodging || _dodgeTimes == dodgeCapacity) return;
 		_dodgeTimes += 1;
-		transform.rotation = new Vector3(0, 0, dodgeAngle * (float) _characterMotor.FaceDirection).ToQuaternion();
+		transform.eulerAngles = new Vector3(0, transform.eulerAngles.y, dodgeAngle);
 		_characterMotor.Dodge(dodgeSpeed * (float) _characterMotor.FaceDirection, dodgeDuration);
 		_isDodging = true;
-		if (hasDodgeTrail) EnableTrail(dodgeTrailSettings);
+		if (hasDodgeTrail) EnableDodgeTrail(); /* EnableTrail(dodgeTrailSettings); */
 		if (_dodgeCooldownCoroutine == null) _dodgeCooldownCoroutine = StartCoroutine(ExeDodgeCooldownCoroutine());
 	}
 
@@ -176,8 +188,6 @@ public class CharacterController : MonoBehaviour {
 			carriedIBSpriteControllers[oldIndex].OnSwitchOff();
 			_currentIBSpriteController.OnSwitchOn();
 		} else _currentIBSpriteControllerIndex = oldIndex;
-
-		;
 	}
 
 	public void SwitchNextIBSprite() {
@@ -272,10 +282,11 @@ public class CharacterController : MonoBehaviour {
 	protected void ResetJumpTimes() => _jumpTimes = 0;
 
 	protected void FinishDodge() {
-		transform.rotation = Quaternion.identity;
+		transform.eulerAngles = new Vector3(0, transform.eulerAngles.y, 0);
 		_isDodging = false;
 		if (hasDodgeTrail) {
-			DisableTrail();
+			// DisableTrail();
+			DisableDodgeTrail();
 			if (_isAccelerating)
 				if (hasAccelerationTrail) EnableTrail(accelerationTrailSettings);
 		}
@@ -292,6 +303,10 @@ public class CharacterController : MonoBehaviour {
 		_trailRenderer.Clear();
 	}
 
+	protected void EnableDodgeTrail() => _characterTrailController.Fire(dodgeTrailMaterial);
+
+	protected void DisableDodgeTrail() => _characterTrailController.Stop();
+
 	protected void EnterStunState(float stunnedAngle, float stunnedTime) {
 		_isStunned = true;
 		_stunCoroutine = StartCoroutine(ExeStunCoroutine(stunnedAngle, stunnedTime));
@@ -299,14 +314,16 @@ public class CharacterController : MonoBehaviour {
 
 	protected void ExitStunState() {
 		StopCoroutine(_stunCoroutine);
+		transform.eulerAngles = new Vector3(0, transform.eulerAngles.y, 0);
 		_stunCoroutine = null;
 		_isStunned = false;
 	}
 
 	protected IEnumerator ExeStunCoroutine(float stunnedAngle, float stunnedTime) {
-		transform.rotation = new Vector3(0, 0, stunnedAngle * (float) _characterMotor.FaceDirection).ToQuaternion();
+		float yRotation = transform.eulerAngles.y;
+		transform.eulerAngles = new Vector3(0, yRotation, stunnedAngle);
 		yield return new WaitForSeconds(stunnedTime);
-		transform.rotation = Quaternion.identity;
+		transform.eulerAngles = new Vector3(0, yRotation, 0);
 		ExitStunState();
 	}
 

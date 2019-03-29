@@ -21,7 +21,7 @@ public sealed class JoystickAxisDetector : JoystickInputDetector {
 		builder.Append(joystickIndex);
 		builder.Append("Axis");
 		builder.Append(inputIndex);
-		builder.Append(direction);
+		builder.Append((int) direction);
 		_name = builder.ToString();
 	}
 	

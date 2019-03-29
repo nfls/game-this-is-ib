@@ -39,27 +39,24 @@ Shader "这就是IB/WireframePointDissolutionShader"
 			struct v2g {
 				float4 pos : SV_POSITION;
 				float2 uv : TEXCOORD0;
-				float2 uvNoiseTex : TEXCOORD1;
-				float3 objPos : TEXCOORD2;
-				float3 objStartPos : TEXCOORD3;
-				float3 lightDir : TEXCOORD4;
-				float3 normal : TEXCOORD5;
+				float3 objPos : TEXCOORD1;
+				float3 objStartPos : TEXCOORD2;
+				float3 lightDir : TEXCOORD3;
+				float3 normal : TEXCOORD4;
 			};
 
 			struct g2f {
 				float4 pos : POSITION;
         		float2 uv : TEXCOORD0;
-				float2 uvNoiseTex : TEXCOORD1;
-				float3 objPos : TEXCOORD2;
-				float3 objStartPos : TEXCOORD3;
-        		float3 dist : TEXCOORD4;
-        		float3 lightDir : TEXCOORD5;
-				float3 normal : TEXCOORD6;
+				float3 objPos : TEXCOORD1;
+				float3 objStartPos : TEXCOORD2;
+        		float3 dist : TEXCOORD3;
+        		float3 lightDir : TEXCOORD4;
+				float3 normal : TEXCOORD5;
 			};
 
 			fixed4 _EdgeColor;
 			sampler2D _NoiseTex;
-			float4 _NoiseTex_ST;
 			float _Threshold;
 			float _EdgeLength;
 			float _MaxDistance;
@@ -70,7 +67,6 @@ Shader "这就是IB/WireframePointDissolutionShader"
 				v2g o;
 				o.pos = UnityObjectToClipPos(v.vertex);
 				o.uv = TRANSFORM_TEX(v.texcoord, _MainTex);
-				o.uvNoiseTex = TRANSFORM_TEX(v.texcoord, _NoiseTex);
 				o.objPos = v.vertex;
 				o.objStartPos = mul(unity_WorldToObject, _StartPoint);
 				o.lightDir = ObjSpaceLightDir(v.vertex);
@@ -111,7 +107,6 @@ Shader "这就是IB/WireframePointDissolutionShader"
         		pIn.pos = np[0].pos;
         		pIn.uv = np[0].uv;
         		pIn.dist = float3(dist0, 0, 0);
-				pIn.uvNoiseTex = np[0].uvNoiseTex;
 				pIn.objPos = np[0].objPos;
 				pIn.objStartPos = np[0].objStartPos;
         		triStream.Append(pIn);
@@ -121,7 +116,6 @@ Shader "这就是IB/WireframePointDissolutionShader"
         		pIn.pos = np[1].pos;
         		pIn.uv = np[1].uv;
         		pIn.dist = float3(0, dist1, 0);
-				pIn.uvNoiseTex = np[1].uvNoiseTex;
 				pIn.objPos = np[1].objPos;
 				pIn.objStartPos = np[1].objStartPos;
         		triStream.Append(pIn);
@@ -131,7 +125,6 @@ Shader "这就是IB/WireframePointDissolutionShader"
         		pIn.pos = np[2].pos;
         		pIn.uv = np[2].uv;
         		pIn.dist = float3(0, 0, dist2);
-				pIn.uvNoiseTex = np[2].uvNoiseTex;
 				pIn.objPos = np[2].objPos;
 				pIn.objStartPos = np[2].objStartPos;
         		triStream.Append(pIn);
@@ -141,7 +134,7 @@ Shader "这就是IB/WireframePointDissolutionShader"
 				float dist = length(i.objPos.xyz - i.objStartPos.xyz);
 				float normalizedDist = saturate(dist / _MaxDistance);
 
-				fixed cutout = tex2D(_NoiseTex, i.uvNoiseTex).r * (1 - _DistanceFactor) + normalizedDist * _DistanceFactor;
+				fixed cutout = tex2D(_NoiseTex, i.uv).r * (1 - _DistanceFactor) + normalizedDist * _DistanceFactor;
 				clip(cutout - _Threshold);
 
 				fixed4 color = getcolor(i.pos, i.uv, i.dist, i.lightDir, i.normal);
@@ -153,5 +146,59 @@ Shader "这就是IB/WireframePointDissolutionShader"
 
 			ENDCG
 		}
+
+		Pass {
+			
+			Tags {
+	        	"LightMode" = "ShadowCaster"
+	    	}
+
+			Cull Off
+			Offset -1, 0
+
+			CGPROGRAM
+
+			#pragma vertex vert
+ 			#pragma fragment frag
+ 			#pragma multi_compile_shadowcaster
+ 			#pragma fragmentoption ARB_precision_hint_fastest
+
+			#include "UnityCG.cginc"
+
+			sampler2D _NoiseTex;
+			float4 _NoiseTex_ST;
+			float _Threshold;
+			float _MaxDistance;
+			float4 _StartPoint;
+			float _DistanceFactor;
+
+			struct v2f {
+         		V2F_SHADOW_CASTER;
+				float2 uv : TEXCOORD2;
+				float3 objPos : TEXCOORD3;
+				float3 objStartPos : TEXCOORD4;
+     		};
+
+     		v2f vert(appdata_base v) {
+         		v2f o;
+         		TRANSFER_SHADOW_CASTER_NORMALOFFSET(o)
+				o.uv = TRANSFORM_TEX(v.texcoord, _NoiseTex);
+				o.objPos = v.vertex;
+				o.objStartPos = mul(unity_WorldToObject, _StartPoint);
+            	return o;
+    		}
+ 
+     		float4 frag(v2f i) : COLOR {
+				float dist = length(i.objPos.xyz - i.objStartPos.xyz);
+				float normalizedDist = saturate(dist / _MaxDistance);
+				fixed cutout = tex2D(_NoiseTex, i.uv).r * (1 - _DistanceFactor) + normalizedDist * _DistanceFactor;
+				clip(cutout - _Threshold);
+         		SHADOW_CASTER_FRAGMENT(i)
+    		}
+
+			ENDCG
+		}
 	}
+
+	Fallback "Diffuse"
 }

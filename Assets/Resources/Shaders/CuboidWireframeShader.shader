@@ -20,6 +20,7 @@
             }
             
             Blend SrcAlpha OneMinusSrcAlpha
+            ZWrite On
             Cull Off
             
             CGPROGRAM
@@ -32,4 +33,6 @@
             ENDCG
         }
     }
+
+    Fallback "Diffuse"
 }

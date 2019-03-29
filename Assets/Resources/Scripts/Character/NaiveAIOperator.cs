@@ -46,7 +46,7 @@ public class NaiveAIOperator : CharacterOperator {
 				if (diff.x > 0) _currerntAction = _characterController.MoveLeft;
 				else _currerntAction = _characterController.MoveRight;
 			} else if (absDiffX < maxAttackDistance) {
-				if (diff.x * (float) _characterController.FaceDirection < 0) _characterController.Flip();
+				if (diff.x * (float) _characterController.FaceDirection < 0) _characterController.Turn();
 				if (diff.y > jumpRequirementHeight) _characterController.Jump();
 				if (onlyAttackWithStamina && _characterController.stamina > 0 || !onlyAttackWithStamina)
 					if (Random.value < aggressiveness) {
@@ -57,7 +57,6 @@ public class NaiveAIOperator : CharacterOperator {
 				if (diff.x > 0) _currerntAction = _characterController.MoveRight;
 				else _currerntAction = _characterController.MoveLeft; 
 			}
-
 		} else {
 			int length = Physics.RaycastNonAlloc(transform.position, new Vector3((float) _characterController.FaceDirection, 0f, 0f), hitResults, detectionDistance, 1 << LayerManager.TerrainLayer | 1 << LayerManager.DeviceLayer | 1 << LayerManager.CharacterLayer, QueryTriggerInteraction.Ignore);
 			Array.Sort(hitResults, (x, y) => x.transform == null ? 1 : y.transform == null ? -1 : x.distance.CompareTo(y.distance));

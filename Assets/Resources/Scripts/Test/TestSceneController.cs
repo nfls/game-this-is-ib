@@ -1,16 +1,11 @@
 ﻿using System;
 using Cinemachine;
 using UnityEngine;
+using UnityEngine.Rendering;
 
 public class TestSceneController : MonoBehaviour {
 
-	public DInt dInt;
-	public DLong dLong;
-	public DFloat dFloat;
-
-	public IntDecorator intDecorator;
-	public LongDecorator longDecorator;
-	public FloatDecorator floatDecorator;
+	public Transform playerSpawnPosition;
 	public CinemachineTargetGroup mainTargetGroup;
 	public CinemachineVirtualCamera combatVirtualCamera;
 	public TimeEffectRequest combatTimeEffect;
@@ -18,14 +13,6 @@ public class TestSceneController : MonoBehaviour {
 	public AudioClip bgm;
 	public bool openCombatClearShot;
 	public float combatClearShotDuration;
-	public int joystickIndex;
-	public int buttonIndex;
-	public KeyCode key;
-	[Range(0, ushort.MaxValue)]
-	public ushort lowStrength;
-	[Range(0, ushort.MaxValue)]
-	public ushort highStrength;
-	public uint milliseconds;
 
 	private void Start() {
 		LocalDataManager.Init();
@@ -62,7 +49,8 @@ public class TestSceneController : MonoBehaviour {
 		localPlayer.GetComponent<CharacterController>().EquipIBSprite(sprite3.GetComponent<IBSpriteController>());
 		localPlayer.GetComponent<CharacterController>().EquipIBSprite(sprite4.GetComponent<IBSpriteController>());
 		localPlayer.GetComponent<CharacterController>().EquipIBSprite(sprite5.GetComponent<IBSpriteController>());
-		localPlayer.transform.position = new Vector3(3, 1, 0);
+		localPlayer.transform.position = playerSpawnPosition == null ? new Vector3(3, 1, 0) : playerSpawnPosition.position;
+		CameraManager.MainCamera.GetComponent<SceneScanEffectController>().center = localPlayer.transform;
 		// localPlayer.transform.position = new Vector3(4, 8, 0);
 		
 		mainTargetGroup.m_Targets = new[] { new CinemachineTargetGroup.Target { target = localPlayer.transform, weight = 1f, radius = 5f } };
@@ -92,6 +80,8 @@ public class TestSceneController : MonoBehaviour {
 		combatComposer = combatVirtualCamera.GetCinemachineComponent<CinemachineComposer>();
 		Debug.Log(JoystickUtil.JoystickNum + " Joysticks Detected : " + string.Join(", ", JoystickUtil.JoystickNames));
 		Debug.Log(JoystickUtil.HapticDeviceNum + " Haptic Device Detected : " + string.Join(", ", JoystickUtil.HapticDeviceNames));
+		JoystickUtil.LogPowerState();
+		JoystickUtil.LogSensorState();
 	}
 
 	private float endTime;

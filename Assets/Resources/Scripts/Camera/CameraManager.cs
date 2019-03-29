@@ -1,6 +1,7 @@
 ﻿using Cinemachine;
 using UnityEngine;
 
+[ExecuteInEditMode]
 public class CameraManager : MonoSingleton {
 	
 	public static Camera MainCamera => mainCamera;
@@ -14,13 +15,13 @@ public class CameraManager : MonoSingleton {
 
 	private void Awake() {
 		mainCamera = Camera.main;
-		mainCamera.depthTextureMode = DepthTextureMode.Depth;
+		mainCamera.depthTextureMode |= DepthTextureMode.Depth;
 		mainImpulseSource = mainCamera.GetComponent<CinemachineImpulseSource>();
 		radialBlurController = mainCamera.GetComponent<RadialBlurController>();
 		virtualMainCamera = FindObjectOfType<CinemachineVirtualCamera>();
 		DontDestroyOnLoad(virtualMainCamera);
 	}
-
+	
 	private void Update() {
 		if (radialBlurEndTime > 0f)
 			if (radialBlurEndTime <= Time.time) {

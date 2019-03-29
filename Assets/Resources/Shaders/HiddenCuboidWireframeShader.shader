@@ -35,4 +35,6 @@
             ENDCG
         }
     }
+
+    Fallback "Diffuse"
 }

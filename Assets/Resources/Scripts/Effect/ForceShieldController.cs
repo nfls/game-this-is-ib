@@ -4,8 +4,9 @@ public class ForceShieldController : MonoBehaviour {
 
 	[Range(0, 10)]
 	public float distortionPower = 1f;
-	[Range(0, 10)]
+	[Range(1, 10)]
 	public float rimlightPower = 1f;
+	[Range(0, 5)]
 	public float intersectionPower = 2f;
 	public float hitAreaRadius = .3f;
 	public float hitAreaTransitionTime = 2f;

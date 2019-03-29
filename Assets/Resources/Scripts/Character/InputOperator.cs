@@ -37,7 +37,7 @@ public sealed class InputOperator : CharacterOperator {
 	protected override void Awake() {
 		base.Awake();
 		
-		_inputMapper = new InputMapper(InputMapper.defaultSwitchProControllerMap);
+		_inputMapper = new InputMapper(InputMapper.defaultKeyboardMap);
 		_inputMapper.BindHoldEvent(InputMapper.MOVE_LEFT, _characterController.MoveLeft);
 		_inputMapper.BindHoldEvent(InputMapper.MOVE_RIGHT, _characterController.MoveRight);
 		_inputMapper.BindPressEvent(InputMapper.ACCELERATE, _characterController.EnterAcceleratingState);

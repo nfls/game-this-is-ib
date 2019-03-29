@@ -10,8 +10,8 @@ public class RadialBlurController : MonoBehaviour {
 
 	private void OnRenderImage(RenderTexture src, RenderTexture dest) {
 		if (material) {
-			material.SetFloat("_BlurFactor", factor);
-			material.SetVector("_BlurCenter", center);
+			material.SetFloat(ShaderManager.BLUR_FACTOR_KEYWORD, factor);
+			material.SetVector(ShaderManager.BLUR_CENTER_KEYWORD, center);
 			Graphics.Blit(src, dest, material);
 		} else Graphics.Blit(src, dest);
 	}

@@ -54,7 +54,6 @@ public abstract class IBSpriteController : MonoBehaviour {
 
 	public virtual void OnSwitchOff() {
 		if (_isAttacking) CancelAttack();
-		
 		gameObject.SetActive(false);
 	}
 

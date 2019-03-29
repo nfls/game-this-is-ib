@@ -167,7 +167,7 @@ public class CharacterMotor : MonoBehaviour {
 
 	public void Turn() {
 		_faceDirection = (FaceDirection) ((int) _faceDirection * -1);
-		transform.localRotation = (transform.localRotation.eulerAngles + new Vector3(0f, 180f, 0f)).ToQuaternion();
+		transform.eulerAngles = _faceDirection == FaceDirection.Left ? new Vector3(0f, 180f, 0f) : Vector3.zero;
 	}
 
 	public void Move(float velocity) {

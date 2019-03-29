@@ -2,11 +2,13 @@
 using System.Collections;
 using System.Diagnostics;
 using UnityEngine;
+using Debug = UnityEngine.Debug;
 
 public class LevelController : MonoBehaviour {
 	
 	[CameraBackgroundColor]
 	public Color backgroundColor;
+	public float scanTime = 10f;
 
 	public bool changeMaterial;
 	public Material terrainMaterial;
@@ -47,6 +49,10 @@ public class LevelController : MonoBehaviour {
 		}
 	}
 
+	private void Start() {
+		StartCoroutine(ExeScanCoroutine(scanTime));
+	}
+
 	public void Shift(Vector3 destination, float time, Action finishAction) {
 		if (_shiftCoroutine != null) {
 			StopCoroutine(_shiftCoroutine);
@@ -74,6 +80,23 @@ public class LevelController : MonoBehaviour {
 
 	public void Pause() {
 		foreach (var device in devices) device.Pause();
+	}
+
+	protected IEnumerator ExeScanCoroutine(float time) {
+		SceneScanEffectController effectController = CameraManager.MainCamera.GetComponent<SceneScanEffectController>();
+		effectController.distance = 0;
+		effectController.enabled = true;
+		float maxDistance = Mathf.Sqrt(_width * _width + _height * _height);
+		float originalTime = Time.time;
+		float targetTime = originalTime + time;
+		float currentTime;
+		do {
+			yield return null;
+			currentTime = Time.time;
+			effectController.distance = (currentTime - originalTime) / time * maxDistance;
+		} while (currentTime < targetTime);
+
+		effectController.enabled = false;
 	}
 
 	protected IEnumerator ExeShiftCoroutine(Vector3 destination, float time, Action finishAction) {

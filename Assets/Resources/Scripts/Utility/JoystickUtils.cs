@@ -60,11 +60,21 @@ public static class JoystickUtil {
 
 	// Operation State Int
 	public const int SDL_SUCCESS = 0;
+	
+	public const float SDL_STANDARD_GRAVITY = 9.80665f;
 
 	// CPP BOOL
 	public static class SDL_BOOL {
 		public const int SDL_FALSE = 0;
 		public const int SDL_TRUE = 1;
+	}
+	
+	public enum SDL_PowerState {
+		SDL_POWERSTATE_UNKNOWN = 0,
+		SDL_POWERSTATE_ON_BATTERY,
+		SDL_POWERSTATE_NO_BATTERY,
+		SDL_POWERSTATE_CHARGING,
+		SDL_POWERSTATE_CHARGED
 	}
 	
 	public enum SDL_JoystickPowerLevel
@@ -77,6 +87,14 @@ public static class JoystickUtil {
 		SDL_JOYSTICK_POWER_WIRED,
 		SDL_JOYSTICK_POWER_MAX
 	}
+	
+	public enum SDL_SensorType {
+		SDL_SENSOR_INVALID = -1,
+		SDL_SENSOR_UNKNOWN,
+		SDL_SENSOR_ACCEL,
+		SDL_SENSOR_GYRO
+	}
+
 
 	[StructLayout(LayoutKind.Sequential)]
 	public unsafe struct SDL_HapticDirection {
@@ -221,6 +239,9 @@ public static class JoystickUtil {
 
 	[DllImport(NATIVE_LIB_NAME, CallingConvention = CallingConvention.Cdecl)]
 	private static extern uint SDL_WasInit(uint flags);
+	
+	[DllImport(NATIVE_LIB_NAME, CallingConvention = CallingConvention.Cdecl)]
+	private static extern SDL_PowerState SDL_GetPowerInfo(out int secs, out int pct);
 
 	[DllImport(NATIVE_LIB_NAME, CallingConvention = CallingConvention.Cdecl)]
 	private static extern void SDL_HapticClose(IntPtr haptic);
@@ -365,6 +386,53 @@ public static class JoystickUtil {
 	
 	[DllImport(NATIVE_LIB_NAME, CallingConvention = CallingConvention.Cdecl)]
 	private static extern SDL_JoystickPowerLevel SDL_JoystickCurrentPowerLevel(IntPtr joystick);
+	
+	[DllImport(NATIVE_LIB_NAME, CallingConvention = CallingConvention.Cdecl)]
+	private static extern int SDL_NumSensors();
+	
+	[DllImport(NATIVE_LIB_NAME, EntryPoint = "SDL_SensorGetDeviceName", CallingConvention = CallingConvention.Cdecl)]
+	private static extern IntPtr INTERNAL_SDL_SensorGetDeviceName(int device_index);
+
+	private static string SDL_SensorGetDeviceName(int device_index) => UTF8_ToManaged(INTERNAL_SDL_SensorGetDeviceName(device_index));
+
+	[DllImport(NATIVE_LIB_NAME, CallingConvention = CallingConvention.Cdecl)]
+	private static extern SDL_SensorType SDL_SensorGetDeviceType(int device_index);
+
+	[DllImport(NATIVE_LIB_NAME, CallingConvention = CallingConvention.Cdecl)]
+	private static extern int SDL_SensorGetDeviceNonPortableType(int device_index);
+
+	[DllImport(NATIVE_LIB_NAME, CallingConvention = CallingConvention.Cdecl)]
+	private static extern int SDL_SensorGetDeviceInstanceID(int device_index);
+
+	[DllImport(NATIVE_LIB_NAME, CallingConvention = CallingConvention.Cdecl)]
+	private static extern IntPtr SDL_SensorOpen(int device_index);
+
+	[DllImport(NATIVE_LIB_NAME, CallingConvention = CallingConvention.Cdecl)]
+	private static extern IntPtr SDL_SensorFromInstanceID(int instance_id);
+
+	[DllImport(NATIVE_LIB_NAME, EntryPoint = "SDL_SensorGetName", CallingConvention = CallingConvention.Cdecl)]
+	private static extern IntPtr INTERNAL_SDL_SensorGetName(IntPtr sensor);
+	
+	private static string SDL_SensorGetName(IntPtr sensor) => UTF8_ToManaged(INTERNAL_SDL_SensorGetName(sensor));
+
+	[DllImport(NATIVE_LIB_NAME, CallingConvention = CallingConvention.Cdecl)]
+	private static extern SDL_SensorType SDL_SensorGetType(IntPtr sensor);
+
+	[DllImport(NATIVE_LIB_NAME, CallingConvention = CallingConvention.Cdecl)]
+	private static extern int SDL_SensorGetNonPortableType(IntPtr sensor);
+
+	[DllImport(NATIVE_LIB_NAME, CallingConvention = CallingConvention.Cdecl)]
+	private static extern Int32 SDL_SensorGetInstanceID(IntPtr sensor);
+
+	/* sensor refers to an SDL_Sensor* */
+	[DllImport(NATIVE_LIB_NAME, CallingConvention = CallingConvention.Cdecl)]
+	private static extern int SDL_SensorGetData(IntPtr sensor, float[] data, int num_values);
+
+	[DllImport(NATIVE_LIB_NAME, CallingConvention = CallingConvention.Cdecl)]
+	private static extern void SDL_SensorClose(IntPtr sensor);
+
+	[DllImport(NATIVE_LIB_NAME, CallingConvention = CallingConvention.Cdecl)]
+	private static extern void SDL_SensorUpdate();
 
 	[DllImport(NATIVE_LIB_NAME, CallingConvention = CallingConvention.Cdecl)]
 	private static extern IntPtr SDL_malloc(IntPtr size);
@@ -402,7 +470,7 @@ public static class JoystickUtil {
 	private static readonly Dictionary<int, IntPtr> availableJoysticks = new Dictionary<int, IntPtr>();
 	private static readonly Dictionary<int, string> availableJoystickNames = new Dictionary<int, string>();
 
-	public static void Init() => SDL_Init(SDL_INIT_VIDEO | SDL_INIT_HAPTIC | SDL_INIT_JOYSTICK);
+	public static void Init() => SDL_Init(SDL_INIT_VIDEO | SDL_INIT_HAPTIC | SDL_INIT_JOYSTICK | SDL_INIT_SENSOR);
 
 	public static void Quit() => SDL_Quit();
 
@@ -410,7 +478,7 @@ public static class JoystickUtil {
 		if (milliseconds < 0) return false;
 		if (!CheckAndInitHapticDevice(deviceIndex)) return false;
 		IntPtr device = availableHapticDevices[deviceIndex];
-		return SDL_HapticRumblePlay(device, strength, (uint) milliseconds) == SDL_SUCCESS;
+		return SDL_HapticRumblePlay(device, strength, (uint) milliseconds) >= 0;
 	}
 
 	public static bool Rumble(float strength, int milliseconds) => Rumble(0, strength, milliseconds);
@@ -432,7 +500,7 @@ public static class JoystickUtil {
 		IntPtr ptr = SDL_HapticOpen(deviceIndex);
 		if (ptr == IntPtr.Zero) return false;
 		if (SDL_HapticRumbleSupported(ptr) == SDL_BOOL.SDL_FALSE) return false;
-		if (SDL_HapticRumbleInit(ptr) != SDL_SUCCESS) return false;
+		if (SDL_HapticRumbleInit(ptr) < 0) return false;
 		availableHapticDevices[deviceIndex] = ptr;
 		Debug.Log("Register Device [" + deviceIndex + "] " + SDL_HapticName(deviceIndex) + " !");
 		return true;
@@ -495,6 +563,16 @@ public static class JoystickUtil {
 	public static SDL_JoystickPowerLevel GetJoystickPowerLevel(int joystickIndex) {
 		if (!CheckAndInitJoystick(joystickIndex)) return SDL_JoystickPowerLevel.SDL_JOYSTICK_POWER_UNKNOWN;
 		return SDL_JoystickCurrentPowerLevel(availableJoysticks[joystickIndex]);
+	}
+
+	public static void LogPowerState() {
+		int secs, pct;
+		SDL_PowerState state = SDL_GetPowerInfo(out secs, out pct);
+		Debug.Log(state + " (" + pct + "%) With " + secs + " Seconds Remaining !");
+	}
+
+	public static void LogSensorState() {
+		Debug.Log("Num of Sensors = " + SDL_NumSensors());
 	}
 
 	private static bool CheckAndInitJoystick(int joystickIndex) {

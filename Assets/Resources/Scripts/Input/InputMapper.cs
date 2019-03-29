@@ -85,8 +85,6 @@ public class InputMapper {
 		Reset();
 	}
 
-	public bool marked;
-
 	public void Refresh() {
 		if (isInControl) {
 			foreach (string name in _onPressedBindings.Keys)

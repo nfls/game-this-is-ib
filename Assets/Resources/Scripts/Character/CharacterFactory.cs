@@ -57,6 +57,7 @@ public static class CharacterFactory {
 		controller.dodgeTrailSettings = ResourcesManager.PlayerAttributesData.dodgeTrailSettings;
 		controller.dodgeTrailSettings.color = data.dodgeTrailColor;
 		controller.bloodColor = data.bloodColor;
+		controller.dodgeTrailMaterial = ResourcesManager.PlayerAttributesData.dodgeTrailMaterial;
 		
 		LayerManager.SetAllLayers(go, LayerManager.CharacterLayer);
 		
