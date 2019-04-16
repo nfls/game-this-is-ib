@@ -1,0 +1,772 @@
+using UnityEngine;
+using System.Collections;
+using UnityEngine.Profiling;
+
+public enum AxisType {x,y,z,xy,xz,yz,xyz}
+public enum ValueType {value, min, max, valuemin, valuemax, minmax, valueminmax}
+public enum TriggerType {name, tag, layer}
+
+[RequireComponent(typeof(Rigidbody))]
+[RequireComponent(typeof(Collider))]
+public class Physix : MonoBehaviour {
+
+private bool pause = false;
+public Vector3 PauseVelocity = Vector3.zero;
+private Vector3 PauseAngularVelocity = Vector3.zero;
+[HideInInspector]
+public Rigidbody rigidbody;
+public LayerMask CollisionIgnoreMask = 0;
+public PHYSIXCOLLISION[] Collisions;
+public PHYSIXMOVE[] Movements;
+private float collisioncount = 0;
+private float norm = 0.0f;
+private bool RESET = false;
+[HideInInspector]
+public PHYSIXMOVE PHYSIXBUFFER;
+private Rigidbody rb;
+[HideInInspector]
+public bool DisplayVisualSettings = false;
+[HideInInspector]
+public float HitboxScale = 1.0f;
+[HideInInspector]
+public Color HitBoxColor = new Color(1,1,1,0.25f);
+[HideInInspector]
+public bool UseDefualtInspector = false;
+[HideInInspector]
+public bool HideCollision = false;
+[HideInInspector]
+public bool HideMovement = false;
+[HideInInspector]
+public int SelectCollision = 0;
+[HideInInspector]
+public int SelectRange = 0;
+[HideInInspector]
+public bool HOLD = false;
+[HideInInspector]
+public Collider[] TriggerStays = new Collider[0];
+[HideInInspector]
+public Collider[] TriggerEnters = new Collider[0];
+[HideInInspector]
+public Collider[] TriggerExits = new Collider[0];
+
+private float Buffer1Value = 0.0f;
+private AxisType Buffer1Axis;
+private ValueType Buffer1ValueType;
+private float Buffer2Value = 0.0f;
+private AxisType Buffer2Axis;
+private ValueType Buffer2ValueType;
+private float Buffer3Value = 0.0f;
+private AxisType Buffer3Axis;
+private ValueType Buffer3ValueType;
+private float BufferValueCount = 0;
+
+[System.Serializable]
+public class PHYSIXCOLLISION {
+	public string Name = "";
+	[HideInInspector]
+	public bool Enter = false;
+	[HideInInspector]
+	public bool Exit = false;
+	[HideInInspector]
+	public bool EnterB = false;
+	[HideInInspector]
+	public bool ExitB = false;
+	[HideInInspector]
+	public bool Active = false;
+	[HideInInspector]
+	public Vector3 Normal;
+	[HideInInspector]
+	public Vector3 Point;
+	[HideInInspector]
+	public float Count = 0;
+	[HideInInspector]
+	public Collision collision;
+	[HideInInspector]
+	public string tag = "";
+	[HideInInspector]
+	public bool Display = false;
+	public Transform localTransform;
+	public PHYSIXBOUNDS[] Ranges;
+	
+	public PHYSIXCOLLISION () {
+	Name = "New Collision";
+	Enter = false;
+	Exit = false;
+	EnterB = false;
+	ExitB = false;
+	Active = false;
+	Normal = new Vector3(0,0,0);
+	Point = new Vector3(0,0,0);
+	Count = 0;
+	tag = "";
+	Display = false;
+	Ranges = new PHYSIXBOUNDS[1];
+	Ranges[0] = new PHYSIXBOUNDS();
+	}
+
+	public void Equals (PHYSIXCOLLISION rhs) {
+	Name = rhs.Name;
+	Enter = false;
+	Exit = false;
+	EnterB = false;
+	ExitB = false;
+	Active = false;
+	Normal = new Vector3(0,0,0);
+	Point = new Vector3(0,0,0);
+	Count = 0;
+	tag = "";
+	Display = false;
+	localTransform = rhs.localTransform;
+	}
+};
+
+[System.Serializable]
+public class PHYSIXBOUNDS {
+	[Tooltip ("Check collision on X axis.")]
+	public bool x = false;
+	[Tooltip ("Check collision on Y axis.")]
+	public bool y = false;
+	[Tooltip ("Check collision on Z axis.")]
+	public bool z = false;
+	[Tooltip ("Is normal*-90 less than value?")]
+	public bool less = false;
+	[Tooltip ("Is normal*-90 greater than value?")]
+	public bool greater = true;
+	[Tooltip ("Is normal*-90 equal to value?")]
+	public bool equals = true;
+	public float value = 0.0f;
+	[HideInInspector]
+	public bool Active = false;
+	[HideInInspector]
+	public bool SelectActive = false;
+
+	public PHYSIXBOUNDS () {
+	x = false;
+	y = false;
+	z = false;
+	less = false;
+	greater = false;
+	equals = false;
+	value = 0.0f;
+	Active = false;
+	}
+
+	public void Equals (PHYSIXBOUNDS rhs) {
+	x = rhs.x;
+	y = rhs.y;
+	z = rhs.z;
+	less = rhs.less;
+	greater = rhs.greater;
+	equals = rhs.equals;
+	value = rhs.value;
+	Active = rhs.Active;
+	}
+};
+
+[System.Serializable]
+public class PHYSIXMOVE {
+	public string Name = "";
+	public PHYSIXMOVETYPE x;
+	public PHYSIXMOVETYPE y;
+	public PHYSIXMOVETYPE z;
+	[HideInInspector]
+	public bool Display = false;
+	[Tooltip ("If filled, applies movement based on local rotation.")]
+	public Transform localTransform;
+	public PHYSIXMOVE () {
+	Name = "New Movement";
+	x = new PHYSIXMOVETYPE();
+	y = new PHYSIXMOVETYPE();
+	z = new PHYSIXMOVETYPE();
+	Display = false;
+	}
+
+	public void Equals (PHYSIXMOVE rhs) {
+	Name = rhs.Name;
+	x.Equals(rhs.x);
+	y.Equals(rhs.y);
+	z.Equals(rhs.z);
+	Display = false;
+	}
+};
+
+[System.Serializable]
+public class PHYSIXMOVETYPE {
+[Tooltip ("Will this axis apply movement?")]
+public bool active = false;
+[Tooltip ("Value to apply, can be modified on-call through script.")]
+public float value = 0.0f;
+[Tooltip ("Keep this force from exceeding a min value?")]
+public bool clampMin = false;
+[Tooltip ("Keep this force from exceeding a max value?")]
+public bool clampMax = false;
+[Tooltip ("Forcefully set velocity to min if velocity exceeds min?")]
+public bool forceMin = false;
+[Tooltip ("Forcefully set velocity to max if velocity exceeds max?")]
+public bool forceMax = false;
+[Tooltip ("Smooths forced clamping, mostly used for deceleration.")]
+public bool smoothForce = false;
+[Tooltip ("Min value used in clamping, can be modified on-call through script.")]
+public float min = 0.0f;
+[Tooltip ("Max value used in clamping, can be modified on-call through script.")]
+public float max = 0.0f;
+[Tooltip ("Add value to velocity? Mostly used for acceleration.")]
+public bool add = false;
+[Tooltip ("Set velocity equal to value? Mostly used for quick actions, like jumping.")]
+public bool equals = false;
+[HideInInspector]
+public bool Display = false;
+[HideInInspector]
+public bool DisplayMin = false;
+[HideInInspector]
+public bool DisplayMax = false;
+
+public PHYSIXMOVETYPE () {
+active = false;
+value = 0.0f;
+clampMin = false;
+clampMax = false;
+forceMin = false;
+forceMax = false;
+smoothForce = false;
+min = 0.0f;
+max = 0.0f;
+add = false;
+equals = false;
+Display = false;
+DisplayMin = false;
+DisplayMax = false;
+}
+
+public void Equals (PHYSIXMOVETYPE rhs) {
+active = rhs.active;
+value = rhs.value;
+clampMin = rhs.clampMin;
+clampMax = rhs.clampMax;
+forceMin = rhs.forceMin;
+forceMax = rhs.forceMax;
+smoothForce = rhs.smoothForce;
+min = rhs.min;
+max = rhs.max;
+add = rhs.add;
+equals = rhs.equals;
+Display = false;
+DisplayMin = false;
+DisplayMax = false;
+}
+};
+
+public void ApplyMovement ( string name  ){
+int index = FindIndexM(name);
+PHYSIXMOVE MOVE = Movements[index];
+BufferValueCount = 0;
+ApplyMovement(MOVE);
+}
+		
+public void ApplyMovement ( string name ,   float VALUE ,   AxisType axis ,   ValueType value  ){
+int index = FindIndexM(name);
+PHYSIXMOVE MOVE= Movements[index];
+BufferValueCount = 1;
+Buffer1Value = VALUE;
+Buffer1ValueType = value;
+Buffer1Axis = axis;
+ApplyMovement(MOVE);
+}
+
+public void ApplyMovement ( string name ,   float VALUE ,   AxisType axis ,   ValueType value ,   float VALUE2 ,   AxisType axis2 ,   ValueType value2  ){
+int index= FindIndexM(name);
+PHYSIXMOVE MOVE= Movements[index];
+BufferValueCount = 2;
+Buffer1Value = VALUE;
+Buffer1ValueType = value;
+Buffer1Axis = axis;
+Buffer2Value = VALUE2;
+Buffer2ValueType = value2;
+Buffer2Axis = axis2;
+ApplyMovement(MOVE);
+}
+
+public void ApplyMovement ( string name ,   float VALUE ,   AxisType axis ,   ValueType value ,   float VALUE2 ,   AxisType axis2 ,   ValueType value2 ,   float VALUE3 ,   AxisType axis3 ,   ValueType value3  ){
+int index = FindIndexM(name);
+PHYSIXMOVE MOVE = Movements[index];
+BufferValueCount = 3;
+Buffer1Value = VALUE;
+Buffer1ValueType = value;
+Buffer1Axis = axis;
+Buffer2Value = VALUE2;
+Buffer2ValueType = value2;
+Buffer2Axis = axis2;
+Buffer3Value = VALUE3;
+Buffer3ValueType = value3;
+Buffer3Axis = axis3;
+ApplyMovement(MOVE);
+}
+
+public void ApplyMovement ( string name ,   Vector3 input, ValueType value){
+int index = FindIndexM(name);
+PHYSIXMOVE MOVE = Movements[index];
+BufferValueCount = 3;
+Buffer1Value = input.x;
+Buffer1ValueType = value;
+Buffer1Axis = AxisType.x;
+Buffer2Value = input.y;
+Buffer2ValueType = value;
+Buffer2Axis = AxisType.y;
+Buffer3Value = input.z;
+Buffer3ValueType = value;
+Buffer3Axis = AxisType.z;
+ApplyMovement(MOVE);
+}
+
+public void ApplyMovement (PHYSIXMOVE MOVE){
+if(!pause){
+if(rigidbody == null){rigidbody = transform.GetComponent<Rigidbody>();}
+bool localBool = (MOVE.localTransform != null);
+Vector3 READ = (localBool ? MOVE.localTransform.InverseTransformDirection(rigidbody.velocity) : rigidbody.velocity);
+Vector3 Velocity = READ;
+
+bool  XACTIVE = false;
+bool  YACTIVE = false;
+bool  ZACTIVE = false;
+
+float XVALUE = MOVE.x.value;
+float XMIN = MOVE.x.min;
+float XMAX = MOVE.x.max;
+
+float YVALUE = MOVE.y.value;
+float YMIN = MOVE.y.min;
+float YMAX = MOVE.y.max;
+
+float ZVALUE = MOVE.z.value;
+float ZMAX = MOVE.z.max;
+float ZMIN = MOVE.z.min;
+
+if(BufferValueCount >= 1){
+bool B1Value = (Buffer1ValueType == ValueType.value || Buffer1ValueType == ValueType.valuemin || Buffer1ValueType == ValueType.valuemax || Buffer1ValueType == ValueType.valueminmax);
+bool B1Min = (Buffer1ValueType == ValueType.min || Buffer1ValueType == ValueType.minmax || Buffer1ValueType == ValueType.valuemin || Buffer1ValueType == ValueType.valueminmax);
+bool B1Max = (Buffer1ValueType == ValueType.max || Buffer1ValueType == ValueType.minmax || Buffer1ValueType == ValueType.valuemax || Buffer1ValueType == ValueType.valueminmax);
+
+if(Buffer1Axis == AxisType.x || Buffer1Axis == AxisType.xy || Buffer1Axis == AxisType.xz || Buffer1Axis == AxisType.xyz){
+XACTIVE = true;
+if(B1Value){XVALUE = Buffer1Value;}
+if(B1Min){XMIN = Buffer1Value;}
+if(B1Max){XMAX = Buffer1Value;}
+}
+if(Buffer1Axis == AxisType.y || Buffer1Axis == AxisType.xy || Buffer1Axis == AxisType.yz || Buffer1Axis == AxisType.xyz){
+YACTIVE = true;
+if(B1Value){YVALUE = Buffer1Value;}
+if(B1Min){YMIN = Buffer1Value;}
+if(B1Max){YMAX = Buffer1Value;}
+}
+if(Buffer1Axis == AxisType.z || Buffer1Axis == AxisType.xz || Buffer1Axis == AxisType.yz || Buffer1Axis == AxisType.xyz){
+ZACTIVE = true;
+if(B1Value){ZVALUE = Buffer1Value;}
+if(B1Min){ZMIN = Buffer1Value;}
+if(B1Max){ZMAX = Buffer1Value;}
+}
+}
+
+if(BufferValueCount >= 2){
+bool B2Value= (Buffer2ValueType == ValueType.value || Buffer2ValueType == ValueType.valuemin || Buffer2ValueType == ValueType.valuemax || Buffer2ValueType == ValueType.valueminmax);
+bool B2Min= (Buffer2ValueType == ValueType.min || Buffer2ValueType == ValueType.minmax || Buffer2ValueType == ValueType.valuemin || Buffer2ValueType == ValueType.valueminmax);
+bool B2Max= (Buffer2ValueType == ValueType.max || Buffer2ValueType == ValueType.minmax || Buffer2ValueType == ValueType.valuemax || Buffer2ValueType == ValueType.valueminmax);
+
+if(Buffer2Axis == AxisType.x || Buffer2Axis == AxisType.xy || Buffer2Axis == AxisType.xz || Buffer2Axis == AxisType.xyz){
+XACTIVE = true;
+if(B2Value){XVALUE = Buffer2Value;}
+if(B2Min){XMIN = Buffer2Value;}
+if(B2Max){XMAX = Buffer2Value;}
+}
+if(Buffer2Axis == AxisType.y || Buffer2Axis == AxisType.xy || Buffer2Axis == AxisType.yz || Buffer2Axis == AxisType.xyz){
+YACTIVE = true;
+if(B2Value){YVALUE = Buffer2Value;}
+if(B2Min){YMIN = Buffer2Value;}
+if(B2Max){YMAX = Buffer2Value;}
+}
+if(Buffer2Axis == AxisType.z || Buffer2Axis == AxisType.xz || Buffer2Axis == AxisType.yz || Buffer2Axis == AxisType.xyz){
+ZACTIVE = true;
+if(B2Value){ZVALUE = Buffer2Value;}
+if(B2Min){ZMIN = Buffer2Value;}
+if(B2Max){ZMAX = Buffer2Value;}
+}
+}
+
+if(BufferValueCount >= 3){
+bool B3Value= (Buffer3ValueType == ValueType.value || Buffer3ValueType == ValueType.valuemin || Buffer3ValueType == ValueType.valuemax || Buffer3ValueType == ValueType.valueminmax);
+bool B3Min= (Buffer3ValueType == ValueType.min || Buffer3ValueType == ValueType.minmax || Buffer3ValueType == ValueType.valuemin || Buffer3ValueType == ValueType.valueminmax);
+bool B3Max= (Buffer3ValueType == ValueType.max || Buffer3ValueType == ValueType.minmax || Buffer3ValueType == ValueType.valuemax || Buffer3ValueType == ValueType.valueminmax);
+
+if(Buffer3Axis == AxisType.x || Buffer3Axis == AxisType.xy || Buffer3Axis == AxisType.xz || Buffer3Axis == AxisType.xyz){
+XACTIVE = true;
+if(B3Value){XVALUE = Buffer3Value;}
+if(B3Min){XMIN = Buffer3Value;}
+if(B3Max){XMAX = Buffer3Value;}
+}
+if(Buffer3Axis == AxisType.y || Buffer3Axis == AxisType.xy || Buffer3Axis == AxisType.yz || Buffer3Axis == AxisType.xyz){
+YACTIVE = true;
+if(B3Value){YVALUE = Buffer3Value;}
+if(B3Min){YMIN = Buffer3Value;}
+if(B3Max){YMAX = Buffer3Value;}
+}
+if(Buffer3Axis == AxisType.z || Buffer3Axis == AxisType.xz || Buffer3Axis == AxisType.yz || Buffer3Axis == AxisType.xyz){
+ZACTIVE = true;
+if(B3Value){ZVALUE = Buffer3Value;}
+if(B3Min){ZMIN = Buffer3Value;}
+if(B3Max){ZMAX = Buffer3Value;}
+}
+}
+
+if(MOVE.x.active || XACTIVE){
+if(MOVE.x.add && (!MOVE.x.clampMin || READ.x >= XMIN || XVALUE > 0) && (!MOVE.x.clampMax || READ.x <= XMAX || XVALUE < 0)){Velocity.x += XVALUE;}
+if(MOVE.x.equals){Velocity.x = XVALUE;}
+if(MOVE.x.forceMin && READ.x < XMIN){Velocity.x = Mathf.MoveTowards(Velocity.x, XMIN, MOVE.x.smoothForce ? XVALUE : XMIN - READ.x);}
+if(MOVE.x.forceMax && READ.x > XMAX){Velocity.x = Mathf.MoveTowards(Velocity.x, XMAX, MOVE.x.smoothForce ? XVALUE : READ.x - XMAX);}
+}
+if(MOVE.y.active || YACTIVE){
+if(MOVE.y.add && (!MOVE.y.clampMin || READ.y >= YMIN || YVALUE > 0) && (!MOVE.y.clampMax || READ.y <= YMAX || YVALUE < 0)){Velocity.y += YVALUE;}
+if(MOVE.y.equals){Velocity.y = YVALUE;}
+if(MOVE.y.forceMin && READ.y < YMIN){Velocity.y = Mathf.MoveTowards(Velocity.y, YMIN, MOVE.y.smoothForce ? YVALUE : YMIN - READ.y);}
+if(MOVE.y.forceMax && READ.y > YMAX){Velocity.y = Mathf.MoveTowards(Velocity.y, YMAX, MOVE.y.smoothForce ? YVALUE : READ.y - YMAX);}
+}
+if(MOVE.z.active || ZACTIVE){
+if(MOVE.z.add && (!MOVE.z.clampMin || READ.z >= ZMIN || ZVALUE > 0) && (!MOVE.z.clampMax || READ.z <= ZMAX || ZVALUE < 0)){Velocity.z += ZVALUE;}
+if(MOVE.z.equals){Velocity.z = ZVALUE;}
+if(MOVE.z.forceMin && READ.z < ZMIN){Velocity.z = Mathf.MoveTowards(Velocity.z, ZMIN, MOVE.z.smoothForce ? ZVALUE : ZMIN - READ.z);}
+if(MOVE.z.forceMax && READ.z > ZMAX){Velocity.z = Mathf.MoveTowards(Velocity.z, ZMAX, MOVE.z.smoothForce ? ZVALUE : READ.z - ZMAX);}
+}
+rigidbody.velocity = (localBool ? MOVE.localTransform.TransformDirection(Velocity) : Velocity);
+}
+}
+
+public void Pause () {
+if(pause != true){pause = true; PauseVelocity = rigidbody.velocity; PauseAngularVelocity = rigidbody.angularVelocity; rigidbody.velocity = Vector3.zero; rigidbody.angularVelocity = Vector3.zero;}
+}
+
+public void Pause (float percent) {
+if(pause != true){pause = true; PauseVelocity = rigidbody.velocity; PauseAngularVelocity = rigidbody.angularVelocity; rigidbody.velocity *= percent; rigidbody.angularVelocity *= percent;}
+}
+
+public void Play () {
+if(pause != false){pause = false; rigidbody.velocity = PauseVelocity; rigidbody.angularVelocity = PauseAngularVelocity;}
+} 
+
+public int FindIndexM ( string name  ){
+for (int c = 0; c < Movements.Length; c++) {
+if(Movements[c].Name == name){return c;}
+}
+Debug.LogError("Couldn't find Movement data for '"+name+".' Defaulting to '"+(Movements.Length > 0 ? Movements[0].Name : "Error")+".'");
+return 0;
+}
+
+public int FindIndex ( string name  ){
+for (int c = 0; c < Collisions.Length; c++) {
+if(Collisions[c].Name == name){return c;}
+}
+Debug.LogError("Couldn't find Collision data for '"+name+".' Defaulting to '"+(Collisions.Length > 0 ? Collisions[0].Name : "Error")+".'");
+return 0;
+}
+
+public PHYSIXMOVE GetMovementModule ( string name  ){
+int index= FindIndexM(name);
+return (Movements.Length == 0 ? null : Movements[index]);
+}
+
+public PHYSIXCOLLISION GetCollisionModule ( string name  ){
+int index= FindIndex(name);
+return (Collisions.Length == 0 ? null : Collisions[index]);
+}
+
+public Vector3 GetNormal ( string name  ){
+int index= FindIndex(name);
+return (Collisions[index].Count == 0 ? Vector3.zero : (Collisions[index].Normal / Collisions[index].Count).normalized);
+}
+
+public Collision GetCollision ( string name  ){
+int index= FindIndex(name);
+return (Collisions[index].Count == 0 ? null : Collisions[index].collision);
+}
+
+public string GetTag ( string name  ){
+int index= FindIndex(name);
+return (Collisions[index].Count == 0 ? null : Collisions[index].tag);
+}
+
+public Vector3 GetLocalNormal ( string name  ){
+int index= FindIndex(name);
+return (Collisions[index].Count == 0 ? Vector3.zero : Collisions[index].localTransform.InverseTransformDirection((Collisions[index].Normal / Collisions[index].Count).normalized));
+}
+
+public Vector3 GetPoint ( string name  ){
+int index= FindIndex(name);
+return (Collisions[index].Count == 0 ? Vector3.zero : (Collisions[index].Point / Collisions[index].Count));
+}
+
+public Vector3 GetLocalPoint ( string name  ){
+int index= FindIndex(name);
+return (Collisions[index].Count == 0 ? Vector3.zero : Collisions[index].localTransform.InverseTransformPoint(Collisions[index].Point / Collisions[index].Count));
+}
+
+public void SetCollisionValue (string name, int rangeindex, float value){
+int index= FindIndex(name);
+Collisions[index].Ranges[rangeindex].value = value;
+}
+
+public void SetCollisionValue (string name, float value){
+int index= FindIndex(name);
+if(Collisions[index].Ranges.Length == 0){return;}
+Collisions[index].Ranges[0].value = value;
+}
+
+public bool IsColliding ( string name  ){
+int index= FindIndex(name);
+return (Collisions[index].Active && collisioncount != 0);
+}
+
+public bool IsExiting ( string name  ){
+int index= FindIndex(name);
+return (Collisions[index].Exit);
+}
+
+public bool IsEntering (string name){
+int index= FindIndex(name);
+return (Collisions[index].Enter);
+}
+
+public bool IsTriggering (string identifier, TriggerType identifierType){
+for (int i = 0; i < TriggerStays.Length; i++) {
+if(identifierType == TriggerType.name && TriggerStays[i].name == identifier){return true; break;}
+if(identifierType == TriggerType.tag && TriggerStays[i].tag == identifier){return true; break;}
+if(identifierType == TriggerType.layer && TriggerStays[i].gameObject.layer == LayerMask.NameToLayer(identifier)){return true; break;}
+}
+return false;
+}
+
+public bool IsTriggerEntering (string identifier, TriggerType identifierType){
+for (int i = 0; i < TriggerEnters.Length; i++) {
+if(identifierType == TriggerType.name && TriggerEnters[i].name == identifier){return true; break;}
+if(identifierType == TriggerType.tag && TriggerEnters[i].tag == identifier){return true; break;}
+if(identifierType == TriggerType.layer && TriggerEnters[i].gameObject.layer == LayerMask.NameToLayer(identifier)){return true; break;}
+}
+return false;
+}
+
+public bool IsTriggerExiting (string identifier, TriggerType identifierType){
+for (int i = 0; i < TriggerExits.Length; i++) {
+if(identifierType == TriggerType.name && TriggerExits[i].name == identifier){return true; break;}
+if(identifierType == TriggerType.tag && TriggerExits[i].tag == identifier){return true; break;}
+if(identifierType == TriggerType.layer && TriggerExits[i].gameObject.layer == LayerMask.NameToLayer(identifier)){return true; break;}
+}
+return false;
+}
+
+public Collider GetTrigger (string identifier, TriggerType identifierType){
+for (int i = 0; i < TriggerStays.Length; i++) {
+if(identifierType == TriggerType.name && TriggerStays[i].name == identifier){return TriggerStays[i]; break;}
+if(identifierType == TriggerType.tag && TriggerStays[i].tag == identifier){return TriggerStays[i]; break;}
+if(identifierType == TriggerType.layer && TriggerStays[i].gameObject.layer == LayerMask.NameToLayer(identifier)){return TriggerStays[i]; break;}
+}
+return null;
+}
+
+public Collider GetTriggerEntering (string identifier, TriggerType identifierType){
+for (int i = 0; i < TriggerEnters.Length; i++) {
+if(identifierType == TriggerType.name && TriggerEnters[i].name == identifier){return TriggerEnters[i]; break;}
+if(identifierType == TriggerType.tag && TriggerEnters[i].tag == identifier){return TriggerEnters[i]; break;}
+if(identifierType == TriggerType.layer && TriggerEnters[i].gameObject.layer == LayerMask.NameToLayer(identifier)){return TriggerEnters[i]; break;}
+}
+return null;
+}
+
+public Collider GetTriggerExiting (string identifier, TriggerType identifierType){
+for (int i = 0; i < TriggerExits.Length; i++) {
+if(identifierType == TriggerType.name && TriggerExits[i].name == identifier){return TriggerExits[i]; break;}
+if(identifierType == TriggerType.tag && TriggerExits[i].CompareTag(identifier)){return TriggerExits[i]; break;}
+if(identifierType == TriggerType.layer && TriggerExits[i].gameObject.layer == LayerMask.NameToLayer(identifier)){return TriggerExits[i]; break;}
+}
+return null;
+}
+
+public float AngleToNormal (float angle){
+return -(Quaternion.Euler(0,angle,0) * Vector3.forward).x;
+}
+
+public Quaternion NormalToAngle (Vector3 normal){
+return Quaternion.FromToRotation (Vector3.up, normal);
+}
+
+public float RoundToPower (float input, float power) {
+		float powerMult = (Mathf.Pow(10, power));
+		return Mathf.RoundToInt(input * powerMult) / powerMult;
+}
+
+void Update (){
+	RESET = true;
+	if(collisioncount < 0){collisioncount = 0;}
+}
+
+void ResizeArray <T> (ref T[] array, int size) {
+T[] Temp = array;
+int oldlength = array.Length;
+array = new T[size];
+for (int i = 0; i < oldlength; i++) {
+if(Temp[i] == null || i >= array.Length){break;}
+array[i] = Temp[i];
+}
+}
+
+void Start () {
+if(rigidbody == null){rigidbody = transform.GetComponent<Rigidbody>();}
+}
+
+void LateUpdate (){
+int l = Collisions.Length;
+if(collisioncount == 0) {
+for (int c = 0; c < l; c++) {
+var collision = Collisions[c];
+collision.Normal = Vector3.zero;
+collision.Point = Vector3.zero;
+collision.Count = 0;
+collision.Active = false;
+for (int b2 = 0, len = collision.Ranges.Length; b2 < len; b2++) {
+collision.Ranges[b2].Active = false;
+}
+}
+}
+for (int c2 = 0; c2 < l; c2++) {
+Collisions[c2].Enter = false;
+Collisions[c2].Exit = false;
+}
+for (int c3 = 0; c3 < l; c3++) {
+bool collide = (Collisions[c3].Active && collisioncount != 0);
+if(Collisions[c3].ExitB != !collide){Collisions[c3].Exit = !collide; Collisions[c3].ExitB = !collide;}
+if(Collisions[c3].EnterB != collide){Collisions[c3].Enter = collide; Collisions[c3].EnterB = collide;}
+}
+if(TriggerStays.Length != 0){ResizeArray(ref TriggerStays, 0);}
+if(TriggerEnters.Length != 0){ResizeArray(ref TriggerEnters, 0);}
+if(TriggerExits.Length != 0){ResizeArray(ref TriggerExits, 0);}
+}
+
+void OnTriggerStay (Collider collider) {
+ResizeArray(ref TriggerStays, TriggerStays.Length + 1);
+TriggerStays[TriggerStays.Length-1] = collider;
+}
+
+void OnTriggerEnter (Collider collider) {
+ResizeArray(ref TriggerEnters, TriggerEnters.Length + 1);
+TriggerEnters[TriggerEnters.Length-1] = collider;
+}
+
+void OnTriggerExit (Collider collider) {
+ResizeArray(ref TriggerExits, TriggerExits.Length + 1);
+TriggerExits[TriggerExits.Length-1] = collider;
+}
+
+
+void OnCollisionEnter(Collision collider) {
+	if (CollisionIgnoreMask != (CollisionIgnoreMask | (1 << collider.gameObject.layer))) {
+		collisioncount++;
+		HandleCollision(collider);
+	}
+}
+
+void OnCollisionExit(Collision collider) {
+	if (CollisionIgnoreMask != (CollisionIgnoreMask | (1 << collider.gameObject.layer))) collisioncount--;
+}
+
+void OnCollisionStay(Collision collider) {
+	if (CollisionIgnoreMask != (CollisionIgnoreMask | (1 << collider.gameObject.layer))) HandleCollision(collider);
+}
+
+void HandleCollision ( Collision collider){
+	if(RESET){
+	for (int c = 0; c < Collisions.Length; c++) {
+	Collisions[c].Normal = Vector3.zero;
+	Collisions[c].Point = Vector3.zero;
+	Collisions[c].Count = 0;
+	Collisions[c].Active = false;
+	for (int b2 = 0; b2 < Collisions[c].Ranges.Length; b2++) {
+	Collisions[c].Ranges[b2].Active = false;
+	}
+	}
+	RESET = false;
+	}
+	ContactPoint[] points = collider.contacts;
+	//Debug.Log(points[i].normal * -90);
+	for (int c2 = 0; c2 < Collisions.Length; c2++) {
+	bool localBool = (Collisions[c2].localTransform != null);
+	Vector3 pointpointpoint = (points[0].normal);
+	Vector3 pointpoint= (localBool ? Collisions[c2].localTransform.InverseTransformDirection(points[0].normal) : pointpointpoint);
+	Vector3 poooooint= points[0].point;
+
+	for (int b = 0; b < Collisions[c2].Ranges.Length; b++) {
+	if(Collisions[c2].Ranges[b].x){norm = pointpoint.x;}
+	if(Collisions[c2].Ranges[b].y){norm = pointpoint.y;}
+	if(Collisions[c2].Ranges[b].z){norm = pointpoint.z;}
+		if ((Collisions[c2].Ranges[b].greater && norm < AngleToNormal(Collisions[c2].Ranges[b].value)) ||
+		    (Collisions[c2].Ranges[b].less && norm > AngleToNormal(Collisions[c2].Ranges[b].value)) ||
+		    (Collisions[c2].Ranges[b].equals && RoundToPower(norm, 3) ==
+		     RoundToPower(AngleToNormal(Collisions[c2].Ranges[b].value), 3))) {
+			Collisions[c2].Ranges[b].Active = true;
+			Collisions[c2].Normal += pointpointpoint;
+			Collisions[c2].Point += poooooint;
+			Collisions[c2].Count++;
+			Collisions[c2].collision = collider;
+			// Collisions[c2].tag = collider.transform.tag;
+		}
+	}
+}
+for (int c3 = 0; c3 < Collisions.Length; c3++) {
+bool BOOL = true;
+for (int b3 = 0; b3 < Collisions[c3].Ranges.Length; b3++) {
+BOOL = (BOOL && Collisions[c3].Ranges[b3].Active);
+}
+
+Collisions[c3].Active = BOOL;
+}
+}
+
+/*
+void ApplyMovement ( Vector3 axis ,   float value ,   bool clampMin ,    bool clampMax ,    bool forceMin ,    bool forceMax ,    bool smoothForce ,    float min ,   float max ,   bool add ,    bool equals  ){
+ if(axis.x != 0){
+PHYSIXBUFFER.x.active = true;
+PHYSIXBUFFER.x.value = value;
+PHYSIXBUFFER.x.clampMin = clampMin;
+PHYSIXBUFFER.x.clampMax = clampMax;
+PHYSIXBUFFER.x.forceMin = forceMin;
+PHYSIXBUFFER.x.forceMax = forceMax;
+PHYSIXBUFFER.x.smoothForce = smoothForce;
+PHYSIXBUFFER.x.min = min;
+PHYSIXBUFFER.x.max = max;
+PHYSIXBUFFER.x.add = add;
+PHYSIXBUFFER.x.equals = equals;
+}
+if(axis.y != 0){
+PHYSIXBUFFER.y.active = true;
+PHYSIXBUFFER.y.value = value;
+PHYSIXBUFFER.y.clampMin = clampMin;
+PHYSIXBUFFER.y.clampMax = clampMax;
+PHYSIXBUFFER.y.forceMin = forceMin;
+PHYSIXBUFFER.y.forceMax = forceMax;
+PHYSIXBUFFER.y.smoothForce = smoothForce;
+PHYSIXBUFFER.y.min = min;
+PHYSIXBUFFER.y.max = max;
+PHYSIXBUFFER.y.add = add;
+PHYSIXBUFFER.y.equals = equals;
+}
+if(axis.z != 0){
+PHYSIXBUFFER.z.active = true;
+PHYSIXBUFFER.z.value = value;
+PHYSIXBUFFER.z.clampMin = clampMin;
+PHYSIXBUFFER.z.clampMax = clampMax;
+PHYSIXBUFFER.z.forceMin = forceMin;
+PHYSIXBUFFER.z.forceMax = forceMax;
+PHYSIXBUFFER.z.smoothForce = smoothForce;
+PHYSIXBUFFER.z.min = min;
+PHYSIXBUFFER.z.max = max;
+PHYSIXBUFFER.z.add = add;
+PHYSIXBUFFER.z.equals = equals;
+}
+ApplyMovement(PHYSIXBUFFER);
+}
+*/
+}
