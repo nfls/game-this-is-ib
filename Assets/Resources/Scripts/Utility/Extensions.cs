@@ -35,6 +35,8 @@ public static class Extensions {
 			foreach (var file in directory.GetFiles(pattern, option)) files.Add(file);
 		return files.ToArray();
 	}
+
+	public static string GetFaceCollisionDirection(this FaceDirection direction) => direction == FaceDirection.Right ? CharacterMotor.RIGHT_COLLISION : CharacterMotor.LEFT_COLLISION;
 }
 
 public class CameraBackgroundColorAttribute : PropertyAttribute { }

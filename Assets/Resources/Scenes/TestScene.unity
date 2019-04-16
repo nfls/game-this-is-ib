@@ -2577,7 +2577,7 @@ PrefabInstance:
     - target: {fileID: 2551969073804708948, guid: dfe1f71330c6145838e6723cd72c322b,
         type: 3}
       propertyPath: counterInteractionText
-      value: " DODGE NEEDS \n TO COOLDOWN "
+      value: " DODGE NEEDS TO \n COOLDOWN AFTER USED !  "
       objectReference: {fileID: 0}
     - target: {fileID: 2551969073804708948, guid: dfe1f71330c6145838e6723cd72c322b,
         type: 3}

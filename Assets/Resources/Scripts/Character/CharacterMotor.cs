@@ -4,10 +4,10 @@ using UnityEngine;
 [RequireComponent(typeof(SphereCollider))]
 public class CharacterMotor : MonoBehaviour {
 	
-	private const string BOTTOM_COLLISION = "Bottom";
-	private const string FORWARD_COLLISION = "Forward";
-	private const string BACKWARD_COLLISION = "Backward";
-	private const string GLOBAL_MOVEMENT = "Global";
+	public const string BOTTOM_COLLISION = "Bottom";
+	public const string RIGHT_COLLISION = "Right";
+	public const string LEFT_COLLISION = "Left";
+	public const string GLOBAL_MOVEMENT = "Global";
 	
 	private static readonly Vector3 ZeroVector3 = Vector3.zero;
 	private static readonly Quaternion IdentityQuaternion = Quaternion.identity;
@@ -28,7 +28,7 @@ public class CharacterMotor : MonoBehaviour {
 
 	public bool IsGrounded => _isGrounded;
 
-	public bool IsFaceCollided => _physix.IsColliding(FORWARD_COLLISION);
+	public bool IsFaceCollided =>  _physix.IsColliding(_faceDirection.GetFaceCollisionDirection());
 
 	public Collider BodyCollider => _bodyCollider;
 
@@ -82,13 +82,13 @@ public class CharacterMotor : MonoBehaviour {
 		};
 		
 		_physix.Collisions[1] = new Physix.PHYSIXCOLLISION {
-			Name = FORWARD_COLLISION,
+			Name = RIGHT_COLLISION,
 			Active = true,
 			Ranges = new[] { new Physix.PHYSIXBOUNDS { x = true, greater = true, equals = true, value = 45f } }
 		};
 		
 		_physix.Collisions[2] = new Physix.PHYSIXCOLLISION {
-			Name = BACKWARD_COLLISION,
+			Name = LEFT_COLLISION,
 			Active = true,
 			Ranges = new[] { new Physix.PHYSIXBOUNDS { x = true, less = true, equals = true, value = -45f } }
 		};
@@ -203,8 +203,8 @@ public class CharacterMotor : MonoBehaviour {
 
 	private void Teleport(float distance) {
 
-		if (_physix.IsColliding(FORWARD_COLLISION))
-			if (_physix.GetCollision(FORWARD_COLLISION).gameObject.layer != LayerManager.CharacterLayer) return;
+		if (_physix.IsColliding(RIGHT_COLLISION))
+			if (_physix.GetCollision(RIGHT_COLLISION).gameObject.layer != LayerManager.CharacterLayer) return;
 
 		gameObject.layer = LayerManager.DodgeLayer;
 		RaycastHit hitInfo;

@@ -4,15 +4,15 @@ using Random = UnityEngine.Random;
 
 public class NaiveAIOperator : CharacterOperator {
 
-	public float thinkIntern = .2f;
+	public float thinkIntern = .1f;
 	public float detectionDistance = 8f;
 	public float maximumSight = 20f;
 	public float jumpRequirementHeight = .5f;
-	public float minAttackDistance = .5f;
-	public float maxAttackDistance = 1.5f;
+	public float minAttackDistance = 1f;
+	public float maxAttackDistance = 2f;
 	public bool onlyAttackWithStamina = true;
 	[Range(0f, 1f)]
-	public float aggressiveness = .5f;
+	public float aggressiveness = .0f;
 
 	protected CharacterController _target;
 	protected Action _currerntAction;
@@ -59,9 +59,11 @@ public class NaiveAIOperator : CharacterOperator {
 						_characterController.OnReceiveAttackCommand();
 					}
 			} else {
-				if (diff.x > 0 && !GetComponent<CharacterMotor>().IsFaceCollided) _currerntAction = _characterController.MoveRight;
-				else _currerntAction = _characterController.MoveLeft;
-				if (diff.y > jumpRequirementHeight) _characterController.Jump();
+				bool isFaceCollided = GetComponent<CharacterMotor>().IsFaceCollided;
+				if (!isFaceCollided) {
+					if (diff.x > 0) _currerntAction = _characterController.MoveRight;
+					else _currerntAction = _characterController.MoveLeft;
+				} else _characterController.Jump();
 			}
 		} else {
 			int length = Physics.RaycastNonAlloc(transform.position, new Vector3((float) _characterController.FaceDirection, 0f, 0f), hitResults, detectionDistance, 1 << LayerManager.TerrainLayer | 1 << LayerManager.DeviceLayer | 1 << LayerManager.CharacterLayer, QueryTriggerInteraction.Ignore);
