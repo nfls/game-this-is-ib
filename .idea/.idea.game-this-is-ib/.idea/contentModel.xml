@@ -63,14 +63,6 @@
         <e p="local" t="Include">
           <e p="InterlocutionData.txt" t="Include" />
         </e>
-        <e p="ParticleSystemPreview" t="Include">
-          <e p="Editor" t="Include">
-            <e p="OverrideEditor.cs" t="Include" />
-            <e p="ParticleSystemEditorUtilsReflect.cs" t="Include" />
-            <e p="ParticleSystemGameObjectEditor.cs" t="Include" />
-            <e p="ParticleSystemPreview.cs" t="Include" />
-          </e>
-        </e>
         <e p="Physix" t="Include">
           <e p="Physix.cs" t="Include" />
           <e p="PreviewScenes" t="Include">
@@ -79,6 +71,7 @@
               <e p="FirstPersonPhysixMove.cs" t="Include" />
               <e p="ReallySimplePhysixMove.cs" t="Include" />
               <e p="SimplePhysixMove.cs" t="Include" />
+              <e p="SimplePlatformMover.cs" t="Include" />
               <e p="TerribleCamera.cs" t="Include" />
               <e p="TerribleFPSCamera.cs" t="Include" />
             </e>
@@ -86,6 +79,11 @@
           <e p="README.txt" t="Include" />
           <e p="Scripts" t="Include">
             <e p="PhysixInspector.cs" t="Include" />
+          </e>
+        </e>
+        <e p="Plugins" t="Include">
+          <e p="Editor" t="Include">
+            <e p="VSCode.cs" t="Include" />
           </e>
         </e>
         <e p="Resources" t="Include">
@@ -174,6 +172,7 @@
               <e p="LaunchSceneController.cs" t="Include" />
             </e>
             <e p="Sprite" t="Include">
+              <e p="AreaDamagerController.cs" t="Include" />
               <e p="ComplexNewtonSpriteController.cs" t="Include" />
               <e p="ComplexShooterSpriteController.cs" t="Include" />
               <e p="ComplexThrowerSpriteController.cs" t="Include" />
@@ -222,6 +221,7 @@
               <e p="Extensions.cs" t="Include" />
               <e p="JoystickUtils.cs" t="Include" />
               <e p="MonoSingleton.cs" t="Include" />
+              <e p="ObjectPool.cs" t="Include" />
               <e p="PhysicsVisualizer.cs" t="Include" />
               <e p="PrimitiveHelper.cs" t="Include" />
               <e p="SingletonManager.cs" t="Include" />
@@ -357,6 +357,7 @@
         <e p="bin" t="ExcludeRecursive" />
       </e>
     </e>
-    <e p="$USER_HOME$/Library/Caches/Rider2018.1/resharper-host/local/Transient/ReSharperHost/v12/SolutionCaches/_game-this-is-ib.-1397334290.00" t="ExcludeRecursive" />
+    <e p="$USER_HOME$/Library/Caches/Rider2018.3/extResources" t="IncludeRecursive" />
+    <e p="$USER_HOME$/Library/Caches/Rider2018.3/resharper-host/local/Transient/ReSharperHost/v183/SolutionCaches/_game-this-is-ib.-1397334290.00" t="ExcludeRecursive" />
   </component>
 </project>

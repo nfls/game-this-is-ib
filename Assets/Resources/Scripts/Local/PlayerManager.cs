@@ -12,13 +12,10 @@ public static class PlayerManager {
 
 	private static LocalPlayerData localPlayerDataCache;
 
-	static PlayerManager() {
-		localPlayerDataCache = new LocalPlayerData();
-	}
+	static PlayerManager() => localPlayerDataCache = new LocalPlayerData();
 
 	public static void Init() {
 		if (!File.Exists(PlayerDataPath)) GeneratePlayerData();
-		
 		LoadLocalPlayerData();
 	}
 
@@ -57,11 +54,7 @@ public static class PlayerManager {
 		RefreshLocalPlayerDataCache();
 	}
 
-	public static void SaveLocalPlayerData() {
-		LocalDataManager.WriteDataToFile(PlayerDataPath, new LocalPlayerDataProxy(localPlayerDataCache));
-	}
+	public static void SaveLocalPlayerData() => LocalDataManager.WriteDataToFile(PlayerDataPath, new LocalPlayerDataProxy(localPlayerDataCache));
 
-	public static void RefreshLocalPlayerDataCache() {
-		localPlayerDataCache.Cache(localPlayerData);
-	}
+	public static void RefreshLocalPlayerDataCache() => localPlayerDataCache.Cache(localPlayerData);
 }

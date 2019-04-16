@@ -3,6 +3,10 @@
 public sealed class InputOperator : CharacterOperator {
 	
 	public InputMapper InputMapper => _inputMapper;
+	public bool IsInControl {
+		get { return _inputMapper.isInControl; }
+		set { _inputMapper.isInControl = value; }
+	}
 
 	public InteractionSystem InteractionSystem {
 		get { return _interactionSystem; }

@@ -1,6 +1,5 @@
 using UnityEngine;
 using System.Collections;
-using UnityEngine.Profiling;
 
 public enum AxisType {x,y,z,xy,xz,yz,xyz}
 public enum ValueType {value, min, max, valuemin, valuemax, minmax, valueminmax}
@@ -10,14 +9,25 @@ public enum TriggerType {name, tag, layer}
 [RequireComponent(typeof(Collider))]
 public class Physix : MonoBehaviour {
 
+static Collider[] SceneColliders;
+private Component[] Colliders;
 private bool pause = false;
-public Vector3 PauseVelocity = Vector3.zero;
+private Vector3 PauseVelocity = Vector3.zero;
 private Vector3 PauseAngularVelocity = Vector3.zero;
+private Vector3 PauseVelocity2 = Vector3.zero;
+private Vector3 PauseAngularVelocity2 = Vector3.zero;
 [HideInInspector]
 public Rigidbody rigidbody;
-public LayerMask CollisionIgnoreMask = 0;
 public PHYSIXCOLLISION[] Collisions;
+public bool FixMovingPlatforms = true;
+public bool PlatformsRetainVelocity = true;
+public float PlatformsVelocityMultiplier = 25;
+public LayerMask PlatformLayerMask = 0;
+public bool TriggerCollision = false;
+public float TriggerBounceMultiplier = 0.5f;
+public LayerMask IgnoreCollision = 0;
 public PHYSIXMOVE[] Movements;
+//public Vector3 PhysicsRotation;
 private float collisioncount = 0;
 private float norm = 0.0f;
 private bool RESET = false;
@@ -76,7 +86,11 @@ public class PHYSIXCOLLISION {
 	[HideInInspector]
 	public Vector3 Normal;
 	[HideInInspector]
+	public Vector3 LastNormal;
+	[HideInInspector]
 	public Vector3 Point;
+	[HideInInspector]
+	public Vector3 LastPoint;
 	[HideInInspector]
 	public float Count = 0;
 	[HideInInspector]
@@ -87,6 +101,16 @@ public class PHYSIXCOLLISION {
 	public bool Display = false;
 	public Transform localTransform;
 	public PHYSIXBOUNDS[] Ranges;
+	public bool Snap = false;
+	public float SnapOffset = 0.1f;
+	public float SnapBreakVelocity = 10;
+	public float ApplyMovementBreakVelocity = 10;
+	public float SnapAngle = 60;
+	[HideInInspector]
+	public int SnapDelay;
+	[HideInInspector]
+	public Transform SnapTransform = null;
+	public LayerMask IgnoreMask = 0;
 	
 	public PHYSIXCOLLISION () {
 	Name = "New Collision";
@@ -95,13 +119,21 @@ public class PHYSIXCOLLISION {
 	EnterB = false;
 	ExitB = false;
 	Active = false;
+	SnapDelay = 0;
 	Normal = new Vector3(0,0,0);
+	LastNormal = new Vector3(0,0,0);
+	LastPoint = new Vector3(0,0,0);
 	Point = new Vector3(0,0,0);
 	Count = 0;
 	tag = "";
 	Display = false;
+	Snap = false;
+	SnapOffset = 0.1f;
+	SnapBreakVelocity = 10;
+	SnapAngle = 60;
 	Ranges = new PHYSIXBOUNDS[1];
 	Ranges[0] = new PHYSIXBOUNDS();
+	IgnoreMask = 0;
 	}
 
 	public void Equals (PHYSIXCOLLISION rhs) {
@@ -111,11 +143,18 @@ public class PHYSIXCOLLISION {
 	EnterB = false;
 	ExitB = false;
 	Active = false;
+	SnapDelay = 0;
 	Normal = new Vector3(0,0,0);
+	LastNormal = new Vector3(0,0,0);
+	LastPoint = new Vector3(0,0,0);
 	Point = new Vector3(0,0,0);
 	Count = 0;
 	tag = "";
 	Display = false;
+	Snap = rhs.Snap;
+	SnapOffset = rhs.SnapOffset;
+	SnapBreakVelocity = rhs.SnapBreakVelocity;
+	SnapAngle = rhs.SnapAngle;
 	localTransform = rhs.localTransform;
 	}
 };
@@ -131,7 +170,7 @@ public class PHYSIXBOUNDS {
 	[Tooltip ("Is normal*-90 less than value?")]
 	public bool less = false;
 	[Tooltip ("Is normal*-90 greater than value?")]
-	public bool greater = true;
+	public bool greater = false;
 	[Tooltip ("Is normal*-90 equal to value?")]
 	public bool equals = true;
 	public float value = 0.0f;
@@ -186,6 +225,7 @@ public class PHYSIXMOVE {
 	x.Equals(rhs.x);
 	y.Equals(rhs.y);
 	z.Equals(rhs.z);
+	localTransform = rhs.localTransform;
 	Display = false;
 	}
 };
@@ -302,7 +342,7 @@ Buffer3Axis = axis3;
 ApplyMovement(MOVE);
 }
 
-public void ApplyMovement ( string name ,   Vector3 input, ValueType value){
+public void ApplyMovement ( string name , Vector3 input, ValueType value){
 int index = FindIndexM(name);
 PHYSIXMOVE MOVE = Movements[index];
 BufferValueCount = 3;
@@ -417,33 +457,46 @@ if(B3Max){ZMAX = Buffer3Value;}
 }
 
 if(MOVE.x.active || XACTIVE){
-if(MOVE.x.add && (!MOVE.x.clampMin || READ.x >= XMIN || XVALUE > 0) && (!MOVE.x.clampMax || READ.x <= XMAX || XVALUE < 0)){Velocity.x += XVALUE;}
+if(MOVE.x.add && (!MOVE.x.clampMin || Velocity.x >= XMIN || XVALUE > 0) && (!MOVE.x.clampMax || Velocity.x <= XMAX || XVALUE < 0)){Velocity.x += XVALUE;}
 if(MOVE.x.equals){Velocity.x = XVALUE;}
-if(MOVE.x.forceMin && READ.x < XMIN){Velocity.x = Mathf.MoveTowards(Velocity.x, XMIN, MOVE.x.smoothForce ? XVALUE : XMIN - READ.x);}
-if(MOVE.x.forceMax && READ.x > XMAX){Velocity.x = Mathf.MoveTowards(Velocity.x, XMAX, MOVE.x.smoothForce ? XVALUE : READ.x - XMAX);}
+if(MOVE.x.forceMin && Velocity.x < XMIN){Velocity.x = Mathf.MoveTowards(Velocity.x, XMIN, MOVE.x.smoothForce ? XVALUE : XMIN - Velocity.x);}
+if(MOVE.x.forceMax && Velocity.x > XMAX){Velocity.x = Mathf.MoveTowards(Velocity.x, XMAX, MOVE.x.smoothForce ? XVALUE : Velocity.x - XMAX);}
 }
 if(MOVE.y.active || YACTIVE){
-if(MOVE.y.add && (!MOVE.y.clampMin || READ.y >= YMIN || YVALUE > 0) && (!MOVE.y.clampMax || READ.y <= YMAX || YVALUE < 0)){Velocity.y += YVALUE;}
+if(MOVE.y.add && (!MOVE.y.clampMin || Velocity.y >= YMIN || YVALUE > 0) && (!MOVE.y.clampMax || Velocity.y <= YMAX || YVALUE < 0)){Velocity.y += YVALUE;}
 if(MOVE.y.equals){Velocity.y = YVALUE;}
-if(MOVE.y.forceMin && READ.y < YMIN){Velocity.y = Mathf.MoveTowards(Velocity.y, YMIN, MOVE.y.smoothForce ? YVALUE : YMIN - READ.y);}
-if(MOVE.y.forceMax && READ.y > YMAX){Velocity.y = Mathf.MoveTowards(Velocity.y, YMAX, MOVE.y.smoothForce ? YVALUE : READ.y - YMAX);}
+if(MOVE.y.forceMin && Velocity.y < YMIN){Velocity.y = Mathf.MoveTowards(Velocity.y, YMIN, MOVE.y.smoothForce ? YVALUE : YMIN - Velocity.y);}
+if(MOVE.y.forceMax && Velocity.y > YMAX){Velocity.y = Mathf.MoveTowards(Velocity.y, YMAX, MOVE.y.smoothForce ? YVALUE : Velocity.y - YMAX);}
 }
 if(MOVE.z.active || ZACTIVE){
-if(MOVE.z.add && (!MOVE.z.clampMin || READ.z >= ZMIN || ZVALUE > 0) && (!MOVE.z.clampMax || READ.z <= ZMAX || ZVALUE < 0)){Velocity.z += ZVALUE;}
+if(MOVE.z.add && (!MOVE.z.clampMin || Velocity.z >= ZMIN || ZVALUE > 0) && (!MOVE.z.clampMax || Velocity.z <= ZMAX || ZVALUE < 0)){Velocity.z += ZVALUE;}
 if(MOVE.z.equals){Velocity.z = ZVALUE;}
-if(MOVE.z.forceMin && READ.z < ZMIN){Velocity.z = Mathf.MoveTowards(Velocity.z, ZMIN, MOVE.z.smoothForce ? ZVALUE : ZMIN - READ.z);}
-if(MOVE.z.forceMax && READ.z > ZMAX){Velocity.z = Mathf.MoveTowards(Velocity.z, ZMAX, MOVE.z.smoothForce ? ZVALUE : READ.z - ZMAX);}
+if(MOVE.z.forceMin && Velocity.z < ZMIN){Velocity.z = Mathf.MoveTowards(Velocity.z, ZMIN, MOVE.z.smoothForce ? ZVALUE : ZMIN - Velocity.z);}
+if(MOVE.z.forceMax && Velocity.z > ZMAX){Velocity.z = Mathf.MoveTowards(Velocity.z, ZMAX, MOVE.z.smoothForce ? ZVALUE : Velocity.z - ZMAX);}
 }
 rigidbody.velocity = (localBool ? MOVE.localTransform.TransformDirection(Velocity) : Velocity);
+
+for (int c = 0; c < Collisions.Length; c++) {
+if(!Collisions[c].Snap || !Collisions[c].Active){continue;}
+Vector3 Normal = Collisions[c].LastNormal;
+float magnitude = Vector3.Project(rigidbody.velocity, Normal).magnitude;
+if(magnitude >= Collisions[c].ApplyMovementBreakVelocity){Collisions[c].SnapDelay = Time.frameCount + 2;}
+
+}
+
 }
 }
 
 public void Pause () {
-if(pause != true){pause = true; PauseVelocity = rigidbody.velocity; PauseAngularVelocity = rigidbody.angularVelocity; rigidbody.velocity = Vector3.zero; rigidbody.angularVelocity = Vector3.zero;}
+if(pause != true){pause = true; PauseVelocity = rigidbody.velocity; PauseAngularVelocity = rigidbody.angularVelocity; PauseVelocity2 = Vector3.zero; PauseAngularVelocity2 = Vector3.zero;}
+rigidbody.velocity = PauseVelocity2;
+rigidbody.angularVelocity = PauseAngularVelocity2;
 }
 
 public void Pause (float percent) {
-if(pause != true){pause = true; PauseVelocity = rigidbody.velocity; PauseAngularVelocity = rigidbody.angularVelocity; rigidbody.velocity *= percent; rigidbody.angularVelocity *= percent;}
+if(pause != true){pause = true; PauseVelocity = rigidbody.velocity; PauseAngularVelocity = rigidbody.angularVelocity; PauseVelocity2 = rigidbody.velocity * percent; PauseAngularVelocity2 = rigidbody.angularVelocity * percent;}
+rigidbody.velocity = PauseVelocity2;
+rigidbody.angularVelocity = PauseAngularVelocity2;
 }
 
 public void Play () {
@@ -534,54 +587,54 @@ return (Collisions[index].Enter);
 
 public bool IsTriggering (string identifier, TriggerType identifierType){
 for (int i = 0; i < TriggerStays.Length; i++) {
-if(identifierType == TriggerType.name && TriggerStays[i].name == identifier){return true; break;}
-if(identifierType == TriggerType.tag && TriggerStays[i].tag == identifier){return true; break;}
-if(identifierType == TriggerType.layer && TriggerStays[i].gameObject.layer == LayerMask.NameToLayer(identifier)){return true; break;}
+if(identifierType == TriggerType.name && TriggerStays[i].name == identifier){return true;}
+if(identifierType == TriggerType.tag && TriggerStays[i].tag == identifier){return true;}
+if(identifierType == TriggerType.layer && TriggerStays[i].gameObject.layer == LayerMask.NameToLayer(identifier)){return true;}
 }
 return false;
 }
 
 public bool IsTriggerEntering (string identifier, TriggerType identifierType){
 for (int i = 0; i < TriggerEnters.Length; i++) {
-if(identifierType == TriggerType.name && TriggerEnters[i].name == identifier){return true; break;}
-if(identifierType == TriggerType.tag && TriggerEnters[i].tag == identifier){return true; break;}
-if(identifierType == TriggerType.layer && TriggerEnters[i].gameObject.layer == LayerMask.NameToLayer(identifier)){return true; break;}
+if(identifierType == TriggerType.name && TriggerEnters[i].name == identifier){return true;}
+if(identifierType == TriggerType.tag && TriggerEnters[i].tag == identifier){return true;}
+if(identifierType == TriggerType.layer && TriggerEnters[i].gameObject.layer == LayerMask.NameToLayer(identifier)){return true;}
 }
 return false;
 }
 
 public bool IsTriggerExiting (string identifier, TriggerType identifierType){
 for (int i = 0; i < TriggerExits.Length; i++) {
-if(identifierType == TriggerType.name && TriggerExits[i].name == identifier){return true; break;}
-if(identifierType == TriggerType.tag && TriggerExits[i].tag == identifier){return true; break;}
-if(identifierType == TriggerType.layer && TriggerExits[i].gameObject.layer == LayerMask.NameToLayer(identifier)){return true; break;}
+if(identifierType == TriggerType.name && TriggerExits[i].name == identifier){return true;}
+if(identifierType == TriggerType.tag && TriggerExits[i].tag == identifier){return true;}
+if(identifierType == TriggerType.layer && TriggerExits[i].gameObject.layer == LayerMask.NameToLayer(identifier)){return true;}
 }
 return false;
 }
 
 public Collider GetTrigger (string identifier, TriggerType identifierType){
 for (int i = 0; i < TriggerStays.Length; i++) {
-if(identifierType == TriggerType.name && TriggerStays[i].name == identifier){return TriggerStays[i]; break;}
-if(identifierType == TriggerType.tag && TriggerStays[i].tag == identifier){return TriggerStays[i]; break;}
-if(identifierType == TriggerType.layer && TriggerStays[i].gameObject.layer == LayerMask.NameToLayer(identifier)){return TriggerStays[i]; break;}
+if(identifierType == TriggerType.name && TriggerStays[i].name == identifier){return TriggerStays[i];}
+if(identifierType == TriggerType.tag && TriggerStays[i].tag == identifier){return TriggerStays[i];}
+if(identifierType == TriggerType.layer && TriggerStays[i].gameObject.layer == LayerMask.NameToLayer(identifier)){return TriggerStays[i];}
 }
 return null;
 }
 
 public Collider GetTriggerEntering (string identifier, TriggerType identifierType){
 for (int i = 0; i < TriggerEnters.Length; i++) {
-if(identifierType == TriggerType.name && TriggerEnters[i].name == identifier){return TriggerEnters[i]; break;}
-if(identifierType == TriggerType.tag && TriggerEnters[i].tag == identifier){return TriggerEnters[i]; break;}
-if(identifierType == TriggerType.layer && TriggerEnters[i].gameObject.layer == LayerMask.NameToLayer(identifier)){return TriggerEnters[i]; break;}
+if(identifierType == TriggerType.name && TriggerEnters[i].name == identifier){return TriggerEnters[i];}
+if(identifierType == TriggerType.tag && TriggerEnters[i].tag == identifier){return TriggerEnters[i];}
+if(identifierType == TriggerType.layer && TriggerEnters[i].gameObject.layer == LayerMask.NameToLayer(identifier)){return TriggerEnters[i];}
 }
 return null;
 }
 
 public Collider GetTriggerExiting (string identifier, TriggerType identifierType){
 for (int i = 0; i < TriggerExits.Length; i++) {
-if(identifierType == TriggerType.name && TriggerExits[i].name == identifier){return TriggerExits[i]; break;}
-if(identifierType == TriggerType.tag && TriggerExits[i].CompareTag(identifier)){return TriggerExits[i]; break;}
-if(identifierType == TriggerType.layer && TriggerExits[i].gameObject.layer == LayerMask.NameToLayer(identifier)){return TriggerExits[i]; break;}
+if(identifierType == TriggerType.name && TriggerExits[i].name == identifier){return TriggerExits[i];}
+if(identifierType == TriggerType.tag && TriggerExits[i].tag == identifier){return TriggerExits[i];}
+if(identifierType == TriggerType.layer && TriggerExits[i].gameObject.layer == LayerMask.NameToLayer(identifier)){return TriggerExits[i];}
 }
 return null;
 }
@@ -599,6 +652,170 @@ public float RoundToPower (float input, float power) {
 		return Mathf.RoundToInt(input * powerMult) / powerMult;
 }
 
+void FixedUpdate () {
+HandleMovingPlats();
+collisioncount = 0;
+Snap();
+ResetTriggerBanks();
+}
+
+Vector3 ClosestPointOnTriangle (int index, MeshCollider mesh, Vector3 point) {
+Vector3[] vertices = mesh.sharedMesh.vertices;
+int[] triangles = mesh.sharedMesh.triangles;
+Vector3 p0 = mesh.transform.TransformPoint(vertices[triangles[index * 3 + 0]]);
+Vector3 p1 = mesh.transform.TransformPoint(vertices[triangles[index * 3 + 1]]);
+Vector3 p2 = mesh.transform.TransformPoint(vertices[triangles[index * 3 + 2]]);
+
+return ClosestPointOnTriangle(p0,p1,p2,point);
+}
+
+Vector3 ClosestPointOnTriangle (Vector3 p1,Vector3 p2,Vector3 p3, Vector3 point) {
+Vector3 trianglepoint = (p1 + p2 + p3) / 3f;
+
+Vector3 normal = Vector3.Cross((p2-p1).normalized, (p3-p1).normalized);
+Vector3 returnvector = Vector3.ProjectOnPlane(point - trianglepoint, normal);
+Vector3 endpoint = trianglepoint + returnvector;
+
+Vector3 p1direct = (ClosestPointOnLine(p2, p3, trianglepoint, true) - trianglepoint);
+Vector3 p2direct = (ClosestPointOnLine(p1, p3, trianglepoint, true) - trianglepoint);
+Vector3 p3direct = (ClosestPointOnLine(p2, p1, trianglepoint, true) - trianglepoint);
+if(Vector3.Project(returnvector, p1direct.normalized).magnitude > p1direct.magnitude && Vector3.Angle(returnvector, p1direct) < 90){endpoint = ClosestPointOnLine(p2, p3, endpoint);}
+returnvector = Vector3.ProjectOnPlane(endpoint - trianglepoint, normal);
+if(Vector3.Project(returnvector, p2direct.normalized).magnitude > p2direct.magnitude && Vector3.Angle(returnvector, p2direct) < 90){endpoint = ClosestPointOnLine(p1, p3, endpoint);}
+returnvector = Vector3.ProjectOnPlane(endpoint - trianglepoint, normal);
+if(Vector3.Project(returnvector, p3direct.normalized).magnitude > p3direct.magnitude && Vector3.Angle(returnvector, p3direct) < 90){endpoint = ClosestPointOnLine(p2, p1, endpoint);}
+
+return endpoint;
+}
+
+Vector3 ClosestPointOnLine (Vector3 line1, Vector3 line2, Vector3 point) {
+Vector3 min = line2 - line1;
+Vector3 add = Vector3.ClampMagnitude(Vector3.Project(point - line1, min), min.magnitude);
+		return line1 + (Vector3.Angle(add, min) < 90 ? add : Vector3.zero);
+}
+
+Vector3 ClosestPointOnLine (Vector3 line1, Vector3 line2, Vector3 point, bool Unclamped) {
+Vector3 min = line2 - line1;
+Vector3 add = Vector3.Project(point - line1, min);
+		return line1 + add;
+}
+
+float GetColliderSize () {
+		float count = 0;
+		float value = 0;
+		foreach (Collider collide in Colliders) {
+			count++;
+			value += collide.bounds.size.magnitude;
+		}
+		return (count == 0 ? 1 : value / count);
+}
+
+float GetColliderRadius () {
+		float count = 0;
+		float value = 0;
+		foreach (SphereCollider collide in Colliders) {
+			count++;
+			value += collide.radius;
+		}
+		return (count == 0 ? 1 : value / count);
+}
+
+public void DelaySnap ( string name  ){
+int index= FindIndex(name);
+		Collisions[index].SnapDelay = Time.frameCount + 1;
+}
+
+public void DelaySnap (string name, int frames){
+int index= FindIndex(name);
+		Collisions[index].SnapDelay = Time.frameCount + 1 + frames;
+}
+
+public Collider GetClosestCollider (Vector3 startpos, float maxradius) {
+	float radius = 0.0f;
+	float change = (maxradius / 10f);
+	bool updown = false;
+	Collider[] colliders = Physics.OverlapSphere(startpos, radius);
+	int length = colliders.Length + 1;
+	int count = 100;
+	while (colliders.Length != length && count > 0) {
+		if(colliders.Length < length) {
+			if(updown != false) {updown = false; change /= 2f;}
+			radius += change;
+			colliders = Physics.OverlapSphere(startpos, radius);
+		}
+		if(colliders.Length > length) {
+			if(updown != true) {updown = true; change /= 2f;}
+			radius -= change;
+			colliders = Physics.OverlapSphere(startpos, radius);
+		}
+		count--;
+	}
+	Collider returncollider = null;
+	for (int i = 0; i < colliders.Length; i++) {
+		if(!IsOurCollider(colliders[i])){returncollider = colliders[i]; break;}
+	}
+	return returncollider;
+}
+
+public void Snap () {
+RaycastHit hit;
+RaycastHit hit2;
+for (int i = 0; i < Collisions.Length; i++) {
+if(!Collisions[i].Snap || !Collisions[i].Active || Collisions[i].SnapDelay >= Time.frameCount){continue;}
+Collision collision = Collisions[i].collision;
+if(collision == null || collision.collider == null){continue;}
+
+Vector3 Normal = Collisions[i].LastNormal.normalized;
+Vector3 center = GetColliderCenter();
+
+float snapdistance = Mathf.Clamp(rigidbody.velocity.magnitude, 1, 100000) * Collisions[i].SnapOffset;
+Collider snapto = Collisions[i].collision.collider;
+if (Physics.Raycast(new Ray(center, -Normal), out hit2, snapdistance, ~(Collisions[i].IgnoreMask | IgnoreCollision))) {
+	snapto = hit2.collider;
+}
+if(snapto == null) {continue;}
+
+bool ismesh = snapto.GetType() == typeof(MeshCollider);
+
+Vector3 direction;
+float distance;
+if(Colliders.Length <= 0 || Colliders[0] == null) {continue;}
+Vector3 nowscale = transform.localScale;
+transform.localScale += (Vector3.one);
+bool overlapped = Physics.ComputePenetration(
+(Collider)Colliders[0], transform.position, transform.rotation,
+snapto, snapto.transform.position, snapto.transform.rotation,
+out direction, out distance
+);
+transform.localScale = nowscale;
+
+if (Physics.SphereCast(center + direction.normalized * transform.localScale.magnitude * 0.5f, GetColliderRadius(), -direction.normalized, out hit, snapdistance, ~(Collisions[i].IgnoreMask | IgnoreCollision))) {
+float maxangle = Mathf.Abs(Vector3.Angle(hit.normal, Normal));
+if (Collisions[i].IgnoreMask != (Collisions[i].IgnoreMask | (1 << snapto.gameObject.layer)) && IgnoreCollision != (IgnoreCollision | (1 << snapto.gameObject.layer)) && snapto.Raycast(new Ray(center, -(direction.normalized + direction.normalized + direction.normalized + Normal) * 0.25f), out hit2, snapdistance)) {
+	maxangle = Mathf.Abs(Vector3.Angle(hit2.normal, Normal));
+}
+
+Quaternion torot = Quaternion.FromToRotation(Normal, hit.normal);
+Vector3 newvelo = torot * rigidbody.velocity;
+float magnitude = Vector3.Project(rigidbody.velocity, hit.normal).magnitude;
+float magnitude2 = Vector3.Project(rigidbody.velocity, Normal).magnitude;
+Vector3 colliderpoint = GetClosestColliderPoint(hit.point);
+//if(magnitude >= Collisions[i].SnapBreakVelocity && magnitude2 >= Collisions[i].SnapBreakVelocity){Debug.Log(rigidbody.velocity);}
+//if(maxangle > Collisions[i].SnapAngle){Debug.Log("ANGLE");}
+//if(!NormalCollides(i, hit.normal)){Debug.Log("CANNOT");}
+if((magnitude >= Collisions[i].SnapBreakVelocity && magnitude2 >= Collisions[i].SnapBreakVelocity) || maxangle > Collisions[i].SnapAngle || !NormalCollides(i, hit.normal)){continue;}
+
+Vector3 tomove = hit.point - colliderpoint;
+
+transform.position += tomove;
+Vector3 newvelo2 = Vector3.ProjectOnPlane(newvelo, hit.normal);
+rigidbody.velocity = newvelo2;
+collisioncount++;
+Collisions[i].LastNormal = hit.normal;
+}
+}
+}
+
 void Update (){
 	RESET = true;
 	if(collisioncount < 0){collisioncount = 0;}
@@ -614,34 +831,97 @@ array[i] = Temp[i];
 }
 }
 
+public void RefreshColliders () {
+Colliders = GetComponents(typeof(Collider));
+}
+
+public bool IsOurCollider (Collider collide) {
+for (int i = 0; i < Colliders.Length; i++) {
+if(collide == Colliders[i]) {return true;}
+}
+return false;
+}
+
 void Start () {
+RefreshColliders();
 if(rigidbody == null){rigidbody = transform.GetComponent<Rigidbody>();}
 }
 
+Vector3 GetClosestColliderPoint (Vector3 point) {
+Vector3 returnpoint = Vector3.zero;
+bool first = true;
+foreach (Collider collide in Colliders) {
+Vector3 closerpoint = collide.ClosestPoint(point);
+if(!first && Vector3.Distance(point, returnpoint) > Vector3.Distance(point, closerpoint)){returnpoint = closerpoint;}
+if(first){returnpoint = closerpoint; first = false;}
+}
+return returnpoint;
+}
+Vector3 GetColliderCenter () {
+Vector3 returnpoint = Vector3.zero;
+		float count = 0;
+foreach (Collider collide in Colliders) {
+			returnpoint += collide.bounds.center;
+			count++;
+}
+		return returnpoint / count;
+}
+
+Transform Platform;
+bool firstplat = true;
+Vector3 platlastpos = Vector3.zero;
+Vector3 platlastpos2 = Vector3.zero;
+Vector3 platvelocity = Vector3.zero;
+Quaternion platlastrot = Quaternion.identity;
+void HandleMovingPlats () {
+	if(collisioncount <= 0 && Platform != null) {Platform = null; if(PlatformsRetainVelocity) {rigidbody.velocity += platvelocity * PlatformsVelocityMultiplier;}}
+	if(!FixMovingPlatforms || Platform == null || collisioncount <= 0){return;}
+	if(!firstplat) {
+		Vector3 tomove = Platform.position - platlastpos;
+		Quaternion torotate = Platform.rotation * Quaternion.Inverse(platlastrot);
+		Vector3 tomove2 = (torotate * platlastpos2) - platlastpos2;
+		
+		platvelocity = (tomove + tomove2);
+		transform.position += platvelocity;
+		//transform.eulerAngles += torotate;
+	}
+	platlastpos = Platform.position;
+	platlastrot = Platform.rotation;
+	platlastpos2 = transform.position - Platform.position;
+	firstplat = false;
+}
+
 void LateUpdate (){
-int l = Collisions.Length;
-if(collisioncount == 0) {
-for (int c = 0; c < l; c++) {
-var collision = Collisions[c];
-collision.Normal = Vector3.zero;
-collision.Point = Vector3.zero;
-collision.Count = 0;
-collision.Active = false;
-for (int b2 = 0, len = collision.Ranges.Length; b2 < len; b2++) {
-collision.Ranges[b2].Active = false;
+if(collisioncount == 0){
+for (int c = 0; c < Collisions.Length; c++) {
+Collisions[c].Normal = Vector3.zero;
+Collisions[c].Point = Vector3.zero;
+Collisions[c].Count = 0;
+Collisions[c].Active = false;
+for (int b2 = 0; b2 < Collisions[c].Ranges.Length; b2++) {
+Collisions[c].Ranges[b2].Active = false;
 }
 }
 }
-for (int c2 = 0; c2 < l; c2++) {
+for (int c2 = 0; c2 < Collisions.Length; c2++) {
 Collisions[c2].Enter = false;
 Collisions[c2].Exit = false;
 }
-for (int c3 = 0; c3 < l; c3++) {
-bool collide = (Collisions[c3].Active && collisioncount != 0);
-if(Collisions[c3].ExitB != !collide){Collisions[c3].Exit = !collide; Collisions[c3].ExitB = !collide;}
-if(Collisions[c3].EnterB != collide){Collisions[c3].Enter = collide; Collisions[c3].EnterB = collide;}
+for (int c3 = 0; c3 < Collisions.Length; c3++) {
+	bool collide = (Collisions[c3].Active && collisioncount != 0);
+	if(Collisions[c3].ExitB != !collide){Collisions[c3].Exit = !collide; Collisions[c3].ExitB = !collide;}
+	if(Collisions[c3].EnterB != collide){Collisions[c3].Enter = collide; Collisions[c3].EnterB = collide;}
 }
+ResetTriggerEnterExit();
+}
+
+void ResetTriggerBanks () {
 if(TriggerStays.Length != 0){ResizeArray(ref TriggerStays, 0);}
+if(TriggerEnters.Length != 0){ResizeArray(ref TriggerEnters, 0);}
+if(TriggerExits.Length != 0){ResizeArray(ref TriggerExits, 0);}
+}
+
+void ResetTriggerEnterExit () {
 if(TriggerEnters.Length != 0){ResizeArray(ref TriggerEnters, 0);}
 if(TriggerExits.Length != 0){ResizeArray(ref TriggerExits, 0);}
 }
@@ -661,20 +941,49 @@ ResizeArray(ref TriggerExits, TriggerExits.Length + 1);
 TriggerExits[TriggerExits.Length-1] = collider;
 }
 
+void OnCollisionEnter ( Collision collider  ){HandleCollision(collider); collisioncount++;}
 
-void OnCollisionEnter(Collision collider) {
-	if (CollisionIgnoreMask != (CollisionIgnoreMask | (1 << collider.gameObject.layer))) {
-		collisioncount++;
-		HandleCollision(collider);
+void OnCollisionExit ( Collision collider  ){if(collisioncount > 0){collisioncount--;}}
+
+void OnCollisionStay ( Collision collider  ){
+	bool PlatformLayer = PlatformLayerMask == (PlatformLayerMask | (1 << collider.gameObject.layer)) || IgnoreCollision == (IgnoreCollision | (1 << collider.gameObject.layer));
+	if(!PlatformLayer && Platform != collider.transform) { Platform = collider.transform; firstplat = true;}
+	collisioncount++;
+	HandleCollision(collider);
+}
+
+bool NormalCollides (int index, Vector3 normal) {
+bool BOOL = true;
+Vector3 pointpoint = ((Collisions[index].localTransform != null) ? Collisions[index].localTransform.InverseTransformDirection(normal) : normal);
+
+for (int b = 0; b < Collisions[index].Ranges.Length; b++) {
+	if(Collisions[index].Ranges[b].x){norm = pointpoint.x;}
+	if(Collisions[index].Ranges[b].y){norm = pointpoint.y;}
+	if(Collisions[index].Ranges[b].z){norm = pointpoint.z;}
+	float normround = RoundToPower(norm, 3);
+	float round = RoundToPower(AngleToNormal(Collisions[index].Ranges[b].value), 3);
+	bool BOOL2 = (Collisions[index].Ranges[b].greater && norm < AngleToNormal(Collisions[index].Ranges[b].value)) ||
+	(Collisions[index].Ranges[b].less && norm > AngleToNormal(Collisions[index].Ranges[b].value)) ||
+	(Collisions[index].Ranges[b].equals && normround == round);
+	BOOL = (BOOL && BOOL2);
 	}
+	return BOOL;
 }
 
-void OnCollisionExit(Collision collider) {
-	if (CollisionIgnoreMask != (CollisionIgnoreMask | (1 << collider.gameObject.layer))) collisioncount--;
+Vector3 AverageNormal (ContactPoint[] array) {
+		Vector3 end = Vector3.zero;
+		for (int i = 0; i < array.Length; i++) {
+			end += array[i].normal;
+		}
+		return end / array.Length;
 }
 
-void OnCollisionStay(Collision collider) {
-	if (CollisionIgnoreMask != (CollisionIgnoreMask | (1 << collider.gameObject.layer))) HandleCollision(collider);
+Vector3 AveragePoint (ContactPoint[] array) {
+		Vector3 end = Vector3.zero;
+		for (int i = 0; i < array.Length; i++) {
+			end += array[i].point;
+		}
+		return end / array.Length;
 }
 
 void HandleCollision ( Collision collider){
@@ -691,28 +1000,23 @@ void HandleCollision ( Collision collider){
 	RESET = false;
 	}
 	ContactPoint[] points = collider.contacts;
-	//Debug.Log(points[i].normal * -90);
+	
+Vector3 poooooint = AveragePoint(points);
+Vector3 nom = AverageNormal(points);
+
 	for (int c2 = 0; c2 < Collisions.Length; c2++) {
-	bool localBool = (Collisions[c2].localTransform != null);
-	Vector3 pointpointpoint = (points[0].normal);
-	Vector3 pointpoint= (localBool ? Collisions[c2].localTransform.InverseTransformDirection(points[0].normal) : pointpointpoint);
-	Vector3 poooooint= points[0].point;
+	if(Collisions[c2].IgnoreMask == (Collisions[c2].IgnoreMask | (1 << collider.gameObject.layer))){continue;}
+	if(IgnoreCollision == (IgnoreCollision | (1 << collider.gameObject.layer))){continue;}
+	bool  localBool = (Collisions[c2].localTransform != null);
+	Vector3 pointpoint = (localBool ? Collisions[c2].localTransform.InverseTransformDirection(nom) : nom);
 
 	for (int b = 0; b < Collisions[c2].Ranges.Length; b++) {
 	if(Collisions[c2].Ranges[b].x){norm = pointpoint.x;}
 	if(Collisions[c2].Ranges[b].y){norm = pointpoint.y;}
 	if(Collisions[c2].Ranges[b].z){norm = pointpoint.z;}
-		if ((Collisions[c2].Ranges[b].greater && norm < AngleToNormal(Collisions[c2].Ranges[b].value)) ||
-		    (Collisions[c2].Ranges[b].less && norm > AngleToNormal(Collisions[c2].Ranges[b].value)) ||
-		    (Collisions[c2].Ranges[b].equals && RoundToPower(norm, 3) ==
-		     RoundToPower(AngleToNormal(Collisions[c2].Ranges[b].value), 3))) {
-			Collisions[c2].Ranges[b].Active = true;
-			Collisions[c2].Normal += pointpointpoint;
-			Collisions[c2].Point += poooooint;
-			Collisions[c2].Count++;
-			Collisions[c2].collision = collider;
-			// Collisions[c2].tag = collider.transform.tag;
-		}
+	if((Collisions[c2].Ranges[b].greater && norm < AngleToNormal(Collisions[c2].Ranges[b].value)) ||
+	(Collisions[c2].Ranges[b].less && norm > AngleToNormal(Collisions[c2].Ranges[b].value)) ||
+	(Collisions[c2].Ranges[b].equals && RoundToPower(norm, 3) == RoundToPower(AngleToNormal(Collisions[c2].Ranges[b].value), 3))){Collisions[c2].Ranges[b].Active = true; Collisions[c2].Normal += nom; Collisions[c2].LastNormal = nom; Collisions[c2].Point += poooooint; Collisions[c2].LastPoint = poooooint; Collisions[c2].Count++; Collisions[c2].collision = collider; if(Collisions[c2].tag == "" || !collider.transform.CompareTag(Collisions[c2].tag)){Collisions[c2].tag = collider.transform.tag;}}
 	}
 }
 for (int c3 = 0; c3 < Collisions.Length; c3++) {
@@ -723,6 +1027,7 @@ BOOL = (BOOL && Collisions[c3].Ranges[b3].Active);
 
 Collisions[c3].Active = BOOL;
 }
+
 }
 
 /*
@@ -767,6 +1072,139 @@ PHYSIXBUFFER.z.add = add;
 PHYSIXBUFFER.z.equals = equals;
 }
 ApplyMovement(PHYSIXBUFFER);
+}
+
+public void Snap () {
+RaycastHit hit;
+for (int i = 0; i < Collisions.Length; i++) {
+if(!Collisions[i].Snap || !Collisions[i].Active){continue;}
+Vector3 Normal = (Collisions[i].Count == 0 ? Vector3.zero : -(Collisions[i].Normal / Collisions[i].Count).normalized);
+Vector3 ColliderPoint = Collisions[i].collision.collider.ClosestPoint(transform.position);
+if (Physics.Raycast(new Ray(transform.position, ((ColliderPoint - transform.position).normalized + Normal) * 0.5f), out hit)) {
+Vector3 rigidnormal = (hit.normal - Normal) * 0.5f;
+float maxangle = Mathf.Abs(180 - Vector3.Angle(Normal, hit.normal));
+float magnitude = Vector3.Project(rigidbody.velocity, -Normal).magnitude;
+if(hit.distance > rigidbody.velocity.magnitude * Collisions[i].SnapOffset || magnitude >= Collisions[i].SnapBreakVelocity || maxangle > Collisions[i].SnapAngle || !NormalCollides(i, hit.normal)){continue;}
+Vector3 tomove = ColliderPoint - GetClosestColliderPoint(ColliderPoint);
+transform.position += tomove;
+				rigidbody.velocity = rigidbody.velocity.magnitude * (Vector3.ProjectOnPlane(rigidbody.velocity, -tomove.normalized)).normalized;
+}
+}
+}
+
+OldSnap
+public void Snap () {
+RaycastHit hit;
+for (int i = 0; i < Collisions.Length; i++) {
+if(!Collisions[i].Snap || !Collisions[i].Active || Collisions[i].SnapDelay >= Time.frameCount){continue;}
+bool mesh = Collisions[i].collision != null && Collisions[i].collision.collider != null && Collisions[i].collision.collider.GetType() == typeof(MeshCollider);
+if(mesh){
+if(Collisions[i].SnapTransform != Collisions[i].collision.collider.transform){
+Collisions[i].SnapTransform = Collisions[i].collision.collider.transform;
+PhysixMeshSnapping pms = Collisions[i].SnapTransform.GetComponent<PhysixMeshSnapping>();
+
+if(pms == null){
+pms = Collisions[i].collision.collider.gameObject.AddComponent(typeof(PhysixMeshSnapping)) as PhysixMeshSnapping;
+}
+
+Collisions[i].SnapMeshScript = pms;
+}
+MeshCollider meshcollider = (MeshCollider)Collisions[i].collision.collider;
+mesh = !meshcollider.convex;
+}
+Vector3 Normal = -(Collisions[i].LastNormal).normalized;
+if(Collisions[i].collision.collider == null){continue;}
+Vector3 ColliderPoint = (mesh ? GetClosestMeshPoint((MeshCollider)Collisions[i].collision.collider, transform.position, i) : Collisions[i].collision.collider.ClosestPoint(transform.position));
+
+if (Physics.Raycast(new Ray(transform.position, ((ColliderPoint - transform.position).normalized + Normal) * 0.5f), out hit)) {
+
+float maxangle = Mathf.Abs(Vector3.Angle(-Normal, hit.normal));
+				float magnitude = Vector3.Project(rigidbody.velocity, -Normal).magnitude;
+				//if(Vector3.Distance(ColliderPoint, GetClosestColliderPoint(ColliderPoint)) > Mathf.Clamp(rigidbody.velocity.magnitude, 1, 100000) * Collisions[i].SnapOffset){Debug.Log("OFFSET");}
+				//if(magnitude >= Collisions[i].SnapBreakVelocity){Debug.Log(magnitude);}
+				//if(maxangle > Collisions[i].SnapAngle){Debug.Log("ANGLE");}
+				//if(!NormalCollides(i, hit.normal)){Debug.Log("CANNOT");}
+bool mesh2 = hit.collider.GetType() == typeof(MeshCollider);
+if(mesh2){
+MeshCollider meshcollider = (MeshCollider)hit.collider;
+mesh2 = !meshcollider.convex;
+}
+ColliderPoint = (mesh2 ? GetClosestMeshPoint((MeshCollider)hit.collider, transform.position, i) : hit.collider.ClosestPoint(transform.position));
+if(Vector3.Distance(ColliderPoint, GetClosestColliderPoint(ColliderPoint)) > Mathf.Clamp(rigidbody.velocity.magnitude, 1, 100000) * Collisions[i].SnapOffset || (magnitude >= Collisions[i].SnapBreakVelocity && (!mesh2 || maxangle == 0)) || maxangle > Collisions[i].SnapAngle || !NormalCollides(i, hit.normal)){continue;}
+
+Vector3 tomove = Vector3.ClampMagnitude(ColliderPoint - GetClosestColliderPoint(ColliderPoint), GetColliderSize());
+Vector3 todirect = -(ColliderPoint - GetColliderCenter()).normalized;
+transform.position += tomove;
+float mag = rigidbody.velocity.magnitude;
+Vector3 newvelo = Vector3.ProjectOnPlane(rigidbody.velocity, todirect).normalized;
+rigidbody.velocity = mag * newvelo;
+collisioncount++;
+}
+}
+}
+
+float LargestTriangleSize (Vector3 p1,Vector3 p2,Vector3 p3) {
+		float l1 = Vector3.Distance(p1,p2);
+		float l2 = Vector3.Distance(p2,p3);
+		float l3 = Vector3.Distance(p1,p3);
+		return (l1 > l2 && l1 > l3 ? l1 : (l2 > l1 && l2 > l3 ? l2 : l3));
+}
+float SmallestTriangleSize (Vector3 p1,Vector3 p2,Vector3 p3) {
+		float l1 = Vector3.Distance(p1,p2);
+		float l2 = Vector3.Distance(p2,p3);
+		float l3 = Vector3.Distance(p1,p3);
+		return (l1 < l2 && l1 < l3 ? l1 : (l2 < l1 && l2 < l3 ? l2 : l3));
+}
+
+Vector3 GetClosestMeshPoint (MeshCollider collider, Vector3 Point, int collideindex) {
+float collidersize = GetColliderSize();
+Vector3 point = collider.transform.InverseTransformPoint(Point);
+if(collider.sharedMesh.vertexCount < 3){return Vector3.zero;}
+Vector3[] verts = collider.sharedMesh.vertices;
+int[] tris = (Collisions[collideindex].SnapMeshScript == null ? collider.sharedMesh.triangles : Collisions[collideindex].SnapMeshScript.GetClosestBox(point).triangles);
+int index1 = 0;
+int index2 = 0;
+int index3 = 0;
+float dist1 = 0;
+bool first = true;
+
+int length = tris.Length;
+for (int i = 0; i < length; i += 3) {
+if(verts.Length <= tris[i] || verts.Length <= tris[i+1] || verts.Length <= tris[i+2]){continue;}
+Vector3 POINT = (verts[tris[i]]+verts[tris[i+1]]+verts[tris[i+2]]) / 3f;
+if(Vector3.Distance(point, POINT) > LargestTriangleSize(verts[tris[i]],verts[tris[i+1]],verts[tris[i+2]])){continue;}
+
+Vector3 NORMAL = Vector3.Cross((verts[tris[i+1]]-verts[tris[i+0]]).normalized, (verts[tris[i+2]]-verts[tris[i+0]]).normalized);
+double dot = Vector3.Dot(point - POINT,NORMAL);
+if(dot <= 0){continue;}
+
+Vector3 tripoint = ClosestPointOnTriangle(verts[tris[i]],verts[tris[i+1]],verts[tris[i+2]],point);
+float DIST = Vector3.Distance(point, tripoint);
+if(DIST == dist1){
+Vector3 NORM = collider.transform.TransformDirection((point - tripoint).normalized);
+Vector3 direct = Vector3.ProjectOnPlane(NORM, (point - tripoint).normalized) * collidersize;
+
+Vector3 normcurrent = collider.transform.TransformDirection(Vector3.Cross((verts[index2]-verts[index1]).normalized, (verts[index3]-verts[index1]).normalized));
+Vector3 normnew = collider.transform.TransformDirection(Vector3.Cross((verts[tris[i+1]]-verts[tris[i]]).normalized, (verts[tris[i+2]]-verts[tris[i]]).normalized));
+float AngleCurrent = Vector3.Angle(NORM, normcurrent);
+float AngleNew = Vector3.Angle(NORM, normnew);
+if(AngleNew < AngleCurrent){first = true;}
+}
+if(DIST < dist1 || first){
+index1 = tris[i];
+index2 = tris[i+1];
+index3 = tris[i+2];
+dist1 = DIST;
+first = false;
+continue;
+}
+}
+Vector3 p1 = collider.transform.TransformPoint(verts[index1]);
+Vector3 p2 = collider.transform.TransformPoint(verts[index2]);
+Vector3 p3 = collider.transform.TransformPoint(verts[index3]);
+
+Vector3 endPoint = ClosestPointOnTriangle(p1,p2,p3,Point);
+return endPoint;
 }
 */
 }

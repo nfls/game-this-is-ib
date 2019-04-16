@@ -34,8 +34,17 @@ public static class CharacterFactory {
 
 		go.AddComponent<CharacterMotor>();
 		CharacterController controller = go.AddComponent<CharacterController>();
+		SetupPlayer(controller, data);
+		
+		LayerManager.SetAllLayers(go, LayerManager.CharacterLayer);
+		
+		return go;
+	}
+
+	private static void SetupPlayer(CharacterController controller, PlayerData data) {
 		controller.name = data.name;
 		controller.health = data.health;
+		controller.maxHealth = data.health;
 		controller.maxStamina = ResourcesManager.PlayerAttributesData.maxStamina[data.maxStaminaIndex].value;
 		controller.stamina = controller.maxStamina;
 		controller.staminaRecoveryDelay = ResourcesManager.PlayerAttributesData.staminaRecoveryDelay[data.staminaRecoveryDelayIndex].value;
@@ -58,10 +67,6 @@ public static class CharacterFactory {
 		controller.dodgeTrailSettings.color = data.dodgeTrailColor;
 		controller.bloodColor = data.bloodColor;
 		controller.dodgeTrailMaterial = ResourcesManager.PlayerAttributesData.dodgeTrailMaterial;
-		
-		LayerManager.SetAllLayers(go, LayerManager.CharacterLayer);
-		
-		return go;
 	}
 
 	/// <summary>

@@ -72,7 +72,7 @@ public class PendulumSpriteController : IBSpriteController {
 		ResetPositionAndRotation();
 		EnableTrail(attackTrailSettings);
 		EnterCharacterSyncState();
-		transform.right = characterController.transform.position - transform.position * (float) characterMotor.FaceDirection;
+		transform.right = (characterController.transform.position - transform.position * (float) characterMotor.FaceDirection) * (float) characterMotor.FaceDirection;
 		while (_commandBufferCount > 0) {
 			_ibSpriteTrigger.Enable();
 			if (attackSound) _audioSource.PlayOneShot(attackSound.Source);

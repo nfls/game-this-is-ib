@@ -1,5 +1,4 @@
 ﻿using System;
-using UnityEditor;
 using UnityEngine;
 using UnityEngine.Rendering;
 
@@ -31,7 +30,13 @@ public abstract class IBSpriteController : MonoBehaviour {
 		}
 	}
 
-	public Quaternion InitialRotation => initialRotation.ToQuaternion();
+	public Quaternion InitialRotation {
+		get {
+			Vector3 rotation = initialRotation;
+			rotation.y = characterMotor.FaceDirection == FaceDirection.Right ? 0f : 180f;
+			return rotation.ToQuaternion();
+		}
+	}
 
 	public abstract DetectionSettings DetectionSettings {
 		get;
@@ -83,7 +88,9 @@ public abstract class IBSpriteController : MonoBehaviour {
 			Vector3 initialPosition = InitialPosition;
 			Vector3 displacement = initialPosition - transform.position;
 			float distance = displacement.magnitude;
-			if (transform.lossyScale.x * (float) characterMotor.FaceDirection < 0) Flip();
+			Vector3 eulerAngles = transform.eulerAngles;
+			if (characterMotor.FaceDirection == FaceDirection.Left && eulerAngles.y < 1f && eulerAngles.y > -1f) Turn();
+			else if (characterMotor.FaceDirection == FaceDirection.Right && eulerAngles.y < -179f && eulerAngles.y > 179f) Turn();
 			if (_isFollowing) {
 				float offsetDistance = initialOffset.magnitude;
 				transform.position = Vector3.MoveTowards(transform.position, initialPosition, Mathf.LerpUnclamped(idleMovementSettings.minFollowVelocity * Time.deltaTime, idleMovementSettings.maxFollowVelocity * Time.deltaTime, distance / (idleMovementSettings.maxFollowDistance - offsetDistance)));
@@ -127,6 +134,12 @@ public abstract class IBSpriteController : MonoBehaviour {
 		Vector3 scale = transform.localScale;
 		scale.x *= -1f;
 		transform.localScale = scale;	
+	}
+
+	public void Turn() {
+		Vector3 euler = transform.eulerAngles;
+		euler.y = characterMotor.FaceDirection == FaceDirection.Right ? 0f : 180f;
+		transform.eulerAngles = euler;
 	}
 
 	public void ResetPositionAndRotation() {

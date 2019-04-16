@@ -1,5 +1,6 @@
 ﻿using UnityEngine;
 
+[ImageEffectAllowedInSceneView]
 public class SceneScanEffectController : MonoBehaviour {
 
 	[Range(0f, 40f)]
@@ -39,9 +40,7 @@ public class SceneScanEffectController : MonoBehaviour {
 			frustumCorners.SetRow(2, bottomRight);
 			frustumCorners.SetRow(3, bottomLeft);
 
-			Vector3 centerPos;
-			if (center != null) centerPos = center.position;
-			else centerPos = Vector3.zero;
+			Vector3 centerPos = center != null ? center.position : Vector3.zero;
 			
 			material.SetMatrix(ShaderManager.FRUSTUM_CORNERS_WS_KEYWORD, frustumCorners);
 			material.SetColor(ShaderManager.COLOR_KEYWORD, color);

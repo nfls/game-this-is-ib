@@ -3,27 +3,27 @@ using UnityEngine;
 
 public class SpawnPoint : DeviceController {
 
-	public Material spawnMaterial;
-	public float spawnTime;
-	
-	private Coroutine _spawnCoroutine;
+	public float spawnYOffset = .5f;
+	public float spawnTime = 3f;
 
-	public void Spawn() {
-		_spawnCoroutine = StartCoroutine(ExeSpawnCoroutine());
+	private ParticleSystem _particleSystem;
+	private Coroutine spawnCoroutine;
+
+	protected override void Awake() => _particleSystem = GetComponentInChildren<ParticleSystem>();
+
+	public void Spawn(CharacterController character) {
+		_particleSystem.Play();
+		Vector3 pos = transform.position;
+		pos.y += spawnYOffset;
+		character.transform.position = pos;
+		character.ComeAlive();
+		if (spawnCoroutine != null) StopCoroutine(spawnCoroutine);
+		spawnCoroutine = StartCoroutine(ExeSpawnCoroutine(character.GetComponent<InputOperator>()));
 	}
 
-	private IEnumerator ExeSpawnCoroutine() {
-		float timeRemaining = spawnTime;
-		float speed = 1f / spawnTime;
-		float dissolveThreshold = 1;
-		while (timeRemaining > 0) {
-			yield return null;
-			float delataTime = Time.time;
-			timeRemaining -= delataTime;
-			dissolveThreshold -= speed * delataTime;
-			spawnMaterial.SetFloat(ShaderManager.DISSOLVE_THRESHOLD_KEYWORD, dissolveThreshold);
-		}
-		
-		spawnMaterial.SetFloat(ShaderManager.DISSOLVE_THRESHOLD_KEYWORD, 0f);
+	private IEnumerator ExeSpawnCoroutine(InputOperator input) {
+		input.IsInControl = false;
+		yield return new WaitForSeconds(spawnTime);
+		input.IsInControl = true;
 	}
 }

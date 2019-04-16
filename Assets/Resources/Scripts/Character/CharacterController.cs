@@ -16,6 +16,7 @@ public class CharacterController : MonoBehaviour {
 
 	public string characterName;
 	public float health;
+	public float maxHealth;
 	public float maxStamina;
 	public float stamina;
 	public float staminaRecoveryDelay;
@@ -263,6 +264,12 @@ public class CharacterController : MonoBehaviour {
 		if (_stunCoroutine == null) _currentIBSpriteController?.CancelAttack();
 		else ExitStunState();
 		EnterStunState(stunnedAngle * (float) FaceDirection, stunnedTime);
+	}
+
+	public void ComeAlive() {
+		
+		health = maxHealth;
+		stamina = maxStamina;
 	}
 
 	protected void SprayBlood() {

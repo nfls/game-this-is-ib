@@ -1,4 +1,5 @@
 ﻿using System.Collections.Generic;
+using System.Diagnostics;
 using Cinemachine;
 using UnityEngine;
 using UnityEngine.Events;
@@ -33,6 +34,7 @@ public class ZoneTrigger : DeviceController {
 		}
 	}
 
+	[Conditional("UNITY_EDITOR")]
 	protected void OnDrawGizmos() {
 		var pos = transform.position;
 		var scale = transform.lossyScale;
@@ -43,6 +45,7 @@ public class ZoneTrigger : DeviceController {
 		Gizmos.DrawWireCube(pos, scale);
 	}
 
+	[Conditional("UNITY_EDITOR")]
 	protected void OnDrawGizmosSelected() {
 		var pos = transform.position;
 		var scale = transform.lossyScale;

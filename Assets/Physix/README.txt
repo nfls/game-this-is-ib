@@ -1,4 +1,4 @@
--------------Physix Version 1.1--------------
+-------------Physix Version 1.6--------------
 ---Copyright Matt "Melonhead" Sellers 2018---
 
 ############################################################################################
@@ -125,6 +125,33 @@ p.ApplyMovement("Strafe", 25, AxisType.xyz, ValueType.value); //Calls "Strafe", 
 ############################################################################################
 ############################################################################################
 
+-Snapping-
+Physix has a snapping function that allows physix to snap itself to a surface while
+colliding with it. Simply toggle the "Snap" option inside of a collision module to make that
+collision module snap to any surfaces it collides with.
+
+Snapping only functions correctly when utilizing a movement system that is based on per
+-movement velocity changes, NOT per frame. See "AdvancedMovement" demo scene for an example
+of Snappable movement.
+
+As of Physix V.1.5, you no longer need to worry about snapping to mesh colliders, as they 
+now share the same code as non-mesh colliders. Although there are still problems when attempting
+to snap around sharp mesh angles (90 degrees or steeper), but setting the mesh to convex solves
+this problem. As a rule of thumb, sticking to convex-mesh and non-mesh colliders will yeild
+better snapping results, but you shouldn't run into problems if you keep your changes in slope
+below 75 degrees.
+
+You can also call DelaySnap() manually to force physix to stop snapping a specific collision
+module.
+
+PS: The snapping function's mesh capabilities are held back due to a glitch with unity itself,
+specifically the ComputePenetration() function. Hopefully unity will promptly fix this, as the
+snapping function will work perfectly as soon as they do.
+
+############################################################################################
+############################################################################################
+############################################################################################
+
 -Scene View Editing-
 Collision angles can be edited by clicking and dragging the corners of the visible collision
 cones seen in the scene view. Holding down the control key will snap the values to multiples of five, 
@@ -180,8 +207,12 @@ Physix.Pause(); //Freezes physix until Play() is called. Perfect for pause menus
 Physix.Pause(float percent); //Same as pause, but physix retains it's velocity * percent. Great for bullet time or hitlag.
 Physix.Play(); //Resumes physix if already paused.
 
+-Snap Delay (Used for meshcollider snapping)-
+Physix.DelaySnap(string Name); //Delays snapping for collision module "Name" for one frame.
+Physix.DelaySnap(string Name, int frames); //Delays snapping for collision module "Name" for "frames" number of frames.
+
 ############################################################################################
 ############################################################################################
 ############################################################################################
 
-For technical help or for the reporting of bugs and glitches, please email me at business@mattmelonheadsellers.com.
+For technical help or for the reporting of bugs and glitches, please email me at business@mattmelonheadsellers.com

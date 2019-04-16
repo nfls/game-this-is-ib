@@ -2,31 +2,32 @@
 {
 	Properties 
 	{
-		_MainTex ("Main Texture", 2D) = "white" {}
+		_MainTex ("Main Texture", 2D) = "white" { }
 	}
  
 	CGINCLUDE
 	uniform sampler2D _MainTex;
-	uniform float _BlurFactor;	//模糊强度（0-0.05）
-	uniform float4 _BlurCenter; //模糊中心点xy值（0-1）屏幕空间
+	uniform float _BlurFactor;	// 模糊强度（0-0.05）
+	uniform float4 _BlurCenter; // 模糊中心点xy值（0-1）屏幕空间
 	uniform float _BlurDistance;
+
 	#include "UnityCG.cginc"
-	#define SAMPLE_COUNT 50		//迭代次数
+	#define SAMPLE_COUNT 50		// 迭代次数
  
 	fixed4 frag(v2f_img i) : SV_Target
 	{
-		//模糊方向为模糊中点指向边缘（当前像素点），而越边缘该值越大，越模糊
+		// 模糊方向为模糊中点指向边缘（当前像素点），而越边缘该值越大，越模糊
 		float2 dir = i.uv - _BlurCenter.xy;
 		float2 c = _BlurFactor * dir;
 		fixed4 outColor = 0;
-		//采样SAMPLE_COUNT次
+		// 采样SAMPLE_COUNT次
 		for (int j = 0; j < SAMPLE_COUNT; ++j)
 		{
-			//计算采样uv值：正常uv值+从中间向边缘逐渐增加的采样距离
+			// 计算采样uv值：正常uv值+从中间向边缘逐渐增加的采样距离
 			float2 uv = i.uv + c * j;
 			outColor += tex2D(_MainTex, uv);
 		}
-		//取平均值
+		// 取平均值
 		outColor /= SAMPLE_COUNT;
 		return outColor;
 	}

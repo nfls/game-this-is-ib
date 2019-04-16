@@ -194,8 +194,8 @@ static LayerMask LayerMaskField( string label, LayerMask layerMask) {
 			GUILayout.BeginHorizontal();
 			GUILayout.Space(25);
 			GUILayout.BeginVertical();
-			PHYSIX.CollisionIgnoreMask = LayerMaskField("Collision Ignore Mask", PHYSIX.CollisionIgnoreMask);
-			// DisplayCollisions
+			
+			//DisplayCollisions
 			for (int i = 0; i < PHYSIX.Collisions.Length; i++) {
 			GUILayout.BeginHorizontal();
 			PHYSIX.Collisions[i].Display = GUILayout.Toggle(PHYSIX.Collisions[i].Display, PHYSIX.Collisions[i].Name, "Button");
@@ -253,11 +253,43 @@ static LayerMask LayerMaskField( string label, LayerMask layerMask) {
 					GUILayout.EndVertical();
 					GUILayout.EndHorizontal();
 					PHYSIX.Collisions[i].localTransform = (Transform)EditorGUILayout.ObjectField("Local Transform", (Transform)PHYSIX.Collisions[i].localTransform, typeof(Transform), true);
+					PHYSIX.Collisions[i].Snap = GUILayout.Toggle(PHYSIX.Collisions[i].Snap, new GUIContent("Snap", "Snaps Physix onto a surface if this collision throws true."));
+							if(PHYSIX.Collisions[i].Snap){
+								GUILayout.BeginHorizontal();
+								GUILayout.Space(25);
+								GUILayout.BeginVertical();
+								PHYSIX.Collisions[i].SnapOffset = EditorGUILayout.FloatField(new GUIContent("Snap Offset: ", "Minimum distance ground has to be to snap onto it. Scales with speed."), PHYSIX.Collisions[i].SnapOffset);
+								PHYSIX.Collisions[i].SnapBreakVelocity = EditorGUILayout.FloatField(new GUIContent("Snap Break Velocity", "Tangential force needed to Un-snap Physix from the surface."), PHYSIX.Collisions[i].SnapBreakVelocity);
+								PHYSIX.Collisions[i].ApplyMovementBreakVelocity = EditorGUILayout.FloatField(new GUIContent("ApplyMovement() Break Velocity", "Tangential force needed to Un-snap Physix from the surface, if the force is applied through ApplyMovement()."), PHYSIX.Collisions[i].ApplyMovementBreakVelocity);
+								PHYSIX.Collisions[i].SnapAngle = EditorGUILayout.FloatField(new GUIContent("Snap Angle", "Max surface angle change allowed."), PHYSIX.Collisions[i].SnapAngle);								GUILayout.EndVertical();
+								GUILayout.EndHorizontal();
+							}
+					PHYSIX.Collisions[i].IgnoreMask = LayerMaskField("IgnoreLayers", PHYSIX.Collisions[i].IgnoreMask);
 					GUILayout.EndVertical();
 					GUILayout.EndHorizontal();
 				}
 			}
 			if(GUILayout.Button("-New Collision-", GUILayout.MaxWidth(100))){ResizeArray(ref PHYSIX.Collisions, PHYSIX.Collisions.Length + 1);newThang = true;}
+			EditorGUILayout.HelpBox("Collision Options", MessageType.None);
+			GUILayout.BeginHorizontal();
+			GUILayout.Space(25);
+			GUILayout.BeginVertical();
+
+			PHYSIX.FixMovingPlatforms = GUILayout.Toggle(PHYSIX.FixMovingPlatforms, new GUIContent("Automatic Moving Platforms", "Physix will automatically move with any collider it is colliding with."));
+			if(PHYSIX.FixMovingPlatforms){
+				GUILayout.BeginHorizontal();
+				GUILayout.Space(25);
+				GUILayout.BeginVertical();
+				PHYSIX.PlatformLayerMask = LayerMaskField("Ignore platforms", PHYSIX.PlatformLayerMask);
+				PHYSIX.PlatformsRetainVelocity = GUILayout.Toggle(PHYSIX.PlatformsRetainVelocity, new GUIContent("Retain Platform Velocity", "When exiting a collider, retains any collider velocity."));
+				if(PHYSIX.PlatformsRetainVelocity) {PHYSIX.PlatformsVelocityMultiplier = EditorGUILayout.FloatField(new GUIContent("Platform Velocity Multiplier: ", "Multiplier to decide how much velocity is retained after exiting a moving platform."), PHYSIX.PlatformsVelocityMultiplier);}
+				GUILayout.EndVertical();
+				GUILayout.EndHorizontal();
+			}
+			PHYSIX.IgnoreCollision = LayerMaskField("Ignore Layers", PHYSIX.IgnoreCollision);
+
+			GUILayout.EndVertical();
+			GUILayout.EndHorizontal();
 			GUILayout.EndVertical();
 			GUILayout.EndHorizontal();
 			}
@@ -314,6 +346,7 @@ static LayerMask LayerMaskField( string label, LayerMask layerMask) {
 			//EditorGUILayout.HelpBox("Defualt Inspector", MessageType.None);
 			DrawDefaultInspector();
 			}
+			//PHYSIX.PhysicsRotation = EditorGUILayout.Vector3Field(new GUIContent("Physics Rotation: ", "Rotates the direction in which Physix calculates data. Great for changing gravitational pull."), PHYSIX.PhysicsRotation);
 			GUILayout.BeginHorizontal();GUILayout.Space(10);PHYSIX.DisplayVisualSettings = EditorGUILayout.Foldout(PHYSIX.DisplayVisualSettings, "Settings", true);GUILayout.EndHorizontal();
 			if(PHYSIX.DisplayVisualSettings){
 			GUILayout.BeginHorizontal();
@@ -323,7 +356,7 @@ static LayerMask LayerMaskField( string label, LayerMask layerMask) {
 				PHYSIX.HitBoxColor = EditorGUILayout.ColorField("Hitbox Color: ", PHYSIX.HitBoxColor);
 				PHYSIX.UseDefualtInspector = EditorGUILayout.Toggle("Use Default Inspector: ", PHYSIX.UseDefualtInspector);
 				GUILayout.BeginHorizontal();
-				EditorGUILayout.HelpBox("Physix Version 1.1", MessageType.None);
+				EditorGUILayout.HelpBox("Physix Version 1.6", MessageType.None);
 				EditorGUILayout.HelpBox("© Matt \"Melonhead\" Sellers 2018", MessageType.None);
 				GUILayout.EndHorizontal();
 			GUILayout.EndVertical();

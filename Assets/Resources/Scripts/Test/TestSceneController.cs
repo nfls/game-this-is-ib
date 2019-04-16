@@ -29,8 +29,6 @@ public class TestSceneController : MonoBehaviour {
 		SingletonManager.AddSingleton<AudioManager>();
 		SingletonManager.AddSingleton<InputManager>();
 		SingletonManager.AddSingleton<UIManager>();
-		
-		level.Activate();
 
 		GameObject localPlayer = CharacterFactory.GenerateLocalPlayer();
 		GameObject interactionSystem = new GameObject("Interaction System");
@@ -49,10 +47,13 @@ public class TestSceneController : MonoBehaviour {
 		localPlayer.GetComponent<CharacterController>().EquipIBSprite(sprite3.GetComponent<IBSpriteController>());
 		localPlayer.GetComponent<CharacterController>().EquipIBSprite(sprite4.GetComponent<IBSpriteController>());
 		localPlayer.GetComponent<CharacterController>().EquipIBSprite(sprite5.GetComponent<IBSpriteController>());
-		localPlayer.transform.position = playerSpawnPosition == null ? new Vector3(3, 1, 0) : playerSpawnPosition.position;
-		CameraManager.MainCamera.GetComponent<SceneScanEffectController>().center = localPlayer.transform;
+
+		level.localPlayer = localPlayer.GetComponent<CharacterController>();
+
+		// localPlayer.transform.position = playerSpawnPosition == null ? new Vector3(3, 1, 0) : playerSpawnPosition.position;
+		// CameraManager.MainCamera.GetComponent<SceneScanEffectController>().center = localPlayer.transform;
 		// localPlayer.transform.position = new Vector3(4, 8, 0);
-		
+
 		mainTargetGroup.m_Targets = new[] { new CinemachineTargetGroup.Target { target = localPlayer.transform, weight = 1f, radius = 5f } };
 		combatVirtualCamera.Follow = localPlayer.transform;
 		combatVirtualCamera.LookAt = localPlayer.transform;
@@ -60,7 +61,7 @@ public class TestSceneController : MonoBehaviour {
 		GameObject enemy0 = CharacterFactory.GenerateEnemy("Enemy 0");
 		enemy0.transform.position = new Vector3(3, 8, 0);
 		GameObject sprite6 = IBSpriteFactory.GenerateIBSprite("hammer");
-		enemy0.GetComponent<CharacterController>().EquipIBSprite(sprite6.GetComponent<IBSpriteController>());
+		enemy0.GetComponent<CharacterController>().EquipIBSprite(sprite6.GetComponent<IBSpriteController>(), false);
 		enemy0.AddComponent<NaiveAIOperator>();
 		/*
 		GameObject enemy1 = CharacterFactory.GenerateLocalPlayer();
@@ -68,7 +69,7 @@ public class TestSceneController : MonoBehaviour {
 		enemy1.name = "Enemy 1";
 		enemy1.transform.position = new Vector3(12, 8, 0);
 		*/
-		
+
 		if (bgm) {
 			AudioSource source = GetComponent<AudioSource>();
 			source.clip = bgm;
@@ -82,6 +83,8 @@ public class TestSceneController : MonoBehaviour {
 		Debug.Log(JoystickUtil.HapticDeviceNum + " Haptic Device Detected : " + string.Join(", ", JoystickUtil.HapticDeviceNames));
 		JoystickUtil.LogPowerState();
 		JoystickUtil.LogSensorState();
+
+		level.Activate();
 	}
 
 	private float endTime;

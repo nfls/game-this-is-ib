@@ -1,12 +1,12 @@
 ﻿using System;
 using UnityEngine;
 
-[RequireComponent(typeof(BoxCollider))]
+[RequireComponent(typeof(SphereCollider))]
 public class CharacterMotor : MonoBehaviour {
 	
 	private const string BOTTOM_COLLISION = "Bottom";
-	private const string LEFT_COLLISION = "Left";
-	private const string RIGHT_COLLISION = "Right";
+	private const string FORWARD_COLLISION = "Forward";
+	private const string BACKWARD_COLLISION = "Backward";
 	private const string GLOBAL_MOVEMENT = "Global";
 	
 	private static readonly Vector3 ZeroVector3 = Vector3.zero;
@@ -28,6 +28,8 @@ public class CharacterMotor : MonoBehaviour {
 
 	public bool IsGrounded => _isGrounded;
 
+	public bool IsFaceCollided => _physix.IsColliding(FORWARD_COLLISION);
+
 	public Collider BodyCollider => _bodyCollider;
 
 	public FaceDirection FaceDirection => _faceDirection;
@@ -41,12 +43,14 @@ public class CharacterMotor : MonoBehaviour {
 	private Physix _physix;
 	private FaceDirection _faceDirection = FaceDirection.Right;
 
+	private bool _needsUpdate;
 	private bool _isGrounded;
 
 	private bool _hasMoved;
 	private bool _isDodging;
 
 	private float _freeVelocityX;
+	private float _freeVelocityY;
 	private float _moveVelocityX;
 	private float _dodgeVelocity;
 	private float _dodgeDuration;
@@ -69,22 +73,22 @@ public class CharacterMotor : MonoBehaviour {
 		
 		// Config Physix
 		_physix = gameObject.AddComponent<Physix>();
-		_physix.CollisionIgnoreMask = 1 << LayerManager.ProjectileLayer;
 		_physix.Collisions = new Physix.PHYSIXCOLLISION[3];
 		_physix.Collisions[0] = new Physix.PHYSIXCOLLISION {
 			Name = BOTTOM_COLLISION,
 			Active = true,
-			Ranges = new[] { new Physix.PHYSIXBOUNDS { y = true, less = true, equals = true, value = -45f } }
+			Ranges = new[] { new Physix.PHYSIXBOUNDS { y = true, less = true, equals = true, value = -45f } },
+			Snap = true
 		};
 		
 		_physix.Collisions[1] = new Physix.PHYSIXCOLLISION {
-			Name = LEFT_COLLISION,
+			Name = FORWARD_COLLISION,
 			Active = true,
 			Ranges = new[] { new Physix.PHYSIXBOUNDS { x = true, greater = true, equals = true, value = 45f } }
 		};
 		
 		_physix.Collisions[2] = new Physix.PHYSIXCOLLISION {
-			Name = RIGHT_COLLISION,
+			Name = BACKWARD_COLLISION,
 			Active = true,
 			Ranges = new[] { new Physix.PHYSIXBOUNDS { x = true, less = true, equals = true, value = -45f } }
 		};
@@ -93,9 +97,16 @@ public class CharacterMotor : MonoBehaviour {
 		_physix.Movements[0].x.equals = true;
 		_physix.Movements[0].y.equals = true;
 		_physix.Movements[0].z.equals = true;
+
+		_physix.PlatformsRetainVelocity = false;
+		_physix.PlatformsVelocityMultiplier = 25f;
 	}
 
-	private void FixedUpdate() {
+	private void FixedUpdate() => _needsUpdate = true;
+
+	private void Update() {
+		if (!_needsUpdate) return;
+		_needsUpdate = false;
 		if (_isDodging) {
 			if (Time.time - _dodgeTime >= _dodgeDuration) {
 				_isDodging = false;
@@ -108,7 +119,7 @@ public class CharacterMotor : MonoBehaviour {
 					if (!_isGrounded) {
 						_velocityY = 0f;
 						_isGrounded = true;
-						onGroundEnter?.Invoke();
+						onGroundEnter?.Invoke();	
 					}
 				} else {
 					if (_isGrounded) {
@@ -191,22 +202,13 @@ public class CharacterMotor : MonoBehaviour {
 	}
 
 	private void Teleport(float distance) {
-		float sign;
-		string collision;
-		if (distance > 0) {
-			sign = 1;
-			collision = RIGHT_COLLISION;
-		} else {
-			sign = -1;
-			collision = LEFT_COLLISION;
-		}
 
-		if (_physix.IsColliding(collision))
-			if (_physix.GetCollision(collision).gameObject.layer != LayerManager.CharacterLayer) return;
+		if (_physix.IsColliding(FORWARD_COLLISION))
+			if (_physix.GetCollision(FORWARD_COLLISION).gameObject.layer != LayerManager.CharacterLayer) return;
 
 		gameObject.layer = LayerManager.DodgeLayer;
 		RaycastHit hitInfo;
-		if (_rigidbody.SweepTest(new Vector3(sign, 0, 0), out hitInfo, distance * sign, QueryTriggerInteraction.Ignore)) distance = hitInfo.point.x - transform.position.x - transform.localScale.x / 2;
+		if (_rigidbody.SweepTest(new Vector3(1, 0, 0), out hitInfo, distance, QueryTriggerInteraction.Ignore)) distance = hitInfo.point.x - transform.position.x - transform.localScale.x / 2;
 		gameObject.layer = LayerManager.CharacterLayer;
 		
 		transform.position = transform.position + new Vector3(distance, 0, 0);
@@ -216,7 +218,7 @@ public class CharacterMotor : MonoBehaviour {
 
 	public void GetHit(float velocityX, float velocityY) {
 		_freeVelocityX += velocityX;
-		_velocityY += velocityY;
+		_velocityY = velocityY;
 	}
 }
 

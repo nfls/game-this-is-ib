@@ -8,11 +8,7 @@ public abstract class DeviceController : MonoBehaviour {
 
 	public virtual void Replay() => Play();
 
-	public virtual void Play() {
-		_isEnabled = true;
-	}
+	public virtual void Play() => _isEnabled = true;
 
-	public virtual void Pause() {
-		_isEnabled = false;
-	}
+	public virtual void Pause() => _isEnabled = false;
 }

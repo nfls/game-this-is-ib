@@ -1,6 +1,8 @@
 ﻿using System.Collections;
+using System.Diagnostics;
 using UnityEngine;
 using UnityEngine.Events;
+using UnityEditor;
 
 public class InteractionController : MonoBehaviour {
 
@@ -65,6 +67,25 @@ public class InteractionController : MonoBehaviour {
 
 	public void UnlockOperator() {
 		if (_characterOperator) _characterOperator.InputMapper.isInControl = true;
+	}
+
+	[Conditional("UNITY_EDITOR")]
+	private void OnDrawGizmos() {
+		var pos = transform.position;
+		Gizmos.color = Color.green;
+		float size = .2f;
+		Gizmos.DrawWireCube(pos, new Vector3(size, size, size));
+		string text = interactionText;
+		if (hasCounterInteraction) {
+			int length = text.Length - text.LastIndexOf('\n') - 3;
+			text += "\n";
+			for (int i = 0; i < length; i++) text += "-";
+			text += "\n";
+			text += counterInteractionText;
+		}
+
+		Handles.Label(pos, text);
+
 	}
 	
 	public enum PanelShowDirection {

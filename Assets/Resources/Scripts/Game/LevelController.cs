@@ -9,6 +9,8 @@ public class LevelController : MonoBehaviour {
 	[CameraBackgroundColor]
 	public Color backgroundColor;
 	public float scanTime = 10f;
+	public CharacterController localPlayer;
+	public CharacterController remotePlayer;
 
 	public bool changeMaterial;
 	public Material terrainMaterial;
@@ -16,9 +18,6 @@ public class LevelController : MonoBehaviour {
 	
 	public int Width => _width;
 	public int Height => _height;
-
-	public CharacterController LocalPlayer => _localPlayer;
-	public CharacterController RemotePlayer => _remotePlayer;
 
 	protected bool _isShifiting;
 	[SerializeField]
@@ -29,23 +28,25 @@ public class LevelController : MonoBehaviour {
 	protected CharacterController _localPlayer;
 	protected CharacterController _remotePlayer;
 
-	protected Transform terrainRoot;
-	protected Transform deviceRoot;
+	protected Transform _terrainRoot;
+	protected Transform _deviceRoot;
+	protected SpawnPoint _spawnPoint;
 
-	protected DeviceController[] devices;
+	protected DeviceController[] _devices;
 
 	protected Coroutine _shiftCoroutine;
 
 	private void Awake() {
-		terrainRoot = transform.Find("Terrains");
-		deviceRoot = transform.Find("Devices");
+		_terrainRoot = transform.Find("Terrains");
+		_deviceRoot = transform.Find("Devices");
 
-		devices = deviceRoot.GetComponentsInChildren<DeviceController>();
+		_devices = _deviceRoot.GetComponentsInChildren<DeviceController>();
+		_spawnPoint = _deviceRoot.GetComponentInChildren<SpawnPoint>();
 		
-		StaticBatchingUtility.Combine(terrainRoot.gameObject);
+		StaticBatchingUtility.Combine(_terrainRoot.gameObject);
 		if (changeMaterial) {
-			foreach (MeshRenderer renderer in terrainRoot.GetComponentsInChildren<MeshRenderer>()) renderer.material = terrainMaterial;
-			foreach (MeshRenderer renderer in deviceRoot.GetComponentsInChildren<MeshRenderer>()) renderer.material = deviceMaterial;
+			foreach (MeshRenderer renderer in _terrainRoot.GetComponentsInChildren<MeshRenderer>()) renderer.material = terrainMaterial;
+			foreach (MeshRenderer renderer in _deviceRoot.GetComponentsInChildren<MeshRenderer>()) renderer.material = deviceMaterial;
 		}
 	}
 
@@ -63,24 +64,29 @@ public class LevelController : MonoBehaviour {
 	}
 
 	public void Activate() {
-		Camera.main.backgroundColor = backgroundColor;
-		foreach (var device in devices) device.Replay();
+		CameraManager.MainCamera.backgroundColor = backgroundColor;
+		foreach (var device in _devices) device.Replay();
+		_spawnPoint.Spawn(localPlayer);
 	}
 
 	public void Deactivate() {
-		foreach (var device in devices) {
+		foreach (var device in _devices) {
 			device.Replay();
 			device.Pause();
 		}
 	}
 
 	public void Resume() {
-		foreach (var device in devices) device.Play();
+		foreach (var device in _devices) device.Play();
 	}
 
 	public void Pause() {
-		foreach (var device in devices) device.Pause();
+		foreach (var device in _devices) device.Pause();
 	}
+
+	public void EnableLocalPlayerControl() => _localPlayer.GetComponent<InputOperator>().IsInControl = true;
+
+	public void DisableLocalPlayerControl() => _localPlayer.GetComponent<InputOperator>().IsInControl = false;
 
 	protected IEnumerator ExeScanCoroutine(float time) {
 		SceneScanEffectController effectController = CameraManager.MainCamera.GetComponent<SceneScanEffectController>();

@@ -21,6 +21,11 @@ public class NaiveAIOperator : CharacterOperator {
 	protected bool _hasAttackedLastTime;
 	protected float _lastThinkTime;
 
+	protected override void Awake() {
+		base.Awake();
+		_characterController.SwitchOnIBSprite();
+	}
+
 	protected void Update() {
 		if (Time.time - _lastThinkTime > thinkIntern) {
 			_lastThinkTime = Time.time;
@@ -36,7 +41,7 @@ public class NaiveAIOperator : CharacterOperator {
 		if (_target) {
 			Vector3 diff = _target.transform.position - transform.position;
 			float distanceSqr = diff.sqrMagnitude;
-			if (distanceSqr > maximumSight * maximumSight || Physics.Linecast(transform.position, _target.transform.position, 1 << LayerManager.TerrainLayer | 1 << LayerManager.DeviceLayer, QueryTriggerInteraction.Ignore)) {
+			if (distanceSqr > maximumSight * maximumSight/* || Physics.Linecast(transform.position, _target.transform.position, 1 << LayerManager.TerrainLayer | 1 << LayerManager.DeviceLayer, QueryTriggerInteraction.Ignore)*/) {
 				_target = null;
 				return;
 			}
@@ -54,8 +59,9 @@ public class NaiveAIOperator : CharacterOperator {
 						_characterController.OnReceiveAttackCommand();
 					}
 			} else {
-				if (diff.x > 0) _currerntAction = _characterController.MoveRight;
-				else _currerntAction = _characterController.MoveLeft; 
+				if (diff.x > 0 && !GetComponent<CharacterMotor>().IsFaceCollided) _currerntAction = _characterController.MoveRight;
+				else _currerntAction = _characterController.MoveLeft;
+				if (diff.y > jumpRequirementHeight) _characterController.Jump();
 			}
 		} else {
 			int length = Physics.RaycastNonAlloc(transform.position, new Vector3((float) _characterController.FaceDirection, 0f, 0f), hitResults, detectionDistance, 1 << LayerManager.TerrainLayer | 1 << LayerManager.DeviceLayer | 1 << LayerManager.CharacterLayer, QueryTriggerInteraction.Ignore);

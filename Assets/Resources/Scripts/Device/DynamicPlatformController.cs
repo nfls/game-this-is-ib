@@ -7,42 +7,16 @@ public class DynamicPlatformController : DeviceController {
 
 	public LoopType loopType;
 	public float speed;
-	public RigidbodyInterpolation interpolation = RigidbodyInterpolation.Interpolate;
 	public List<Vector3> destinations;
-
-	public Vector3 DeltaMovement => _deltaMovement;
 
 	private bool _isInverse;
 	private int _currentDestinationIndex;
 	private Vector3 _currentDestination;
-	private Vector3 _deltaMovement;
 	private Vector3 _lastPosition;
-	private List<CharacterController> _characters;
-	private Rigidbody _rigidbody;
 	private Coroutine _checkCoroutine;
 
-	protected override void Awake() {
-		base.Awake();
-		
-		_characters = new List<CharacterController>(2);
-		
-		_rigidbody = gameObject.AddComponent<Rigidbody>();
-		_rigidbody.isKinematic = true;
-		_rigidbody.interpolation = interpolation;
-	}
-
 	private void FixedUpdate() {
-		if (_isEnabled) _rigidbody.MovePosition(Vector3.MoveTowards(transform.position, _currentDestination, speed * Time.deltaTime));
-	}
-	
-	private void Update() => UpdateStandOns();
-
-	private void UpdateStandOns() {
-		Vector3 pos = transform.position;
-		_deltaMovement = pos - _lastPosition;
-		// _deltaMovement.y = 0f;
-		_lastPosition = pos;
-		foreach (var character in _characters) character.transform.position += _deltaMovement;
+		if (_isEnabled) transform.position = Vector3.MoveTowards(transform.position, _currentDestination, speed * Time.deltaTime);
 	}
 
 	public override void Replay() {
@@ -94,30 +68,6 @@ public class DynamicPlatformController : DeviceController {
 
 				_currentDestination = destinations[_currentDestinationIndex];
 			}
-		}
-	}
-
-	private void AddCharacter(CharacterController controller) {
-		_characters.Add(controller);
-	}
-
-	private void RemoveCharacter(CharacterController controller) {
-		_characters.Remove(controller);
-	}
-
-	private void OnCollisionEnter(Collision other) {
-		int layer = other.gameObject.layer;
-		if (layer == LayerManager.CharacterLayer || layer == LayerManager.DodgeLayer) {
-			CharacterController controller = other.transform.GetComponent<CharacterController>();
-			if (controller) AddCharacter(controller);
-		}
-	}
-
-	private void OnCollisionExit(Collision other) {
-		int layer = other.gameObject.layer;
-		if (layer == LayerManager.CharacterLayer || layer == LayerManager.DodgeLayer) {
-			CharacterController controller = other.transform.GetComponent<CharacterController>();
-			if (controller) RemoveCharacter(controller);
 		}
 	}
 
