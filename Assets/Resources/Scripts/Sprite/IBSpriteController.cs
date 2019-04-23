@@ -14,6 +14,8 @@ public abstract class IBSpriteController : MonoBehaviour {
 	public ParticleAsset hitEffect;
 	public ParticleSystem.MinMaxGradient hitEffectColor;
 	public AudioAsset hitSound;
+	public Vector3 hitShake;
+	public TimeEffectRequest hitTimeEffect;
 
 	public AttackEffectSettings attackEffectSettings;
 	public IdleMovementSettings idleMovementSettings;
@@ -190,20 +192,46 @@ public abstract class IBSpriteController : MonoBehaviour {
 			particle.transform.position = contactPosition;
 			particle.Burst();
 		}
-
-		if (characterController.CompareTag(TagManager.LOCAL_PLAYER_TAG)) {
-			CameraManager.RadialBlur(CameraManager.MainCamera.WorldToViewportPoint(contactPosition));
-			ushort rumbleStrength = 10000;
-			float maxDistance = 1.9f;
-			float portion;
-			if (distance * hitDirection > maxDistance) portion = hitDirection * .5f;
-			else portion = distance / maxDistance * .5f;
-			ushort leftStrength = Convert.ToUInt16((.5f - portion) * rumbleStrength);
-			ushort rightStrength = Convert.ToUInt16((.5f + portion) * rumbleStrength);
-			JoystickUtil.RumbleJoystick(leftStrength, rightStrength, 200);
-		}
 		
-		// FindObjectOfType<TestSceneController>().CombatClearShot(characterController.transform, detectedCollider.transform);
+		DamageSoundEffect(contactPosition);
+		
+		if (characterController.CompareTag(TagManager.LOCAL_PLAYER_TAG)) DisplayPlayerDamageEffect(distance, hitDirection, contactPosition);
+		DisplayDamageEffect(distance, hitDirection, contactPosition);
+	}
+	
+	protected virtual void DamageSoundEffect(Vector3 contactPosition, float volume = 1f) {
+		if (hitSound) {
+			if (!_audioSource.enabled) _audioSource.enabled = true;
+			_audioSource.PlayOneShot(hitSound.Source, volume);
+		}
+	}
+
+	protected virtual void DisplayPlayerDamageEffect(float distance, float hitDirection, Vector3 contactPosition) {
+		DamageBlurEffect(contactPosition);
+		DamageRumbleEffect(distance, hitDirection);
+	}
+
+	protected virtual void DisplayDamageEffect(float distance, float hitDirection, Vector3 contactPosition) {
+		DamageTimeEffect(hitTimeEffect);
+		DamageShakeEffect(contactPosition, hitShake);
+	}
+
+	protected void DamageBlurEffect(Vector3 contactPosition) => CameraManager.RadialBlur(CameraManager.MainCamera.WorldToViewportPoint(contactPosition));
+	
+	protected void DamageShakeEffect(Vector3 contactPosition, Vector3 hitShake) => CameraManager.Shake(contactPosition, hitShake);
+
+	protected void DamageTimeEffect(TimeEffectRequest hitTimeEffect) {
+		if (hitTimeEffect) TimeManager.HandleRequest(hitTimeEffect);
+	}
+
+	protected virtual void DamageRumbleEffect(float distance, float hitDirection, ushort rumbleStrength = 10000) {
+		float maxDistance = 1.9f;
+		float portion;
+		if (distance * hitDirection > maxDistance) portion = hitDirection * .5f;
+		else portion = distance / maxDistance * .5f;
+		ushort leftStrength = Convert.ToUInt16((.5f - portion) * rumbleStrength);
+		ushort rightStrength = Convert.ToUInt16((.5f + portion) * rumbleStrength);
+		JoystickUtil.RumbleJoystick(leftStrength, rightStrength, 200);
 	}
 
 	protected virtual void OnDetectCharacterExit(IBSpriteTrigger trigger, Collider detectedCollider) {

@@ -1,4 +1,5 @@
-﻿using System.Collections;
+﻿using System;
+using System.Collections;
 using UnityEngine;
 using Debug = UnityEngine.Debug;
 
@@ -11,6 +12,7 @@ public class ShooterSpriteController : IBSpriteController {
 	public Vector3 fireShake;
 	public ParticleAsset fireEffect;
 	public ParticleAsset explosionEffect;
+	public ParticleSystem.MinMaxGradient explosionEffectColor;
 	public float lifespan;
 	public float recoilTime;
 	public float recoilDistance;
@@ -114,14 +116,17 @@ public class ShooterSpriteController : IBSpriteController {
 		Vector3 rotation = fireRotation;
 		rotation.z *= (float) characterMotor.FaceDirection;
 		projectileController.transform.rotation = rotation.ToQuaternion();
-		projectileController.hitSound = hitSound;
-		projectileController.explosionEffect = explosionEffect;
 		projectileController.lifespan = lifespan;
 		projectileController.ownerCollider = characterMotor.BodyCollider;
+		projectileController.explosionEffect = explosionEffect;
+		projectileController.explosionEffectColor = explosionEffectColor;
+		projectileController.hitSound = hitSound;
 		projectileController.OnDetectCharacterEnter = OnDetectCharacterEnter;
 		projectileController.OnDetectCharacterExit = OnDetectCharacterExit;
 		projectileController.DetectionSettings = DetectionSettings;
 	}
+
+	protected override void DisplayPlayerDamageEffect(float distance, float hitDirection, Vector3 contactPosition) => DamageRumbleEffect(distance, hitDirection, 5000);
 }
 
 public enum RecoilDirection {

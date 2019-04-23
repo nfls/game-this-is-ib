@@ -1,9 +1,11 @@
 ﻿using System;
+using System.CodeDom;
 using UnityEngine;
 
 [RequireComponent(typeof(SphereCollider))]
 public class CharacterMotor : MonoBehaviour {
-	
+
+	public const string TOP_COLLISION = "Top";
 	public const string BOTTOM_COLLISION = "Bottom";
 	public const string RIGHT_COLLISION = "Right";
 	public const string LEFT_COLLISION = "Left";
@@ -73,24 +75,30 @@ public class CharacterMotor : MonoBehaviour {
 		
 		// Config Physix
 		_physix = gameObject.AddComponent<Physix>();
-		_physix.Collisions = new Physix.PHYSIXCOLLISION[3];
+		_physix.Collisions = new Physix.PHYSIXCOLLISION[4];
 		_physix.Collisions[0] = new Physix.PHYSIXCOLLISION {
-			Name = BOTTOM_COLLISION,
+			Name = TOP_COLLISION,
 			Active = true,
-			Ranges = new[] { new Physix.PHYSIXBOUNDS { y = true, less = true, equals = true, value = -45f } },
-			Snap = true
+			Ranges = new [] { new Physix.PHYSIXBOUNDS { y = true, greater = true, equals = false, value = 45f } }
 		};
 		
 		_physix.Collisions[1] = new Physix.PHYSIXCOLLISION {
-			Name = RIGHT_COLLISION,
+			Name = BOTTOM_COLLISION,
 			Active = true,
-			Ranges = new[] { new Physix.PHYSIXBOUNDS { x = true, greater = true, equals = true, value = 45f } }
+			Ranges = new[] { new Physix.PHYSIXBOUNDS { y = true, less = true, equals = false, value = -45f } },
+			Snap = true
 		};
 		
 		_physix.Collisions[2] = new Physix.PHYSIXCOLLISION {
+			Name = RIGHT_COLLISION,
+			Active = true,
+			Ranges = new[] { new Physix.PHYSIXBOUNDS { x = true, greater = true, equals = false, value = 45f } }
+		};
+		
+		_physix.Collisions[3] = new Physix.PHYSIXCOLLISION {
 			Name = LEFT_COLLISION,
 			Active = true,
-			Ranges = new[] { new Physix.PHYSIXBOUNDS { x = true, less = true, equals = true, value = -45f } }
+			Ranges = new[] { new Physix.PHYSIXBOUNDS { x = true, less = true, equals = false, value = -45f } }
 		};
 		
 		_physix.Movements = new[] { new Physix.PHYSIXMOVE { Name = GLOBAL_MOVEMENT } };
@@ -98,7 +106,7 @@ public class CharacterMotor : MonoBehaviour {
 		_physix.Movements[0].y.equals = true;
 		_physix.Movements[0].z.equals = true;
 
-		_physix.PlatformsRetainVelocity = false;
+		_physix.PlatformsRetainVelocity = true;
 		_physix.PlatformsVelocityMultiplier = 25f;
 	}
 
@@ -139,6 +147,7 @@ public class CharacterMotor : MonoBehaviour {
 				}
 			} else {
 				if (usesGravity) _velocityY -= gravity;
+				if (_physix.IsColliding(TOP_COLLISION)) _velocityY = -1f;
 				if (_isGrounded) {
 					_isGrounded = false;
 					onGroundExit?.Invoke();

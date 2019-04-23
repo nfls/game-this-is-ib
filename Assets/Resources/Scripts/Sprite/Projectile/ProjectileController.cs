@@ -7,12 +7,13 @@ using UnityEngine;
 public class ProjectileController : MonoBehaviour {
 
 	public string identifierName;
-	public AudioAsset hitSound;
-	public ParticleAsset explosionEffect;
 	public float lifespan;
 	public float destroyDelay;
 	public Vector3 velocity;
 	public Collider ownerCollider;
+	public ParticleAsset explosionEffect;
+	public ParticleSystem.MinMaxGradient explosionEffectColor;
+	public AudioAsset hitSound;
 	public TrailSettings trailSettings;
 
 	public Action<IBSpriteTrigger, Collider, Vector3> OnDetectCharacterEnter {
@@ -63,14 +64,6 @@ public class ProjectileController : MonoBehaviour {
 		transform.position += velocity * Time.deltaTime;
 	}
 
-	protected virtual void OnHit() {
-		if (hitSound) AudioManager.PlayAtPoint(hitSound.Source, transform.position);
-		if (explosionEffect) {
-			BurstParticleController particleController = explosionEffect.Get<BurstParticleController>();
-			particleController.transform.position = transform.position;
-		}
-	}
-
 	public void Recycle() {
 		_trailRenderer.Clear();
 		_trailRenderer.emitting = false;
@@ -84,9 +77,21 @@ public class ProjectileController : MonoBehaviour {
 
 	private void OnTriggerEnter(Collider other) {
 		int layer = other.gameObject.layer;
-		if (layer == LayerManager.CharacterLayer || layer == LayerManager.TerrainLayer || layer == LayerManager.DeviceLayer) {
+		if (layer == LayerManager.TerrainLayer || layer == LayerManager.DeviceLayer) {
+			if (explosionEffect) {
+				BurstParticleController particle = explosionEffect.Get<BurstParticleController>();
+				ParticleSystem.MainModule main = particle.ParticleSystem.main;
+				main.startColor = explosionEffectColor;
+				particle.transform.position = transform.position;
+				particle.Burst();
+			}
+			
+			if (hitSound) AudioManager.PlayAtPoint(hitSound.Source, transform.position);
+			
+			_startTime = Time.time;
+			lifespan = destroyDelay;
+		} else if (layer == LayerManager.CharacterLayer) {
 			if (other == ownerCollider) return;
-			OnHit();
 			_startTime = Time.time;
 			lifespan = destroyDelay;
 		}

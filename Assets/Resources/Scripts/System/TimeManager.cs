@@ -130,11 +130,14 @@ public class TimeManager : MonoSingleton {
 [Serializable]
 public class TimeEffectRequest {
 
+	public bool required;
 	public TimeEffectLayer layer;
 	public int priority;
 	public float value;
 	public float duration;
 	public float lifeRemained;
+	
+	public static implicit operator bool(TimeEffectRequest request) => request.required;
 }
 
 public enum TimeEffectLayer {

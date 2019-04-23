@@ -5,8 +5,6 @@ using UnityEngine;
 [RequireComponent(typeof(IBSpriteTrigger))]
 public class ThrustSpriteController : IBSpriteController {
 
-	public Vector3 hitShake;
-	public TimeEffectRequest hitTimeEffect;
 	public float thrustDuration;
 	public Vector3 thrustOffset;
 	public Vector3 thrustRotation;
@@ -99,14 +97,6 @@ public class ThrustSpriteController : IBSpriteController {
 		_isAttacking = false;
 		
 		characterController.StartStaminaRecovery();
-	}
-
-	protected override void OnDetectCharacterEnter(IBSpriteTrigger trigger, Collider detectedCollider, Vector3 contactPosition) {
-		base.OnDetectCharacterEnter(trigger, detectedCollider, contactPosition);
-		
-		if (hitSound) _audioSource.PlayOneShot(hitSound.Source);
-		CameraManager.Shake(trigger.transform.position, hitShake);
-		TimeManager.HandleRequest(hitTimeEffect);
 	}
 }
 
